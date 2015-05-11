@@ -14,7 +14,7 @@
     str-rez)
     (setf str-rez (concatenate 'string str-rez ch))))
 
-(defun open-trd-file(path)
+(defun open-trd-file-read(path)
   "Выполняет открытие файла тренда"
   (open path :element-type 'unsigned-byte))
 
@@ -24,6 +24,17 @@
     (dotimes (i byte-number)
       (push (read-byte in) lst))
     (reverse lst)))
+
+(defun open-trd-file-write(path)
+  "Выполняет открытие файла тренда"
+  (open path :element-type 'unsigned-byte :direction :output))
+
+(defun write-trd-file(byte-list out &optional (byte-number (length  byte-list)))
+  "Выполняет чтение bite-number из потока in"
+  (dotimes (i byte-number)
+    (write-byte (pop byte-list ) out)))
+
+;;(ldb-test (byte 8 0) -2.258)
 
 (defun list-to-int(list-of-int &optional (len (length list-of-int )))
   "Выполняет преобразование списка целых чисел 
@@ -44,7 +55,7 @@
   "Выполняет чтение long из потока in"
   (list-to-int(read-trd-file in len)))
 
-(defun read-trd-file-long-long(in &optional (len 8)))
+(defun read-trd-file-long-long(in &optional (len 8))
   "Выполняет чтение long-long из потока in"
   (list-to-int(read-trd-file in len)))
 
@@ -139,13 +150,13 @@
     (format t "~%Reserv         = ~A~%Total-records  = ~A~%Delta-time     = ~A~%Analog-number  = ~A~%Discret-number = ~A" reserv total-records delta-time analog-number discret-number)
     analog-descriptor-list))
 
-;;;;(defparameter in (open-trd-file #p"/home/namatv/MyDoc/git/clisp/recoder/230415_191202.trd"))
-;;;;(defparameter in (open-trd-file #p"/home/namatv/1.txt"))
+;;;;(defparameter in (open-trd-file-read #p"/home/namatv/MyDoc/git/clisp/recoder/230415_191202.trd"))
+;;;;(defparameter in (open-trd-file-read #p"/home/namatv/1.txt"))
 
-(progn
-  (defparameter in
-    (open-trd-file #p"/home/namatv/MyDoc/git/clisp/recoder/230415_191202.trd"))
-  (defparameter analog-signal-list(read-trend-hdr in))
-  (close in))
+;;(progn
+;;  (defparameter in (open-trd-file-read #p"/home/namatv/MyDoc/git/clisp/recoder/230415_191202.trd"))
+;;  (defparameter analog-signal-list(read-trend-hdr in))
+;;  (close in))
+
 
 
