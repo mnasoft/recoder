@@ -2,12 +2,12 @@
 
 (asdf:defsystem #:recoder
   :description "Describe recoder here"
-  :author "Your Name <your.name@example.com>"
-  :license "Specify license here"
+  :author "Nick Matvyeyev <mnasoft@gmail.com>"
+  :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007"
+  :depends-on (#:ie3fp)
   :serial t
   :components ((:file "package")
 	       (:file "ascii")
 	       (:file "cp866")
 	       (:file "cp1251")
                (:file "recoder")))
-
