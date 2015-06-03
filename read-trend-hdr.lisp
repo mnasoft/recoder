@@ -4,8 +4,8 @@
 
 (defun read-trend-hdr (in &optional (byte-number 30))
   (let ((bufer nil)   ;; Буфер для чтения данных
-	(analog nil)  ;; Аналоговые сигналы
-	(discret nil) ;; Дискретные сигналы
+	(analog nil)  ;; Количество аналоговых сигналов
+	(discret nil) ;; Количество дискретных сигналов
 	(head-wid 30)
 	(head-id-wid 5)		     ;; Строка идентификации
 	(head-version-wid 1)	     ;; Версия данных тренда
