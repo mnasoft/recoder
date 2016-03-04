@@ -27,4 +27,4 @@
 	   write-trd-file-quad)
   (:export test_01))
 
-
+;;;;(declaim (optimize (space 0) (compilation-speed 0)  (speed 0) (safety 3) (debug 3)))
