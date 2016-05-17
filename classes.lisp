@@ -2,6 +2,12 @@
 
 (in-package #:recoder)
 
+(defun array-to-list (arr)
+  (let ((rez nil)
+	(arr-dim (array-dimension arr 0)))
+    (dotimes (i arr-dim rez)
+      (push (aref arr (- arr-dim i 1)) rez))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defclass trend ()
@@ -231,11 +237,39 @@ rez=analog-LowLimit+(i*(analog-HighLimit-analog-LowLimit)/65535)
 	  str-list))
 
 (defmethod file-record-position ((tr trend) i)
-  "Возвращает позицию файла-треднда, в которой начинается i-товая запись;"
-  (+ (head-length tr) (* i (record-length tr))))
+  "Перематывает позицию чтения-записи файла-треднда, в положение  начинается i-товая запись;"
+  (file-position
+   (file-descriptor tr)
+   (+ (head-length tr) (* i (record-length tr)))))
 
 (defmethod get-record ((tr trend) i &optional (a-items (let ((rez nil)) (dotimes (i (analog-number tr) (nreverse rez)) (push i rez)))))
-  (let ((rez (make-array (length a-items))))) (file-record-position tr i) a-items)
+  (file-record-position tr i)
+  (let ((a-arr (make-array (analog-number tr) :element-type 'float :initial-element -10.0))
+	(a-ref nil)
+	(f-dat nil))
+    (dotimes (j (analog-number tr) a-arr)
+      (setf
+       f-dat (read-trd-file-short (file-descriptor tr))
+       a-ref (aref (analog-descriptors *tr*) j)
+       (aref a-arr j) (+ (analog-lowlimit a-ref) (* (- (analog-highlimit a-ref) (analog-lowlimit a-ref)) (/ f-dat 65535)))))))
+
+(defmethod print-csv ((tr trend) s &key (start 0) (end (culc-records-number tr)) (delta 50))
+  "Вывод всех аналоговых сигналов тренда tr в файл s, начиная с записи start и заканчивая записью end;
+При этом выводится каждая delta-вая запись;
+Пример использования:"
+  (progn (format s "\"DateTime\"; ")
+	 (dotimes (i (analog-number *tr*) 'done)
+	   (format s "~S; " (analog-id (aref (analog-descriptors *tr*) i))))
+	 (format s "~%"))
+  (do ((i start (+ i delta))
+       (e-time (encode-universal-time
+		(time-second tr) (time-minute tr) (time-hour tr)
+		(date-day tr) (date-month tr) (date-year tr))))
+      ((>= i end) 'done)
+    (multiple-value-bind (second minute hour date month year)
+	(decode-universal-time (round (+ e-time (* i (delta-time tr)))))
+      (format s "\"~4,'0D-~2,'0D-~2,'0D ~2,'0D:~2,'0D:~2,'0D\"; " year month date hour minute second))
+    (format s "~{~10,4,,,,,'EE~^; ~}~%" (array-to-list (get-record tr i)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -243,8 +277,11 @@ rez=analog-LowLimit+(i*(analog-HighLimit-analog-LowLimit)/65535)
 
 (defparameter *tr* (make-instance 'trend :file-name "/home/namatv/My/git/Trends/тренды для 11 отдела/20150409_144519.trd"))
 
-(let ((ref (aref (analog-descriptors *tr*) 17))) (- (analog-highlimit ref) (analog-lowlimit ref)))
+(with-open-file
+    (s "/home/namatv/123.csv" :direction :output :if-exists  :supersede)
+  (print-csv *tr* s :start 205 :delta (* 5 6)))
 
+;;(let ((ref (aref (analog-descriptors *tr*) 17))) (- (analog-highlimit ref) (analog-lowlimit ref)))
 
 ;;(find-analog-number-by-name *tr* (list "EN110" "ET230-1" "ET230-2" "ET240-1" "ET240-2"))
 
