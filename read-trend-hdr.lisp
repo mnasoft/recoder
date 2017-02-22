@@ -7,12 +7,16 @@
   (defparameter *head-version-wid*         1 "Версия данных тренда")
   (defparameter *head-date-wid*            3 "День Месяц Год-2000")
   (defparameter *head-time-wid*            3 "Час Минута Секунда")
-  (defparameter *head-wid*                30 "Общая длина заголовка")
   (defparameter *signal-id-wid*           10 "Длина строки обозначения сигнала")
   (defparameter *signal-description-wid*  40 "Длина строки описания сигнала")
   (defparameter *signal-units-wid*         8 "Длина строки размерности аналогового сигнала")
   (defparameter *signal-LowLimit-wid*      8 "Ширина поля для нижней  границы диапазона аналогового сигнала")
-  (defparameter *signal-HighLimit-wid*     8 "Ширина поля для верхней границы диапазона аналогового сигнала"))
+  (defparameter *signal-HighLimit-wid*     8 "Ширина поля для верхней границы диапазона аналогового сигнала")
+  (defparameter *head-wid*                30 "Общая длина заголовка")
+  (defparameter *analog-wid* (+ *signal-id-wid* *signal-description-wid* *signal-units-wid* *signal-LowLimit-wid* *signal-HighLimit-wid*)
+    "Длина заголовка одной записи аналогового сигнала")
+  (defparameter *discret-wid* (+ *signal-id-wid* *signal-description-wid* )
+    "Длина заголовка одной записи дискретного сигнала"))
 
 (defun read-trend-hdr (in)
   (let ((bufer nil)                   ;; Буфер для чтения данных
@@ -129,14 +133,12 @@
   30)
 
 (defun read-trend-analog-descriptor-list (in analog-number)
-  (let (
-	(analog-id nil)		     ;;
-	(analog-description nil)     ;;
-	(analog-units  nil)	     ;;
-	(analog-LowLimit nil)	     ;;
-	(analog-HighLimit nil)	     ;;
-	(analog-descriptor-list nil)
-	)
+  (let ((analog-id nil)
+	(analog-description nil)
+	(analog-units  nil)
+	(analog-LowLimit nil)
+	(analog-HighLimit nil)
+	(analog-descriptor-list nil))
     (dotimes (i analog-number (nreverse analog-descriptor-list))
       (setf analog-id          (recode-string (read-trd-file in *signal-id-wid*))
 	    analog-description (recode-string (read-trd-file in *signal-description-wid*))
@@ -214,19 +216,26 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+
+
 (defclass a-signal ()
   ((a-signal-id          :accessor a-signal-id          :initarg :a-signal-id          :initform nil :documentation "Обозначение сигнала")
    (a-signal-description :accessor a-signal-description :initarg :a-signal-description :initform nil :documentation "Описание сигнала")
    (a-signal-units       :accessor a-signal-units       :initarg :a-signal-units       :initform nil :documentation "Размерность аналогового сигнала")
-   (a-signal-LowLimit    :accessor a-signal-units       :initarg :a-signal-units       :initform nil :documentation "Нижняя граница диапазона аналогового сигнала")
-   (a-signal-HighLimit   :accessor a-signal-units       :initarg :a-signal-units       :initform nil :documentation "Верхняя граница диапазона аналогового сигнала"))
+   (a-signal-min         :accessor a-signal-min         :initarg :a-signal-min         :initform nil :documentation "Нижняя граница диапазона аналогового сигнала")
+   (a-signal-max         :accessor a-signal-max         :initarg :a-signal-max         :initform nil :documentation "Верхняя граница диапазона аналогового сигнала"))
   (:documentation "Описание аналогового сигнала"))
+
+(defmethod print-object ((x a-signal) stream)
+  (format stream "~S [~A ~A] ~S ~S"  (a-signal-id x) (a-signal-min x) (a-signal-max x) (a-signal-units x) (a-signal-description x)))
 
 (defclass d-signal ()
   ((d-signal-id          :accessor d-signal-id          :initarg :d-signal-id          :initform nil :documentation "Обозначение сигнала")
    (d-signal-description :accessor d-signal-description :initarg :d-signal-description :initform nil :documentation "Описание сигнала"))
   (:documentation "Описание дискретного сигнала"))
 
+(defmethod print-object ((x d-signal) stream)
+  (format stream "~S ~S"  (d-signal-id x) (d-signal-description x)))
 
 (defclass trd ()
   ((trd-file-name         :accessor trd-file-name      :initarg :trd-file-name      :initform nil :documentation "Имя файла в файловой системе")
@@ -244,43 +253,84 @@
   (:documentation ""))
 
 (defmethod trd-open ((x trd))
-  (setf (trd-file-descr x) (open-trd-file-read (trd-file-name x)))
-  (let ((in (trd-file-descr x))
-	(bufer nil)
-	(date-day nil)
-	(date-month nil)
-	(date-year nil)
-	(time-hour nil)
-	(time-minute nil)
-	(time-second nil))
-    (setf
-     (trd-id-string x)      (recode-string (read-trd-file in *head-id-wid*))
-     (trd-version x)        (car (read-trd-file in *head-version-wid*))
-     bufer                  (read-trd-file in *head-date-wid*)
-     date-day               (first bufer)
-     date-month             (second bufer)
-     date-year              (+ 2000 (third bufer))
-     bufer                  (read-trd-file in *head-time-wid*)
-     time-hour              (first bufer)
-     time-minute            (second bufer)
-     time-second            (third bufer)
-     (trd-date-time x)      (encode-universal-time time-second time-minute time-hour date-day date-month date-year)
-     (trd-reserv x)         (read-trd-file-short in)
-     (trd-total-records x)  (read-trd-file-long in)
-     (trd-delta-time x)     (read-trd-file-double in)
-     (trd-analog-number x)  (read-trd-file-short in)
-     (trd-discret-number x) (read-trd-file-short in))
-    (format t "id=~S~%version=~A~%date=~S-~S-~S~%time=~S:~S:~S"
-	    id version date-year date-month date-day time-hour time-minute time-second)
-    (format t "~%Reserv         = ~A~%Total-records  = ~A~%Delta-time     = ~A~%Analog-number  = ~A~%Discret-number = ~A"
-	    reserv total-records delta-time analog-number discret-number)
-    (list id version
-	  date-day date-month date-year 
-	  time-hour time-minute time-second
-	  reserv total-records
-	  delta-time analog-number discret-number)))
+  (when (null (trd-file-descr x))
+    (setf (trd-file-descr x) (open-trd-file-read (trd-file-name x)))
+    (let ((in (trd-file-descr x)) (bufer nil) (date-day nil) (date-month nil) (date-year nil) (time-hour nil) (time-minute nil) (time-second nil)
+	  (analog-id nil) (analog-description nil) (analog-units  nil) (analog-min nil) (analog-max nil)
+	  (discret-id nil) (discret-description nil))
+      (setf (trd-id-string x)      (recode-string (read-trd-file in *head-id-wid*))
+	    (trd-version x)        (car (read-trd-file in *head-version-wid*))
+	    bufer                  (read-trd-file in *head-date-wid*)
+	    date-day               (first bufer)
+	    date-month             (second bufer)
+	    date-year              (+ 2000 (third bufer))
+	    bufer                  (read-trd-file in *head-time-wid*)
+	    time-hour              (first bufer)
+	    time-minute            (second bufer)
+	    time-second            (third bufer)
+	    (trd-date-time x)      (encode-universal-time time-second time-minute time-hour date-day date-month date-year)
+	    (trd-reserv x)         (read-trd-file-short in)
+	    (trd-total-records x)  (read-trd-file-long in)
+	    (trd-delta-time x)     (read-trd-file-double in)
+	    (trd-analog-number x)  (read-trd-file-short in)
+	    (trd-discret-number x) (read-trd-file-short in))
+      (dotimes (i (trd-analog-number x) 'done)
+	(setf analog-id          (recode-string (read-trd-file in *signal-id-wid*))
+	      analog-description (recode-string (read-trd-file in *signal-description-wid*))
+	      analog-units       (recode-string (read-trd-file in *signal-units-wid*))
+	      analog-min         (read-trd-file-double in)
+	      analog-max         (read-trd-file-double in))
+	(push
+	 (make-instance 'a-signal :a-signal-id  analog-id :a-signal-description analog-description :a-signal-units analog-units :a-signal-min analog-min :a-signal-max analog-max)
+	 (trd-analog-list x)))
+      (setf (trd-analog-list x) (nreverse (trd-analog-list x)))
+      (dotimes (i (trd-discret-number x) 'done)
+	(setf discret-id (recode-string (read-trd-file in *signal-id-wid*))
+	      discret-description (recode-string (read-trd-file in *signal-description-wid*)))
+	(push (make-instance 'd-signal :d-signal-id discret-id :d-signal-description discret-description)
+	      (trd-discret-list x)))
+      (setf (trd-discret-list x) (nreverse (trd-discret-list x)))
+      ))
+  x)
 
-(defparameter *t* (make-instance 'trd))
+(defmethod trd-start-offset ((x trd))
+  "Смещение для первой (нулевой) записи тренда"
+    (+ *head-wid*
+    (* (trd-analog-number x) *analog-wid*)
+    (* (trd-discret-number x) *discret-wid*)))
+
+(defmethod trd-record-length ((x trd))
+  "Длина одной записи тренда"
+    (+ (* (trd-analog-number x) 2)
+       (ceiling (/ (trd-discret-number x) 8))))
+
+(defmethod print-object ((x trd) stream)
+  (when (trd-file-descr *t*)
+    (format stream "Path= ~S~%" (trd-file-name x) )
+    (multiple-value-bind (time-second  time-minute time-hour date-day date-month date-year)
+	(decode-universal-time (trd-date-time x))
+      (format stream "id=~S version=~A date=~S-~S-~S time=~S:~S:~S" (trd-id-string x) (trd-version x) date-year date-month date-day time-hour time-minute time-second))
+    (format stream "~%Reserv         = ~A~%Total-records  = ~A~%Delta-time     = ~A~%Analog-number  = ~A~%Discret-number = ~A"
+	    (trd-reserv x) (trd-total-records x) (trd-delta-time x) (trd-analog-number x) (trd-discret-number x))))
+
+(defmethod trd-total-records-number ((x trd))
+  (if (trd-total-records x)
+      (trd-total-records x)
+      (progn
+	(- (file-length (trd-file-descr x)) (trd-start-offset x)))))
+
+(defparameter *t* (make-instance 'trd :trd-file-name "~/develop/TRD/20170111_161429.trd"))
+
+(trd-open *t*)
+
+(trd-total-records-number *t*)
+
+(trd-start-offset *t*)
+
+(trd-total-records *t*)
+
+(length (trd-analog-list *t*))
+(length (trd-discret-list *t*))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
