@@ -218,8 +218,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-
-
 (defclass a-signal ()
   ((a-signal-num         :accessor a-signal-num         :initarg :a-signal-num         :initform nil :documentation "Номер сигнала в списке сигналов. Первый сигнал имеет номер 0")
    (a-signal-id          :accessor a-signal-id          :initarg :a-signal-id          :initform nil :documentation "Обозначение сигнала")
@@ -237,15 +235,6 @@
      (* (- (a-signal-max x)
 	   (a-signal-min x))
 	(/ ushort-int *ushort-max*))))
-
-(multiple-value-bind (rez n file-status)
-    (read-trd-file-short in)
-  (if file-status
-      (progn
-	(setf analog-tmp (+ low-b (* (- up-b low-b) (/ rez 65536)))
-	      lst (cdr lst))
-	(push analog-tmp analog-record))
-      (return (values analog-record i nil))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -337,6 +326,11 @@
     (+ (* (trd-analog-number x) 2)
        (ceiling (/ (trd-discret-number x) 8))))
 
+(defmethod trd-date-time-end ((x trd))
+  "Возвращает время окончания тренда. время возвращается в универсальном формате (universal-time)"
+  (+ (trd-date-time x)
+     (floor (* (trd-total-records x) (trd-delta-time x)))))
+
 (defmethod print-object ((x trd) stream)
   (when (trd-file-descr *t*)
     (format stream "Path= ~S~%" (trd-file-name x) )
@@ -349,40 +343,95 @@
     (format stream "~%Reserv         = ~A~%Total-records  = ~A~%Delta-time     = ~A~%Analog-number  = ~A~%Discret-number = ~A"
 	    (trd-reserv x) (trd-total-records x) (trd-delta-time x) (trd-analog-number x) (trd-discret-number x))))
 
-(defmethod trd-date-time-end ((x trd))
-  "Возвращает время окончания тренда. время возвращается в универсальном формате (universal-time)"
-  (+ (trd-date-time x)
-     (floor (* (trd-total-records x) (trd-delta-time x)))))
+(defmethod trd-analog-signal-list ( (x trd) signal-string-list)
+  "Возвращает список сигналов тренда trd, 
+которые соответствуют списку обозначений сигналов из списка signal-string-list"
+  (when  (trd-file-descr *t*)
+    (mapcar #'(lambda(el)
+		(gethash el (trd-analog-ht x)))
+	    signal-string-list)))
 
-
-(a-signal-value (gethash "EN1" (trd-analog-ht *t*)) (* *ushort-max* 0.0125))
-
-(defmethod trd-get-analog-signal-number-list ( (x trd) rec-number signal-string-list)
-  (when (< -1 rec-number (trd-total-records x))
+(defmethod trd-value-list ( (x trd) rec-number signal-list)
+  "Возвращает список значений тренда trd для записи под номером rec-number,
+ соответствующий сигналам signal-list"
+  (when (and (trd-file-descr *t*) (< -1 rec-number (trd-total-records x)))
     (file-position (trd-file-descr x) 
 		   (+ (trd-start-offset x) (* rec-number (trd-record-length x))))
-    (let ((v-sh (make-array (trd-analog-number x) :element-type 'integer))
-	  (v-fl (make-array (trd-analog-number x) :element-type 'float)))
+    (let* ((v-sh (make-array (trd-analog-number x) :element-type 'integer)))
       (dotimes (i (trd-analog-number x) 'done)
 	(setf (svref v-sh i)
 	      (read-trd-file-short (trd-file-descr x))))
-      v-sh)))
+      (mapcar #'(lambda(el) (a-signal-value el (svref v-sh (a-signal-num el))))
+	      signal-list))))
 
-(trd-get-analog-signal-number-list *t* 18 '("EN1"))
+(defmethod trd-value-record-by-udate ( (x trd) udate)
+  "Возвращает номер записи по универсальному времени"
+  (floor (- udate (trd-date-time x)) (trd-delta-time x)))
 
+(defmethod trd-value-list-by-udate ( (x trd) udate signal-list)
+  "Возвращает список значений тренда trd для записи под номером rec-number,
+ соответствующий сигналам signal-list"
+  (trd-value-list x
+		  (trd-value-record-by-udate x udate)
+		  signal-list))
 
-(* 172.8 5)
-
-(trd-total-records *t*)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;; (defparameter *t* (make-instance 'trd :trd-file-name "~/develop/TRD/20170111_161429.trd"))
+(progn
+  (defparameter *t* (make-instance 'trd :trd-file-name "~/develop/TRD/DM80L№1-100-10/NIL-6/20170123_090853.trd"))
+  (trd-open *t*))
 
-;;;; (trd-open *t*)
-(file-position (trd-file-descr *t*))
+(trd-value-record-by-udate *t* (+  100 ))
 
-(trd-start-offset *t*)
-(trd-record-length *t*)
+"~/develop/TRD/DM80L№1-100-10/CPIPES/"
+
+(progn (defparameter *GT-3-t-1-8-lst* (trd-analog-signal-list *t* '("TSI_T000" "TSI_T030" "TSI_T031" "TSI_T032" "TSI_T033" "TSI_T001" "TSI_T002" "TSI_T003"))) *GT-3-t-1-8-lst*)
+
+(progn (defparameter *GT-3-t-9-16-lst* (trd-analog-signal-list *t* '("TSI_T004" "TSI_T035" "TSI_T036" "TSI_T037" "TSI_T038" "TSI_T005" "TSI_T006" "TSI_T007"))) *GT-3-t-9-16-lst*)
+
+
+
+
+(progn (defparameter *GT-15-t-1-8-lst* (trd-analog-signal-list *t* '("TSI_T111" "TSI_T112" "TSI_T113" "TSI_T114" "TSI_T080" "TSI_T081" "TSI_T082" "TSI_T115"))) *GT-15-t-1-8-lst*)
+
+
+
+
+
+
+(progn
+  (defparameter
+      *a-s-lst*
+    (trd-analog-signal-list
+     *t*
+     '("GQ010" "EN1" "EN2" "T04" "dT04plus" "dT04minus" "T01" "P02" "FQ110" "FQ010"
+       "EB100" "EB110" "EB120"
+       "FA010" "FA020"
+       )))
+  *a-s-lst*)
+
+(trd-value-list-by-udate *t*  (encode-universal-time 04 18 11 23 1 2018) *GT-3-t-9-16-lst*)
+
+(trd-value-list *t* 220 *a-s-lst*)
+(close (trd-file-descr *t*))
+
+;;;; (maphash #'(lambda (k v) (format t "~S~%" v)) (trd-analog-ht *t*) )
+
+;;;; (maphash #'(lambda (k v) (format t "~S~%" v)) (trd-discret-ht *t*) )
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;; (trd-get-analog-signal-number-list *t* 21 '("EN1" "T04mid"))
+
+;;;; (a-signal-value (gethash "EN1" (trd-analog-ht *t*)) (* *ushort-max* 0.0125))
+
+;;;; (trd-total-records *t*)
+
+;;;; (file-position (trd-file-descr *t*))
+
+;;;; (trd-start-offset *t*)
+
+;;;; (trd-record-length *t*)
 
 ;;;; (trd-total-records-number *t*)
 
@@ -396,32 +445,204 @@
 
 ;;;; (trd-total-records *t*)
 
-;;;; (maphash #'(lambda (k v) (format t "~S~%" v)) (trd-discret-ht *t*) )
 
-;;;; (maphash #'(lambda (k v) (format t "~S~%" v)) (trd-analog-ht *t*) )
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;(format nil "~F" 1.d0)
 
-;(progn
-;  (defparameter fname "/home/namatv/My/git/Trends/тренды для 11 отдела/20150409_144519.trd")
-;  ;;"/home/namatv/My/git/Trends/ДМ80№1/090415_150604.trd"
-;  ;;"/home/namatv/My/git/Trends/ДМ80№1/230415_191202.trd"
-;  (defparameter in (open-trd-file-read fname))
-;  (defparameter header (read-trend-header in))
-;  (defparameter analog-number (nth 11 header))
-;  (defparameter discret-number (nth 12 header))
-;  (defparameter analog-descriptor-list (read-trend-analog-descriptor-list in analog-number))
-;  (defparameter discret-descriptor-list (read-trend-discret-descriptor-list in discret-number)))
+ 0 "TSI_T000" [0.0d0 1300.0d0] "°C" "3ЖТ_1"
+30 "TSI_T030" [0.0d0 1300.0d0] "°C" "3ЖТ_2"
+31 "TSI_T031" [0.0d0 1300.0d0] "°C" "3ЖТ_3"
+32 "TSI_T032" [0.0d0 1300.0d0] "°C" "3ЖТ_4"
+33 "TSI_T033" [0.0d0 1300.0d0] "°C" "3ЖТ_5"
+ 1 "TSI_T001" [0.0d0 1300.0d0] "°C" "3ЖТ_6"
+ 2 "TSI_T002" [0.0d0 1300.0d0] "°C" "3ЖТ_7"
+ 3 "TSI_T003" [0.0d0 1300.0d0] "°C" "3ЖТ_8"
+ 4 "TSI_T004" [0.0d0 1300.0d0] "°C" "3ЖТ_9"
+35 "TSI_T035" [0.0d0 1300.0d0] "°C" "3ЖТ_10"
+36 "TSI_T036" [0.0d0 1300.0d0] "°C" "3ЖТ_11"
+37 "TSI_T037" [0.0d0 1300.0d0] "°C" "3ЖТ_12"
+38 "TSI_T038" [0.0d0 1300.0d0] "°C" "3ЖТ_13"
+ 5 "TSI_T005" [0.0d0 1300.0d0] "°C" "3ЖТ_14"
+ 6 "TSI_T006" [0.0d0 1300.0d0] "°C" "3ЖТ_15"
+ 7 "TSI_T007" [0.0d0 1300.0d0] "°C" "3ЖТ_16"
+ 8 "TSI_T008" [0.0d0 1300.0d0] "°C" "3ЖТ_17"
+39 "TSI_T039" [0.0d0 1300.0d0] "°C" "3ЖТ_18"
+40 "TSI_T040" [0.0d0 1300.0d0] "°C" "3ЖТ_19"
+41 "TSI_T041" [0.0d0 1300.0d0] "°C" "3ЖТ_20"
 
-;(progn 
-;  (defparameter analog-rec (read-trend-analog-record in analog-number analog-descriptor-list))
-;  (defparameter discret-rec (read-trend-discret-record in discret-number discret-descriptor-list))
-;  discret-rec)
+42 "TSI_T042" [0.0d0 1300.0d0] "°C" "3ЖТ_21"
+43 "TSI_T043" [0.0d0 1300.0d0] "°C" "3ЖТ_21"
 
-;;;;(length analog-number-list)
+ 9 "TSI_T009" [0.0d0 1300.0d0] "°C" "3ЖТ_22"
+10 "TSI_T010" [0.0d0 1300.0d0] "°C" "3ЖТ_23"
+11 "TSI_T011" [0.0d0 1300.0d0] "°C" "3ЖТ_24"
+44 "TSI_T044" [0.0d0 1300.0d0] "°C" "3ЖТ_25"
+45 "TSI_T045" [0.0d0 1300.0d0] "°C" "3ЖТ_26"
 
-;(close in)
+47 "TSI_T047" [0.0d0 1300.0d0] "°C" "3ЖТ_28"
+46 "TSI_T046" [0.0d0 1300.0d0] "°C" "3ЖТ_29"
+12 "TSI_T012" [0.0d0 1300.0d0] "°C" "3ЖТ_30"
+13 "TSI_T013" [0.0d0 1300.0d0] "°C" "3ЖТ_31"
+14 "TSI_T014" [0.0d0 1300.0d0] "°C" "3ЖТ_32"
+48 "TSI_T048" [0.0d0 1300.0d0] "°C" "3ЖТ_33"
+49 "TSI_T049" [0.0d0 1300.0d0] "°C" "3ЖТ_34"
+34 "TSI_T034" [0.0d0 1300.0d0] "°C" "3ЖТ_35"
+
+15 "TSI_T015" [0.0d0 1300.0d0] "°C" "3ЖТ_36"
+50 "TSI_T050" [0.0d0 1300.0d0] "°C" "3ЖТ_36"
+
+51 "TSI_T051" [0.0d0 1300.0d0] "°C" "3ЖТ_37"
+16 "TSI_T016" [0.0d0 1300.0d0] "°C" "3ЖТ_38"
+17 "TSI_T017" [0.0d0 1300.0d0] "°C" "3ЖТ_39"
+18 "TSI_T018" [0.0d0 1300.0d0] "°C" "3ЖТ_40"
+52 "TSI_T052" [0.0d0 1300.0d0] "°C" "3ЖТ_41"
+53 "TSI_T053" [0.0d0 1300.0d0] "°C" "3ЖТ_42"
+54 "TSI_T054" [0.0d0 1300.0d0] "°C" "3ЖТ_43"
+19 "TSI_T019" [0.0d0 1300.0d0] "°C" "3ЖТ_44"
+55 "TSI_T055" [0.0d0 1300.0d0] "°C" "3ЖТ_45"
+56 "TSI_T056" [0.0d0 1300.0d0] "°C" "3ЖТ_46"
+57 "TSI_T057" [0.0d0 1300.0d0] "°C" "3ЖТ_47"
+20 "TSI_T020" [0.0d0 1300.0d0] "°C" "3ЖТ_48"
+58 "TSI_T058" [0.0d0 1300.0d0] "°C" "3ЖТ_49"
+59 "TSI_T059" [0.0d0 1300.0d0] "°C" "3ЖТ_50"
+60 "TSI_T060" [0.0d0 1300.0d0] "°C" "3ЖТ_51"
+61 "TSI_T061" [0.0d0 1300.0d0] "°C" "3ЖТ_52"
+21 "TSI_T021" [0.0d0 1300.0d0] "°C" "3ЖТ_53"
+22 "TSI_T022" [0.0d0 1300.0d0] "°C" "3ЖТ_54"
+23 "TSI_T023" [0.0d0 1300.0d0] "°C" "3ЖТ_55"
+62 "TSI_T062" [0.0d0 1300.0d0] "°C" "3ЖТ_56"
+65 "TSI_T065" [0.0d0 1300.0d0] "°C" "3ЖТ_57"
+64 "TSI_T064" [0.0d0 1300.0d0] "°C" "3ЖТ_58"
+63 "TSI_T063" [0.0d0 1300.0d0] "°C" "3ЖТ_59"
+67 "TSI_T067" [0.0d0 1300.0d0] "°C" "3ЖТ_60"
+24 "TSI_T024" [0.0d0 1300.0d0] "°C" "3ЖТ_61"
+25 "TSI_T025" [0.0d0 1300.0d0] "°C" "3ЖТ_62"
+26 "TSI_T026" [0.0d0 1300.0d0] "°C" "3ЖТ_63"
+68 "TSI_T068" [0.0d0 1300.0d0] "°C" "3ЖТ_64"
+69 "TSI_T069" [0.0d0 1300.0d0] "°C" "3ЖТ_65"
+66 "TSI_T066" [0.0d0 1300.0d0] "°C" "3ЖТ_66"
+70 "TSI_T070" [0.0d0 1300.0d0] "°C" "3ЖТ_67"
+71 "TSI_T071" [0.0d0 1300.0d0] "°C" "3ЖТ_68"
+
+27 "TSI_T027" [0.0d0 1300.0d0] "°C" "3ЖТ_70"
+28 "TSI_T028" [0.0d0 1300.0d0] "°C" "3ЖТ_71"
+72 "TSI_T072" [0.0d0 1300.0d0] "°C" "3ЖТ_72"
+73 "TSI_T073" [0.0d0 1300.0d0] "°C" "3ЖТ_73"
+74 "TSI_T074" [0.0d0 1300.0d0] "°C" "3ЖТ_74"
+29 "TSI_T029" [0.0d0 1300.0d0] "°C" "3ЖТ_75"
+75 "TSI_T075" [0.0d0 1300.0d0] "°C" "3ЖТ_76"
+
+
+
+
+
+
+
+
+
+
+
+
+76 "TSI_T076" [0.0d0 1300.0d0] "°C" ""
+77 "TSI_T077" [0.0d0 1300.0d0] "°C" ""
+78 "TSI_T078" [0.0d0 1300.0d0] "°C" ""
+79 "TSI_T079" [0.0d0 1300.0d0] "°C" ""
+
+
+110 "TSI_T111" [0.0d0 1300.0d0] "°C" "15ЖТ_1"
+111 "TSI_T112" [0.0d0 1300.0d0] "°C" "15ЖТ_2"
+112 "TSI_T113" [0.0d0 1300.0d0] "°C" "15ЖТ_3"
+113 "TSI_T114" [0.0d0 1300.0d0] "°C" "15ЖТ_4"
+80 "TSI_T080" [0.0d0 1300.0d0] "°C" "15ЖТ_5"
+81 "TSI_T081" [0.0d0 1300.0d0] "°C" "15ЖТ_6"
+82 "TSI_T082" [0.0d0 1300.0d0] "°C" "15ЖТ_7"
+114 "TSI_T115" [0.0d0 1300.0d0] "°C" "15ЖТ_8"
+115 "TSI_T116" [0.0d0 1300.0d0] "°C" "15ЖТ_9"
+116 "TSI_T117" [0.0d0 1300.0d0] "°C" "15ЖТ_10"
+117 "TSI_T118" [0.0d0 1300.0d0] "°C" "15ЖТ_11"
+118 "TSI_T119" [0.0d0 1300.0d0] "°C" "15ЖТ_12"
+83 "TSI_T083" [0.0d0 1300.0d0] "°C" "15ЖТ_13"
+84 "TSI_T084" [0.0d0 1300.0d0] "°C" "15ЖТ_14"
+85 "TSI_T085" [0.0d0 1300.0d0] "°C" "15ЖТ_15"
+
+86 "TSI_T086" [0.0d0 1300.0d0] "°C" "15ЖТ_16"
+119 "TSI_T120" [0.0d0 1300.0d0] "°C" "15ЖТ_16"
+
+120 "TSI_T121" [0.0d0 1300.0d0] "°C" "15ЖТ_17"
+121 "TSI_T122" [0.0d0 1300.0d0] "°C" "15ЖТ_18"
+122 "TSI_T123" [0.0d0 1300.0d0] "°C" "15ЖТ_19"
+123 "TSI_T124" [0.0d0 1300.0d0] "°C" "15ЖТ_20"
+87 "TSI_T087" [0.0d0 1300.0d0] "°C" "15ЖТ_21"
+88 "TSI_T088" [0.0d0 1300.0d0] "°C" "15ЖТ_22"
+89 "TSI_T089" [0.0d0 1300.0d0] "°C" "15ЖТ_23"
+124 "TSI_T125" [0.0d0 1300.0d0] "°C" "15ЖТ_24"
+125 "TSI_T126" [0.0d0 1300.0d0] "°C" "15ЖТ_25"
+126 "TSI_T127" [0.0d0 1300.0d0] "°C" "15ЖТ_26"
+127 "TSI_T128" [0.0d0 1300.0d0] "°C" "15ЖТ_27"
+128 "TSI_T129" [0.0d0 1300.0d0] "°C" "15ЖТ_28"
+129 "TSI_T130" [0.0d0 1300.0d0] "°C" "15ЖТ_29"
+90 "TSI_T090" [0.0d0 1300.0d0] "°C" "15ЖТ_30"
+91 "TSI_T091" [0.0d0 1300.0d0] "°C" "15ЖТ_31"
+130 "TSI_T131" [0.0d0 1300.0d0] "°C" "15ЖТ_32"
+131 "TSI_T132" [0.0d0 1300.0d0] "°C" "15ЖТ_33"
+132 "TSI_T133" [0.0d0 1300.0d0] "°C" "15ЖТ_34"
+133 "TSI_T134" [0.0d0 1300.0d0] "°C" "15ЖТ_35"
+134 "TSI_T135" [0.0d0 1300.0d0] "°C" "15ЖТ_36"
+92 "TSI_T092" [0.0d0 1300.0d0] "°C" "15ЖТ_37"
+93 "TSI_T093" [0.0d0 1300.0d0] "°C" "15ЖТ_38"
+94 "TSI_T094" [0.0d0 1300.0d0] "°C" "15ЖТ_39"
+135 "TSI_T136" [0.0d0 1300.0d0] "°C" "15ЖТ_40"
+136 "TSI_T137" [0.0d0 1300.0d0] "°C" "15ЖТ_41"
+137 "TSI_T138" [0.0d0 1300.0d0] "°C" "15ЖТ_42"
+95 "TSI_T095" [0.0d0 1300.0d0] "°C" "15ЖТ_43"
+
+138 "TSI_T139" [0.0d0 1300.0d0] "°C" "15ЖТ_45"
+97 "TSI_T097" [0.0d0 1300.0d0] "°C" "15ЖТ_45"
+
+139 "TSI_T140" [0.0d0 1300.0d0] "°C" "15ЖТ_46"
+98 "TSI_T098" [0.0d0 1300.0d0] "°C" "15ЖТ_47"
+99 "TSI_T099" [0.0d0 1300.0d0] "°C" "15ЖТ_48"
+140 "TSI_T141" [0.0d0 1300.0d0] "°C" "15ЖТ_49"
+141 "TSI_T142" [0.0d0 1300.0d0] "°C" "15ЖТ_50"
+142 "TSI_T143" [0.0d0 1300.0d0] "°C" "15ЖТ_51"
+143 "TSI_T144" [0.0d0 1300.0d0] "°C" "15ЖТ_52"
+
+96 "TSI_T096" [0.0d0 1300.0d0] "°C" "15ЖТ_54"
+100 "TSI_T100" [0.0d0 1300.0d0] "°C" "15ЖТ_55"
+144 "TSI_T145" [0.0d0 1300.0d0] "°C" "15ЖТ_56"
+101 "TSI_T101" [0.0d0 1300.0d0] "°C" "15ЖТ_57"
+145 "TSI_T146" [0.0d0 1300.0d0] "°C" "15ЖТ_58"
+146 "TSI_T147" [0.0d0 1300.0d0] "°C" "15ЖТ_59"
+147 "TSI_T151" [0.0d0 1300.0d0] "°C" "15ЖТ_60"
+
+102 "TSI_T102" [0.0d0 1300.0d0] "°C" "15ЖТ_62"
+148 "TSI_T152" [0.0d0 1300.0d0] "°C" "15ЖТ_63"
+149 "TSI_T153" [0.0d0 1300.0d0] "°C" "15ЖТ_64"
+150 "TSI_T154" [0.0d0 1300.0d0] "°C" "15ЖТ_65"
+151 "TSI_T155" [0.0d0 1300.0d0] "°C" "15ЖТ_66"
+
+152 "TSI_T156" [0.0d0 1300.0d0] "°C" "15ЖТ_67"
+153 "TSI_T157" [0.0d0 1300.0d0] "°C" "15ЖТ_67"
+
+154 "TSI_T158" [0.0d0 1300.0d0] "°C" "15ЖТ_68"
+103 "TSI_T103" [0.0d0 1300.0d0] "°C" "15ЖТ_69"
+104 "TSI_T104" [0.0d0 1300.0d0] "°C" "15ЖТ_70"
+155 "TSI_T159" [0.0d0 1300.0d0] "°C" "15ЖТ_71"
+156 "TSI_T160" [0.0d0 1300.0d0] "°C" "15ЖТ_72"
+157 "TSI_T161" [0.0d0 1300.0d0] "°C" "15ЖТ_73"
+158 "TSI_T162" [0.0d0 1300.0d0] "°C" "15ЖТ_74"
+159 "TSI_T163" [0.0d0 1300.0d0] "°C" "15ЖТ_75"
+160 "TSI_T164" [0.0d0 1300.0d0] "°C" "15ЖТ_76"
+
+
+105 "TSI_T105" [0.0d0 1300.0d0] "°C" ""
+106 "TSI_T106" [0.0d0 1300.0d0] "°C" ""
+107 "TSI_T108" [0.0d0 1300.0d0] "°C" ""
+108 "TSI_T109" [0.0d0 1300.0d0] "°C" ""
+109 "TSI_T110" [0.0d0 1300.0d0] "°C" ""
+
+
