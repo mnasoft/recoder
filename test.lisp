@@ -2,29 +2,34 @@
 
 (in-package #:recoder)
 
-(defun test_01(&optional (in (open-trd-file-read "/home/namatv/MyDoc/git/clisp/trd.files/20150423_190354.trd")))
-  (let
-      ((analog-signal-list(read-trend-hdr in)))
-    (close in)
-    analog-signal-list
-    ))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun test_02(fname)
-  (let* ((in (open-trd-file-read fname))
-	 (header (read-trend-header in))
-	 (analog-number (nth 11 header))
-	 (discret-number (nth 12 header))
-	 (analog-descriptor-list (read-trend-analog-descriptor-list in analog-number))
-	 (discret-descriptor-list (read-trend-discret-descriptor-list in discret-number))
-	 (analog-record	 (read-trend-analog-record in analog-number analog-descriptor-list)))
-    (close in)
-    (list header
-	  analog-descriptor-list
-	  discret-descriptor-list
-	  analog-record)))
+;;;; (maphash #'(lambda (k v) (format t "~S~%" v)) (trd-analog-ht *t*) )
 
-;;;;(test_02 "/home/namatv/My/git/Trends/ДМ80№1/230415_191202.trd")
+;;;; (maphash #'(lambda (k v) (format t "~S~%" v)) (trd-discret-ht *t*) )
 
-;;(defparameter analog-signal-list (test_01 (open-trd-file-read "/home/namatv/My/git/Trends/ДМ80№1/230415_165454.trd")))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;(defparameter analog-signal-list (test_01 (open-trd-file-read "/home/namatv/My/git/clisp/trd.files/230415_191202.trd")))
+;;;; (trd-get-analog-signal-number-list *t* 21 '("EN1" "T04mid"))
+
+;;;; (a-signal-value (gethash "EN1" (trd-analog-ht *t*)) (* *ushort-max* 0.0125))
+
+;;;; (trd-total-records *t*)
+
+;;;; (file-position (trd-file-descr *t*))
+
+;;;; (trd-start-offset *t*)
+
+;;;; (trd-record-length *t*)
+
+;;;; (trd-total-records-number *t*)
+
+;;;; (trd-record-length *t*)
+
+;;;; (file-length (trd-file-descr *t*))
+
+;;;; (trd-total-records-number *t*)
+
+;;;; (trd-start-offset *t*)
+
+;;;; (trd-total-records *t*)
