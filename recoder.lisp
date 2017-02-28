@@ -34,7 +34,7 @@
   (defparameter *discret-wid* (+ *signal-id-wid* *signal-description-wid* )
     "Длина заголовка одной записи дискретного сигнала")
   (defparameter *ushort-max* (- (expt 2 16) 1))
-  (defparameter *mid-value-number-offset*  50))
+  (defparameter *mid-value-number-offset*  10))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -181,7 +181,7 @@
 		(gethash el (trd-analog-ht x)))
 	    signal-string-list)))
 
-(defmethod trd-value-list ( (x trd) rec-number signal-list)
+(defmethod trd-values-by-rec-number ( (x trd) rec-number signal-list)
   "Возвращает список значений тренда trd для записи под номером rec-number,
  соответствующий сигналам signal-list"
   (when (and (trd-file-descr x) (< -1 rec-number (trd-total-records x)))
@@ -198,10 +198,10 @@
   "Возвращает номер записи по универсальному времени"
   (floor (- udate (trd-date-time x)) (trd-delta-time x)))
 
-(defmethod trd-value-list-by-udate ( (x trd) udate signal-list)
+(defmethod trd-values-by-universal-date ( (x trd) udate signal-list)
   "Возвращает список значений тренда trd для записи под номером rec-number,
  соответствующий сигналам signal-list"
-  (trd-value-list x
+  (trd-values-by-rec-number x
 		  (trd-record-number-by-udate x udate)
 		  signal-list))
 
@@ -209,13 +209,13 @@
   "Выполняет транспонирование"
   (apply #'mapcar #'list list))
 
-(defmethod trd-value-mid-list-by-udate ( (x trd) udate signal-list &optional (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
+(defmethod trd-mid-values-by-udate ( (x trd) udate signal-list &optional (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
   "Возвращает список средних значений параметров "
   (when  (trd-file-descr x)
     (let* ((rez nil)
 	   (n-start (- (trd-record-number-by-udate x udate) n-before)))
       (dotimes (i (+ n-before n-after 1) 'done)
-	(push (trd-value-list x (+ n-start i) signal-list) rez))
+	(push (trd-values-by-rec-number x (+ n-start i) signal-list) rez))
       (mapcar #'(lambda (el) (/ (apply #'+ el) (+ n-before n-after 1)))
 	      (transpose rez)))))
 
