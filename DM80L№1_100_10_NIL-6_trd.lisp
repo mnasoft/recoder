@@ -6,7 +6,29 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(progn (defparameter *t* (make-instance 'trd :trd-file-name "~/develop/TRD/DM80L№1-100-10/NIL-6/20170123_090853.trd")) (trd-open *t*))
+(progn (defparameter *nil-6* (make-instance 'trd :trd-file-name "~/develop/TRD/DM80L№1-100-10/NIL-6/20170123_090853.trd")) (trd-open *nil-6*))
+
+(progn (defparameter *T02* (trd-analog-signal-list *nil-6* '("GQ010" "EN1" "EN2" "T04" "TSI_T165" "TSI_T166" "TSI_T167" "TSI_T168" "TSI_T169"))) *T02*)
+
+(progn 
+  (defparameter *d-t02*
+    (mapcar #'(lambda (el) (trd-value-mid-list-by-udate *nil-6* el  *T02*))
+	    (list(encode-universal-time 00 21 9  23 1 2017) ;;;; 1.0 МВт
+		 (encode-universal-time 07 31 9  23 1 2017) ;;;; 4.0 МВт
+		 (encode-universal-time 50 42 9  23 1 2017) ;;;; 8.0 МВт
+		 (encode-universal-time 19 52 9  23 1 2017) ;;;; 11.0 МВт
+		 (encode-universal-time 02 12 10 23 1 2017) ;;;; 14.0 МВт
+		 (encode-universal-time 18 33 10 23 1 2017) ;;;; 16.0 МВт
+		 (encode-universal-time 53 53 10 23 1 2017) ;;;; 18.0 МВт
+		 (encode-universal-time 53 12 11 23 1 2017) ;;;; 20.8 МВт
+		 (encode-universal-time 16 33 11 23 1 2017) ;;;; 23.16 МВт
+		 )))
+  (push (mapcar #'(lambda (el) (a-signal-units el) ) *T02* ) *d-t02*)
+  (push (mapcar #'(lambda (el) (a-signal-id el) ) *T02* ) *d-t02*)
+  (html-table:list-list-html-table *d-t02* "~/rez_t02.html"))
+
+
+
 
 (progn (defparameter *GT-3-t-1-8-lst* (trd-analog-signal-list *t* '("TSI_T000" "TSI_T030" "TSI_T031" "TSI_T032" "TSI_T033" "TSI_T001" "TSI_T002" "TSI_T003"))) *GT-3-t-1-8-lst*)
 

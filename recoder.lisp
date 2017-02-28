@@ -163,7 +163,15 @@
     (mnas-string:print-universal-time (trd-date-time-end x) stream)
     (format stream " ]")
     (format stream "~%Reserv         = ~A~%Total-records  = ~A~%Delta-time     = ~A~%Analog-number  = ~A~%Discret-number = ~A"
-	    (trd-reserv x) (trd-total-records x) (trd-delta-time x) (trd-analog-number x) (trd-discret-number x))))
+	    (trd-reserv x) (trd-total-records x) (trd-delta-time x) (trd-analog-number x) (trd-discret-number x))
+    (format stream "~%==================================================
+Перечень аналоговых сигналов
+==================================================~%")
+    (maphash #'(lambda (k v) (format stream "~S ~S~%" k v)) (trd-analog-ht x) )
+    (format stream "~%==================================================
+Перечень дискретных сигналов
+==================================================~%")
+    (maphash #'(lambda (k v) (format stream "~S ~S~%" k v)) (trd-discret-ht x) )))
 
 (defmethod trd-analog-signal-list ( (x trd) signal-string-list)
   "Возвращает список сигналов тренда trd, 
