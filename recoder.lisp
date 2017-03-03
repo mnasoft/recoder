@@ -4,6 +4,12 @@
 
 ;;; "recoder" goes here. Hacks and glory await!
 
+(defun time-universal-encode (year month day hour min sec)
+  "Функция кодирования в универсальный формат времени"
+  (encode-universal-time sec min hour day month year))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defun recode-string (bufer &optional (start 0) (len (length bufer)) &key (break-nul T) (code-page *cp1251*))
   "Выполняет преобразование символов, передаваемых в параметре bufer,
 имеющих кодировку code-page (*cp1251*|*cp866*), в кодировку utf8."
@@ -233,7 +239,6 @@
 	(push (mapcar #'(lambda (el) (gethash (a-signal-id el) *ht-s-o*)) s-list) data)
 	(push (mapcar #'(lambda (el) (a-signal-description el) )          s-list) data)
 	(html-table:list-list-html-table data html-fname))))
-
 
 
 

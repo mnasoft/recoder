@@ -3,8 +3,33 @@
 
 (in-package #:recoder)
 
+(defparameter *dt-time*
+  (list (time-universal-encode 2017 1 23  9 21 00) ;;;; 1.0 МВт
+	(time-universal-encode 2017 1 23  9 31 07) ;;;; 4.0 МВт
+	(time-universal-encode 2017 1 23  9 42 50) ;;;; 8.0 МВт
+	(time-universal-encode 2017 1 23  9 52 19) ;;;; 11.0 МВт
+	(time-universal-encode 2017 1 23 10 12 02) ;;;; 14.0 МВт
+	(time-universal-encode 2017 1 23 10 33 18) ;;;; 16.0 МВт
+	(time-universal-encode 2017 1 23 10 53 53) ;;;; 18.0 МВт
+	(time-universal-encode 2017 1 23 11 12 53) ;;;; 20.8 МВт
+	(time-universal-encode 2017 1 23 11 33 16) ;;;; 23.16 МВт
+	)
+  "Список универсальных времен при испытаниях на дизельном топливе")
+
+(defparameter *gt-time*
+  (list (time-universal-encode 2017 1 26 15 19 18) ;;;; 1.0 МВт
+	(time-universal-encode 2017 1 26 12 38 46) ;;;; 4.0 МВт
+	(time-universal-encode 2017 1 26 13 04 23) ;;;; 8.0 МВт
+	(time-universal-encode 2017 1 26 13 35 24) ;;;; 11.0 МВт
+	(time-universal-encode 2017 1 26 13 52 58) ;;;; 14.0 МВт
+	(time-universal-encode 2017 1 26 14 14 58) ;;;; 16.0 МВт
+	(time-universal-encode 2017 1 26 14 49 46) ;;;; 18.0 МВт
+	)
+  "Список универсальных времен при испытаниях на газообразном топливе топливе")
+
 (progn
-  (defparameter *ht-s-o* (make-hash-table :test 'equal))
+  (defparameter *ht-s-o* (make-hash-table :test 'equal)
+    "Хеш-таблица преобразования строк обозначений сигналов в обозначения для отчета")
   (let ((s-o
 	 '(("GQ010"    "Ne")
 	   ("EN1"      "n<sub>КНД</sub>")
@@ -24,13 +49,15 @@
 	   ("FP230"     "p<sub>КГТ3</sub>")
 	   ("FA010"     "K<sub>ГТ</sub>")
 	   ("FQ010"     "G<sub>ГТ</sub>")
-	   ("PT240"     "t<sub>В_ПР_КДТ1</sub>")
-	   ("PT230"     "t<sub>В_ПР_КДТ2</sub>")
+   	   ("PT230"     "t<sub>В_ПР_КДТ1</sub>")
+	   ("PT240"     "t<sub>В_ПР_КДТ2</sub>")
 	   ("PT250"     "t<sub>В_ПР_КГТ3</sub>")
-	   
 	   ("EB100"     "П<sub>КС.1</sub>")
 	   ("EB110"     "П<sub>КС.2</sub>")
 	   ("EB120"     "П<sub>КС.3</sub>")
+	   ("FP450"     "")
+	   ("FP460"     "")
+	   ("FP470"     "")
 	   
 	   ("TSI_T165" "t<sub>02.1</sub>")
 	   ("TSI_T166" "t<sub>02.2</sub>")
@@ -209,3 +236,5 @@
 
 	   )))
     (mapc #'(lambda (el) (setf (gethash (first el) *ht-s-o*) (second el)))  s-o)))
+
+
