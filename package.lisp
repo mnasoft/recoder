@@ -25,6 +25,9 @@
 	   write-trd-file-float
 	   write-trd-file-double
 	   write-trd-file-quad)
+  (:export time-universal-encode
+	   make-html-trd
+	   make-transpose-html-trd)
   (:export test_01))
 
 ;;;;(declaim (optimize (space 0) (compilation-speed 0)  (speed 0) (safety 3) (debug 3)))
