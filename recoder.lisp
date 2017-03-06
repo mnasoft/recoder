@@ -4,6 +4,10 @@
 
 ;;; "recoder" goes here. Hacks and glory await!
 
+(defun transpose (list)
+  "Выполняет транспонирование"
+  (apply #'mapcar #'list list))
+
 (defun time-universal-encode (year month day hour min sec)
   "Функция кодирования в универсальный формат времени"
   (encode-universal-time sec min hour day month year))
@@ -211,19 +215,24 @@
 		  (trd-record-number-by-udate x udate)
 		  signal-list))
 
-(defun transpose (list)
-  "Выполняет транспонирование"
-  (apply #'mapcar #'list list))
-
 (defmethod trd-mid-values-by-udate ( (x trd) udate signal-list &optional (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
   "Возвращает список средних значений параметров "
   (when  (trd-file-descr x)
     (let* ((rez nil)
-	   (n-start (- (trd-record-number-by-udate x udate) n-before)))
-      (dotimes (i (+ n-before n-after 1) 'done)
-	(push (trd-values-by-rec-number x (+ n-start i) signal-list) rez))
-      (mapcar #'(lambda (el) (/ (apply #'+ el) (+ n-before n-after 1)))
-	      (transpose rez)))))
+	   (n-start (- (trd-record-number-by-udate x udate) n-before))
+	   (rezult (dotimes (i (+ n-before n-after 1) (transpose rez))
+		     (push (trd-values-by-rec-number x (+ n-start i) signal-list) rez))))
+      (mapcar #'math:averange-value rezult))))
+
+(defmethod trd-stddev-values-by-udate ( (x trd) udate signal-list &optional (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
+  "Возвращает список средних значений параметров "
+  (when  (trd-file-descr x)
+    (let* ((rez nil)
+	   (n-start (- (trd-record-number-by-udate x udate) n-before))
+	   (rezult (dotimes (i (+ n-before n-after 1) (transpose rez))
+		     (push (trd-values-by-rec-number x (+ n-start i) signal-list) rez))))
+      (mapcar #'math:standard-deviation rezult)
+      )))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -237,15 +246,15 @@ time              - список, элементами которого явля
 ht-sname-oboznach - хеш-таблица, элементами которой являются:
                     в качестве ключа    - имена сигналов;
                     в качестве значений - обозначения сигналов
-Пример использования:
-
-"
+Пример использования:"
     (let ((trd (make-instance 'trd :trd-file-name trd-fname)))
       (trd-open trd)
       (let* ((s-list (trd-analog-signal-list trd str-signal-list))
-	     (data (mapcar #'(lambda (el) (trd-mid-values-by-udate trd el          s-list)) time)))
+	     (data (mapcar #'(lambda (el) (trd-mid-values-by-udate trd el          s-list)) time))
+     	     (dev  (mapcar #'(lambda (el) (trd-stddev-values-by-udate trd el       s-list)) time)))
+	(setf data (append data dev))
 	(push (mapcar #'(lambda (el) (a-signal-units el))                          s-list) data)
-	(push (mapcar #'(lambda (el) (a-signal-id el))                             s-list)  data)
+	(push (mapcar #'(lambda (el) (a-signal-id el))                             s-list) data)
 	(push (mapcar #'(lambda (el) (gethash (a-signal-id el) ht-sname-oboznach)) s-list) data)
 	(push (mapcar #'(lambda (el) (a-signal-description el) )                   s-list) data)
 	(html-table:list-list-html-table data html-fname))))
@@ -260,19 +269,17 @@ time              - список, элементами которого явля
 ht-sname-oboznach - хеш-таблица, элементами которой являются:
                     в качестве ключа    - имена сигналов;
                     в качестве значений - обозначения сигналов
-Пример использования:
-"
-    (let ((trd (make-instance 'trd :trd-file-name trd-fname)))
+Пример использования:"
+      (let ((trd (make-instance 'trd :trd-file-name trd-fname)))
       (trd-open trd)
       (let* ((s-list (trd-analog-signal-list trd str-signal-list))
-	     (data (mapcar #'(lambda (el) (trd-mid-values-by-udate trd el          s-list)) time)))
-	(push (mapcar #'(lambda (el) (a-signal-units el))                          s-list)  data)
-	(push (mapcar #'(lambda (el) (a-signal-id el))                             s-list)  data)
-	(push (mapcar #'(lambda (el) (gethash (a-signal-id el) ht-sname-oboznach)) s-list)  data)
-	(push (mapcar #'(lambda (el) (a-signal-description el))                    s-list)  data)
-	(transpose data)
-	(html-table:list-list-html-table data html-fname))))
-
-
+	     (data (mapcar #'(lambda (el) (trd-mid-values-by-udate trd el          s-list)) time))
+     	     (dev  (mapcar #'(lambda (el) (trd-stddev-values-by-udate trd el       s-list)) time)))
+	(setf data (append data dev))
+	(push (mapcar #'(lambda (el) (a-signal-units el))                          s-list) data)
+	(push (mapcar #'(lambda (el) (a-signal-id el))                             s-list) data)
+	(push (mapcar #'(lambda (el) (gethash (a-signal-id el) ht-sname-oboznach)) s-list) data)
+	(push (mapcar #'(lambda (el) (a-signal-description el) )                   s-list) data)
+	(html-table:list-list-html-table (transpose data) html-fname))))
 
 
