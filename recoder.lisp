@@ -168,9 +168,9 @@
     (format stream "Path= ~S~%" (trd-file-name x) )
     (format stream "id=~S version=~A " (trd-id-string x) (trd-version x))
     (format stream "[ ")
-    (mnas-string:print-universal-time (trd-date-time x) stream)
+    (mnas-string:print-universal-time (trd-date-time x) :stream stream)
     (format stream " ; ")
-    (mnas-string:print-universal-time (trd-date-time-end x) stream)
+    (mnas-string:print-universal-time (trd-date-time-end x) :stream stream)
     (format stream " ]")
     (format stream "~%Reserv         = ~A~%Total-records  = ~A~%Delta-time     = ~A~%Analog-number  = ~A~%Discret-number = ~A"
 	    (trd-reserv x) (trd-total-records x) (trd-delta-time x) (trd-analog-number x) (trd-discret-number x))
@@ -217,7 +217,11 @@
 		  (trd-record-number-by-udate x udate)
 		  signal-list))
 
-(defmethod trd-mid-values-by-udate ( (x trd) udate signal-list &optional (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod trd-mid-values-by-udate ( (x trd) udate signal-list &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
   "Возвращает список средних значений параметров "
   (when  (trd-file-descr x)
     (let* ((rez nil)
@@ -226,15 +230,33 @@
 		     (push (trd-values-by-rec-number x (+ n-start i) signal-list) rez))))
       (mapcar #'math:averange-value rezult))))
 
-(defmethod trd-stddev-values-by-udate ( (x trd) udate signal-list &optional (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
-  "Возвращает список средних значений параметров "
+(defmethod trd-mid-values-by-snames ( (x trd) udate snames &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
+  "Возвращает список средних значений параметров, 
+записанных в тренде trd в момент времени udate для списка сигналов, определяемых их именами snames;
+Осреднение происходит в интервале записей от  n-before до n-after"
+  (when  (trd-file-descr x)
+    (trd-mid-values-by-udate x udate (trd-analog-signal-list x snames) :n-before n-before :n-after n-after)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod trd-stddev-values-by-udate ( (x trd) udate signal-list &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
+  "Возвращает список стандартных отклонений для параметров,
+записанных в тренде trd в момент времени udate для списка сигналов signal-list;
+Осреднение происходит в интервале записей от  n-before до n-after"
   (when  (trd-file-descr x)
     (let* ((rez nil)
 	   (n-start (- (trd-record-number-by-udate x udate) n-before))
 	   (rezult (dotimes (i (+ n-before n-after 1) (transpose rez))
 		     (push (trd-values-by-rec-number x (+ n-start i) signal-list) rez))))
-      (mapcar #'math:standard-deviation rezult)
-      )))
+      (mapcar #'math:standard-deviation rezult))))
+
+(defmethod trd-stddev-values-by-snames ( (x trd) udate snames &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
+  "Возвращает список стандартных отклонений для параметров,
+записанных в тренде trd в момент времени udate для списка сигналов, определяемых их именами snames;
+Осреднение происходит в интервале записей от  n-before до n-after"
+  (when  (trd-file-descr x)
+    (trd-stddev-values-by-udate x udate (trd-analog-signal-list x snames) :n-before n-before :n-after n-after)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -283,5 +305,3 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
 	(push (mapcar #'(lambda (el) (gethash (a-signal-id el) ht-sname-oboznach)) s-list) data)
 	(push (mapcar #'(lambda (el) (a-signal-description el) )                   s-list) data)
 	(html-table:list-list-html-table (transpose data) html-fname))))
-
-

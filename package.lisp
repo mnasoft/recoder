@@ -25,13 +25,31 @@
 	   write-trd-file-float
 	   write-trd-file-double
 	   write-trd-file-quad)
-  (:export time-universal-encode
-	   trd-values-by-universal-date 
+  (:export transpose
+	   time-universal-encode
+	   recode-string)
+  (:export a-signal
+	   a-signal-value)
+  (:export d-signal)
+  (:export trd
+	   print-object
+	   trd-open
+	   trd-start-offset
+	   trd-record-length
+	   trd-date-time-end
+	   trd-analog-signal-list
+	   trd-values-by-rec-number
+	   trd-record-number-by-udate
+	   trd-values-by-universal-date
 	   trd-mid-values-by-udate
+   	   trd-mid-values-by-snames
 	   trd-stddev-values-by-udate
+	   trd-stddev-values-by-snames
 	   make-html-trd
 	   make-transpose-html-trd)
   (:export test_01))
 
 ;;;;(declaim (optimize (space 0) (compilation-speed 0)  (speed 0) (safety 3) (debug 3)))
+
+
 
