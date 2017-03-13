@@ -147,6 +147,12 @@
 								     :d-signal-description discret-description)))))
   x)
 
+(defmethod trd-close ((x trd))
+  "Выполняет закрытие файла тренда"
+  (when (trd-file-descr x)
+    (close (trd-file-descr x))
+    (setf (trd-file-descr x) nil)))
+
 (defmethod trd-start-offset ((x trd))
   "Смещение для первой (нулевой) записи тренда"
     (+ *head-wid*

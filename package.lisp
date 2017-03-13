@@ -34,6 +34,7 @@
   (:export trd
 	   print-object
 	   trd-open
+	   trd-close
 	   trd-start-offset
 	   trd-record-length
 	   trd-date-time-end
