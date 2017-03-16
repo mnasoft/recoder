@@ -311,3 +311,18 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
 	(push (mapcar #'(lambda (el) (gethash (a-signal-id el) ht-sname-oboznach)) s-list) data)
 	(push (mapcar #'(lambda (el) (a-signal-description el) )                   s-list) data)
 	(html-table:list-list-html-table (transpose data) html-fname))))
+
+(defun get-trd-by-utime-dirname (utime dir-name &key (extension "trd"))
+  "Возвращает объект тренда, для которого существуют данные на момент 
+универсального времени utime в каталоге dir-name
+"
+  (let ((rezult nil))
+    (mapcar
+     #'(lambda (el)
+	 (let ((trd (make-instance 'trd :trd-file-name el)))
+	   (trd-open trd)
+	   (if (<= (trd-date-time trd) utime (trd-date-time-end trd))
+	       (setf rezult trd)
+	       (trd-close trd))))
+     (mnas-path:find-filename dir-name extension))
+    rezult))
