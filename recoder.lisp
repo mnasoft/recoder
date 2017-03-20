@@ -90,8 +90,8 @@
    (trd-delta-time        :accessor trd-delta-time                                  :initform nil :documentation "Интервал между записями тренда")
    (trd-analog-number     :accessor trd-analog-number                               :initform nil :documentation "Количество аналоговых сигналов")
    (trd-discret-number    :accessor trd-discret-number                              :initform nil :documentation "Количество дискретных сигналов")
-   (trd-analog-ht         :accessor trd-analog-ht                                   :initform nil :documentation "Список аналоговых сигналов (мб вектор)")
-   (trd-discret-ht        :accessor trd-discret-ht                                  :initform nil :documentation "Список дискретных сигналов (мб вектор)"))
+   (trd-analog-ht         :accessor trd-analog-ht                                   :initform nil :documentation "Хеш-таблица аналоговых сигналов")
+   (trd-discret-ht        :accessor trd-discret-ht                                  :initform nil :documentation "Хеш-таблица дискретных сигналов"))
   (:documentation ""))
 
 (defmethod trd-open ((x trd))
@@ -146,6 +146,67 @@
 								     :d-signal-id discret-id
 								     :d-signal-description discret-description)))))
   x)
+
+(defmethod trd-read-header((x trd))
+  "Выполняет открытие файла тренда и чтение заголовка тренда"
+  (when (null (trd-file-descr x))
+    (setf (trd-file-descr x) (open-trd-file-read (trd-file-name x)))
+    (let ((in (trd-file-descr x)) (bufer nil) (date-day nil) (date-month nil) (date-year nil) (time-hour nil) (time-minute nil) (time-second nil))
+      (setf (trd-id-string x)      (recode-string (read-trd-file in *head-id-wid*))
+	    (trd-version x)        (car (read-trd-file in *head-version-wid*))
+	    bufer                  (read-trd-file in *head-date-wid*)
+	    date-day               (first bufer)
+	    date-month             (second bufer)
+	    date-year              (+ 2000 (third bufer))
+	    bufer                  (read-trd-file in *head-time-wid*)
+	    time-hour              (first bufer)
+	    time-minute            (second bufer)
+	    time-second            (third bufer)
+	    (trd-date-time x)      (encode-universal-time time-second time-minute time-hour date-day date-month date-year)
+	    (trd-reserv x)         (read-trd-file-short in)
+	    (trd-total-records x)  (read-trd-file-long in)
+	    (trd-delta-time x)     (read-trd-file-double in)
+	    (trd-analog-number x)  (read-trd-file-short in)
+	    (trd-discret-number x) (read-trd-file-short in))
+      (setf (trd-total-records x)
+	    (/ (- (file-length (trd-file-descr x)) (trd-start-offset x))
+	       (trd-record-length x)))))
+  x)
+
+
+(defmethod trd-read-analog-ht((x trd))
+  (when (null (trd-analog-ht x))
+    (setf (trd-analog-ht x)  (make-hash-table :test #'equal :size (trd-analog-number x)))
+    (file-position (trd-file-descr x) *head-wid*)
+    (let ((in (trd-file-descr x)) (analog-id nil) (analog-description nil) (analog-units  nil) (analog-min nil) (analog-max nil))
+      (dotimes (i (trd-analog-number x) 'done)
+	(setf analog-id          (recode-string (read-trd-file in *signal-id-wid*))
+	      analog-description (recode-string (read-trd-file in *signal-description-wid*))
+	      analog-units       (recode-string (read-trd-file in *signal-units-wid*))
+	      analog-min         (read-trd-file-double in)
+	      analog-max         (read-trd-file-double in)
+	      (gethash analog-id (trd-analog-ht x)) (make-instance 'a-signal
+								   :a-signal-num i
+								   :a-signal-id  analog-id
+								   :a-signal-description analog-description
+								   :a-signal-units analog-units
+								   :a-signal-min analog-min
+								   :a-signal-max analog-max))))))
+
+(defmethod trd-read-discret-ht((x trd))
+  (when (null (trd-discret-ht x))
+    (setf (trd-discret-ht x) (make-hash-table :test #'equal :size (trd-discret-number x)))
+    (file-position (trd-file-descr x) (+ *head-wid* (* (trd-analog-number x) *analog-wid*)))
+    (let ((in (trd-file-descr x)) (discret-id nil) (discret-description nil))
+      (dotimes (i (trd-discret-number x) 'done)
+	(setf discret-id          (recode-string (read-trd-file in *signal-id-wid*))
+	      discret-description (recode-string (read-trd-file in *signal-description-wid*))
+	      (gethash discret-id (trd-discret-ht x)) (make-instance 'd-signal
+								     :d-signal-num i
+								     :d-signal-id discret-id
+								     :d-signal-description discret-description))))))
+
+
 
 (defmethod trd-close ((x trd))
   "Выполняет закрытие файла тренда"
