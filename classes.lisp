@@ -277,6 +277,11 @@ rez=analog-LowLimit+(i*(analog-HighLimit-analog-LowLimit)/65535)
 
 (defparameter *tr* (make-instance 'trend :file-name "/home/namatv/My/git/Trends/тренды для 11 отдела/20150409_144519.trd"))
 
+<<<<<<< HEAD
+=======
+(defparameter *tr* (make-instance 'trend :file-name "d:/home/_namatv/_WorkPlan/2015/My/git/Trends/тренды для 11 отдела/20150409_144519.trd"))
+
+>>>>>>> a9838052c2c9c5c1729971550ce0e7bc4987915b
 (with-open-file
     (s "/home/namatv/123.csv" :direction :output :if-exists  :supersede)
   (print-csv *tr* s :start 205 :delta (* 5 6)))
@@ -286,3 +291,7 @@ rez=analog-LowLimit+(i*(analog-HighLimit-analog-LowLimit)/65535)
 ;;(find-analog-number-by-name *tr* (list "EN110" "ET230-1" "ET230-2" "ET240-1" "ET240-2"))
 
 ;;(close-trd-file *tr*)
+<<<<<<< HEAD
+=======
+
+>>>>>>> a9838052c2c9c5c1729971550ce0e7bc4987915b

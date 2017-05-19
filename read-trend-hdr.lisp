@@ -84,7 +84,6 @@
     (list
      analog-descriptor-list discret-descriptor-list)))
 
-
 (defun read-trend-header (in &optional (byte-number 30))
   (let ((bufer nil)	     ;; Буфер для чтения данных
 	(analog nil)	     ;; Количество аналоговых сигналов
@@ -134,6 +133,10 @@
 	  time-hour time-minute time-second
 	  reserv total-records
 	  delta-time analog-number discret-number)))
+
+(defun trend-header-length ()
+  "Возвращает длину заготовка тренда"
+  30)
 
 (defun read-trend-analog-descriptor-list (in analog-number)
   (let (
@@ -199,8 +202,6 @@
   (let ((b (make-array (* 8 (ceiling (/ n-signal 8))) :element-type 'bit)))
   (dotimes (i n-signal b)
     (setf (bit b i) (ldb (byte 1 (- n-signal 1 i)) int)))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun read-trend-discret-record (in discret-number discret-descriptor-list)
   (let ((discret-byte (ceiling (/ discret-number 8)))
