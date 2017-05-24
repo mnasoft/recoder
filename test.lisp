@@ -21,3 +21,6 @@
 ;;;; (get-trd-by-utime-dirname (time-universal-encode 2017 01 23 16 27 15) "d:/PRG/msys32/home/namatv/develop/TRD/DM80L№1-100-10/CPIPES/" :extension "trd")
 
 ;;;; (mid-values-by-snames "d:/PRG/msys32/home/namatv/develop/TRD/DM80L№1-100-10/CPIPES/" utime snames )
+
+;;;; (get-trd-by-utime-dirname (time-universal-encode 2017 03 09 13 39 30) "d:/home/_namatv/_WorkPlan/2017/80/ОТ_ЖАКИ.102.025-2017/TRD_ДМ80-10-100/ЦПиПЭС/TRD/Переходы" :extension "trd")
+
