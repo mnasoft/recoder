@@ -175,6 +175,7 @@
 
 
 (defmethod trd-read-analog-ht((x trd))
+  "Выполняет разбор аналоговых сигналов"
   (when (null (trd-analog-ht x))
     (setf (trd-analog-ht x)  (make-hash-table :test #'equal :size (trd-analog-number x)))
     (file-position (trd-file-descr x) *head-wid*)
@@ -194,6 +195,7 @@
 								   :a-signal-max analog-max))))))
 
 (defmethod trd-read-discret-ht((x trd))
+  "Выполняет разбор дискретных сигналов"
   (when (null (trd-discret-ht x))
     (setf (trd-discret-ht x) (make-hash-table :test #'equal :size (trd-discret-number x)))
     (file-position (trd-file-descr x) (+ *head-wid* (* (trd-analog-number x) *analog-wid*)))
