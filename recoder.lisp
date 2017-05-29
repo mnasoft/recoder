@@ -222,10 +222,19 @@
     (* (trd-analog-number x) *analog-wid*)
     (* (trd-discret-number x) *discret-wid*)))
 
+(defmethod trd-analog-length-byte ((x trd))
+    (* (trd-analog-number x) 2))
+
+(defmethod trd-discret-length-byte ((x trd))
+  (ceiling (/ (trd-discret-number x) 8)))
+
 (defmethod trd-record-length ((x trd))
   "Длина одной записи тренда"
-    (+ (* (trd-analog-number x) 2)
-       (ceiling (/ (trd-discret-number x) 8))))
+    (+  (trd-analog-length-byte x)  (trd-discret-length-byte x)))
+
+(defmethod trd-discret-offset ((x trd))
+  "Смещение от начала записи до начала записи дискретных сигналов"
+    (+ (* (trd-analog-number x) 2)))
 
 (defmethod trd-date-time-end ((x trd))
   "Возвращает время окончания тренда. время возвращается в универсальном формате (universal-time)"
@@ -253,11 +262,19 @@
     (maphash #'(lambda (k v) (format stream "~S ~S~%" k v)) (trd-discret-ht x) )))
 
 (defmethod trd-analog-signal-list ( (x trd) signal-string-list)
-  "Возвращает список сигналов тренда trd, 
+  "Возвращает список аналоговых сигналов тренда trd, 
 которые соответствуют списку обозначений сигналов из списка signal-string-list"
   (when  (trd-file-descr x)
     (mapcar #'(lambda(el)
 		(gethash el (trd-analog-ht x)))
+	    signal-string-list)))
+
+(defmethod trd-discret-signal-list ( (x trd) signal-string-list)
+  "Возвращает список дискретных сигналов тренда trd, 
+которые соответствуют списку обозначений сигналов из списка signal-string-list"
+  (when  (trd-file-descr x)
+    (mapcar #'(lambda(el)
+		(gethash el (trd-discret-ht x)))
 	    signal-string-list)))
 
 (defmethod trd-values-by-rec-number ( (x trd) rec-number signal-list)
@@ -276,6 +293,21 @@
 (defmethod trd-record-number-by-udate ( (x trd) udate)
   "Возвращает номер записи по универсальному времени"
   (floor (- udate (trd-date-time x)) (trd-delta-time x)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod trd-discret-by-rec-number ( (x trd) rec-number d-signal-list)
+  "Возвращает список значений тренда trd для записи под номером rec-number,
+ соответствующий сигналам d-signal-list"
+  (when (and (trd-file-descr x) (< -1 rec-number (trd-total-records x)))
+    (file-position (trd-file-descr x) 
+		   (+ (trd-start-offset x)
+		      (* rec-number (trd-record-length x))
+		      (trd-discret-offset x) ))
+    (let ((s-int (list-to-int (read-trd-file (trd-file-descr x) (trd-discret-length-byte x)))))
+      (mapcar #'(lambda (el)
+		  (logbitp  (d-signal-num  el ) s-int))
+	      d-signal-list))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
