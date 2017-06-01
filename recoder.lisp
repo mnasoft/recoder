@@ -311,6 +311,40 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defmethod trd-flag-on-intervals ((x trd) signal-str )
+  "Для тренда x выполняет поиск диапазонов, для которых
+значение сигнала signal-str принимало значение 1."
+  (let* (
+	 (flag (gethash signal-str (trd-discret-ht x)))
+	 (flag-lst (list flag))
+	 (total-rec (trd-total-records x))
+	 (rez-lst nil)
+	 (n-start total-rec)
+	 (n-end -1)
+	 (rez nil)
+	 )
+    (dotimes (i (trd-total-records x) (nreverse rez-lst))
+      (setf rez (first(trd-discret-by-rec-number x i flag-lst)))
+      (if rez (setf n-start (min i n-start)
+		    n-end   (max i n-end))
+	  (when (< -1 n-end)
+	    (push (list n-start n-end) rez-lst)
+	    (setf n-start total-rec
+		  n-end -1))))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod trd-flag-on-intervals-time ((tr trd) signal-str)
+  "Для тренда x выполняет поиск диапазонов, для которых
+значение сигнала signal-str принимало значение 1. 
+И возвращает длительность этих диапазонов"
+  (let ((intervals (trd-flag-on-intervals tr signal-str)))
+    (values
+     (mapcar #'(lambda (el) (* -1 (trd-delta-time tr) (apply #'- el))) intervals)
+     intervals)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defmethod trd-values-by-universal-date ( (x trd) udate signal-list)
   "Возвращает список значений тренда trd для записи под номером rec-number,
  соответствующий сигналам signal-list"

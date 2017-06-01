@@ -57,6 +57,7 @@
 	   
 	   trd-record-number-by-udate	   
 	   trd-values-by-rec-number trd-discret-by-rec-number
+	   trd-flag-on-intervals trd-flag-on-intervals-time	   
 
 	   trd-values-by-universal-date
 	   trd-mid-values-by-udate
