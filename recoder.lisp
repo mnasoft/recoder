@@ -29,22 +29,24 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (progn
-  (defparameter *head-id-wid*              5 "Строка идентификации файла тренда")
-  (defparameter *head-version-wid*         1 "Версия данных тренда")
-  (defparameter *head-date-wid*            3 "День Месяц Год-2000")
-  (defparameter *head-time-wid*            3 "Час Минута Секунда")
-  (defparameter *signal-id-wid*           10 "Длина строки обозначения сигнала")
-  (defparameter *signal-description-wid*  40 "Длина строки описания сигнала")
-  (defparameter *signal-units-wid*         8 "Длина строки размерности аналогового сигнала")
-  (defparameter *signal-LowLimit-wid*      8 "Ширина поля для нижней  границы диапазона аналогового сигнала")
-  (defparameter *signal-HighLimit-wid*     8 "Ширина поля для верхней границы диапазона аналогового сигнала")
-  (defparameter *head-wid*                30 "Общая длина заголовка")
+  (defparameter *head-id-wid*              5 "Строка идентификации файла тренда, char[5]")
+  (defparameter *head-version-wid*         1 "Версия данных тренда, char[1]")
+  (defparameter *head-date-wid*            3 "День Месяц Год-2000 char[3]")
+  (defparameter *head-time-wid*            3 "Час Минута Секунда char[3]")
+  (defparameter *head-wid*                30 "Общая длина заголовка, char[30]")
+  
+  (defparameter *signal-id-wid*           10 "Длина строки обозначения сигнала, char[10]")
+  (defparameter *signal-description-wid*  40 "Длина строки описания сигнала, char[40] ")
+  (defparameter *signal-units-wid*         8 "Длина строки размерности аналогового сигнала, char[8]")
+  (defparameter *signal-LowLimit-wid*      8 "Ширина поля для нижней  границы диапазона аналогового сигнала, double = char[8]")
+  (defparameter *signal-HighLimit-wid*     8 "Ширина поля для верхней границы диапазона аналогового сигнала, double = char[8]")
+
   (defparameter *analog-wid* (+ *signal-id-wid* *signal-description-wid* *signal-units-wid* *signal-LowLimit-wid* *signal-HighLimit-wid*)
     "Длина заголовка одной записи аналогового сигнала")
   (defparameter *discret-wid* (+ *signal-id-wid* *signal-description-wid* )
     "Длина заголовка одной записи дискретного сигнала")
-  (defparameter *ushort-max* (- (expt 2 16) 1))
-  (defparameter *mid-value-number-offset*  10))
+  (defparameter *ushort-max* (- (expt 2 16) 1) "Количество градаций аналогового сигнала от 0 до *ushort-max* при записи тренда")
+  (defparameter *mid-value-number-offset*  10 "Количество записей тренда отсчитываемое влево и вправо от текущей записи для определения среднего значения и стандартнорго отклонения" ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -52,12 +54,24 @@
 
 (defclass a-signal ()
   ((a-signal-num         :accessor a-signal-num         :initarg :a-signal-num         :initform nil :documentation "Номер сигнала в списке сигналов. Первый сигнал имеет номер 0")
-   (a-signal-id          :accessor a-signal-id          :initarg :a-signal-id          :initform nil :documentation "Обозначение сигнала")
-   (a-signal-description :accessor a-signal-description :initarg :a-signal-description :initform nil :documentation "Описание сигнала")
-   (a-signal-units       :accessor a-signal-units       :initarg :a-signal-units       :initform nil :documentation "Размерность аналогового сигнала")
-   (a-signal-min         :accessor a-signal-min         :initarg :a-signal-min         :initform nil :documentation "Нижняя граница диапазона аналогового сигнала")
-   (a-signal-max         :accessor a-signal-max         :initarg :a-signal-max         :initform nil :documentation "Верхняя граница диапазона аналогового сигнала"))
-  (:documentation "Описание аналогового сигнала"))
+   (a-signal-id          :accessor a-signal-id          :initarg :a-signal-id          :initform nil :documentation "Обозначение сигнала, char[10]")
+   (a-signal-description :accessor a-signal-description :initarg :a-signal-description :initform nil :documentation "Описание сигнала, char[40]")
+   (a-signal-units       :accessor a-signal-units       :initarg :a-signal-units       :initform nil :documentation "Размерность аналогового сигнала, char[8]")
+   (a-signal-min         :accessor a-signal-min         :initarg :a-signal-min         :initform nil :documentation "Нижняя граница диапазона аналогового сигнала, double = char[8]")
+   (a-signal-max         :accessor a-signal-max         :initarg :a-signal-max         :initform nil :documentation "Верхняя граница диапазона аналогового сигнала, double = char[8]"))
+  (:documentation "Дескриптор (описание) аналогового сигнала
+Запись дескриптора аналогового сигнала имеет следующую структуру:
+|--------------------+-------+-------------------------------------|
+| Поле               | Длина | Примечание                          |
+|                    |  поля |                                     |
+|--------------------+-------+-------------------------------------|
+| analog-id          |    10 | Обозначение аналогового сигнала     |
+| analog-description |    40 | Описание аналогового сигнала        |
+| analog-units       |     8 | Размернсть аналогового сигнала      |
+| analog-LowLimit    |     8 | Нижняя граница аналогового сигнала  |
+| analog-HighLimit   |     8 | Верхняя граница аналогового сигнала |
+|                    |       |                                     |
+|--------------------+-------+-------------------------------------|"))
 
 (defmethod print-object ((x a-signal) stream)
   (format stream "~S ~S [~A ~A] ~S ~S" (a-signal-num x) (a-signal-id x) (a-signal-min x) (a-signal-max x) (a-signal-units x) (a-signal-description x)))
@@ -72,9 +86,20 @@
 
 (defclass d-signal ()
   ((d-signal-num         :accessor d-signal-num         :initarg :d-signal-num         :initform nil :documentation "Номер сигнала в списке сигналов. Первый сигнал имеет номер 0")
-   (d-signal-id          :accessor d-signal-id          :initarg :d-signal-id          :initform nil :documentation "Обозначение сигнала")
-   (d-signal-description :accessor d-signal-description :initarg :d-signal-description :initform nil :documentation "Описание сигнала"))
-  (:documentation "Описание дискретного сигнала"))
+   (d-signal-id          :accessor d-signal-id          :initarg :d-signal-id          :initform nil :documentation "Обозначение сигнала, char[10]")
+   (d-signal-description :accessor d-signal-description :initarg :d-signal-description :initform nil :documentation "Описание сигнала, char[40]"))
+  (:documentation "Дескриптор (описание) дискретного сигнала
+Запись дескриптора аналогового сигнала во внутреннем представлении
+файло-тренда имеет следующую структуру:
+|---------------------+-------+---------------------------------|
+| Поле                | Длина | Примечание                      |
+|                     | поля, |                                 |
+|                     | байт  |                                 |
+|---------------------+-------+---------------------------------|
+| discret-id          | 10    | Обозначение дискретного сигнала |
+| discret-description | 40    | Описание дискретного сигнала    |
+|---------------------+-------+---------------------------------|
+"))
 
 (defmethod print-object ((x d-signal) stream)
   (format stream "~S ~S ~S" (d-signal-num x) (d-signal-id x) (d-signal-description x)))
@@ -92,7 +117,37 @@
    (trd-discret-number    :accessor trd-discret-number                              :initform nil :documentation "Количество дискретных сигналов")
    (trd-analog-ht         :accessor trd-analog-ht                                   :initform nil :documentation "Хеш-таблица аналоговых сигналов")
    (trd-discret-ht        :accessor trd-discret-ht                                  :initform nil :documentation "Хеш-таблица дискретных сигналов"))
-  (:documentation ""))
+  (:documentation "trd - класс служащий для предоставления интерфейса к файлу-тренду, содержащему записи аналоговых и дискретных параметров;
+Файл-тренд состоит из:
+1 Записи заголовка тренда;
+Заголовок тренда имеет следующую структуру:
+|----------------+-------+----------------------------------------------------------------------------|
+| Поле           |  Дина | Примечание                                                                 |
+|                | поля, |                                                                            |
+|                |  байт |                                                                            |
+|----------------+-------+----------------------------------------------------------------------------|
+| id             |     5 | Строка идентификации                                                       |
+| version        |     1 | Версия данных трендера                                                     |
+| date-day       |     1 | Число месяца                                                               |
+| date-month     |     1 | Порядковый номер месяца                                                    |
+| date-year      |     1 | Год-2000                                                                   |
+| time-hour      |     1 | Час                                                                        |
+| time-minute    |     1 | Минута                                                                     |
+| time-second    |     1 | Секунда                                                                    |
+| reserv         |     2 | Резерв -- содержит сумму аналоговых и дискретных сигналов до 2^16=65536 шт |
+| total-records  |     4 | Количество записей, содержащееся в тренде до 2^32=4294967296 шт            |
+| delta-time     |     8 | Интервал времени между записями, с                                         |
+| analog-number  |     2 | Количество аналоговых сигналов до 2^16=65536 шт                            |
+| discret-number |     2 | Количество дискретных сигналов до 2^16=65536 шт                            |
+|----------------+-------+----------------------------------------------------------------------------|
+2 Записей дескрипторов (описаний) аналоговых сигналов, см. a-signal;
+3 Записей дескрипторов (описаний) дискретных сигналов, см. d-signal; 
+4 Записей анналоговых и дискретных сигналов, состоящий из последовательно записанных списка аналоговых сигналов и упакованного списка дискретных сигналов;
+4.1 Каждый аналоговый сигнал кодируется целочисленным значением длиной 2 байта,
+его вычисляется по формуле: rez=analog-LowLimit+(i*(analog-HighLimit-analog-LowLimit)/65535)
+4.2 Каждый дискретный сигнал кодируется одним битом информации 0|1;
+При записи в тренд на восемь дискретных сигналов отводится один байт;
+Сигналы упаковываются побайтно справа-направо"))
 
 (defmethod trd-open ((x trd))
   "Выполняет открытие файла тренда включая:
@@ -306,14 +361,15 @@
 		      (trd-discret-offset x) ))
     (let ((s-int (list-to-int (read-trd-file (trd-file-descr x) (trd-discret-length-byte x)))))
       (mapcar #'(lambda (el)
-		  (logbitp  (d-signal-num  el ) s-int))
+		  (if (logbitp (d-signal-num  el ) s-int) 1 0))
 	      d-signal-list))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmethod trd-flag-on-intervals ((x trd) signal-str )
   "Для тренда x выполняет поиск диапазонов, для которых
-значение сигнала signal-str принимало значение 1."
+значение сигнала signal-str принимало значение 1.
+todo: доработать, чтоб возвращался последний диапазон при поднятом флаге в конце"
   (let* (
 	 (flag (gethash signal-str (trd-discret-ht x)))
 	 (flag-lst (list flag))
@@ -325,8 +381,9 @@
 	 )
     (dotimes (i (trd-total-records x) (nreverse rez-lst))
       (setf rez (first(trd-discret-by-rec-number x i flag-lst)))
-      (if rez (setf n-start (min i n-start)
-		    n-end   (max i n-end))
+      (if rez
+	  (setf n-start (min i n-start)
+		n-end   (max i n-end))
 	  (when (< -1 n-end)
 	    (push (list n-start n-end) rez-lst)
 	    (setf n-start total-rec
