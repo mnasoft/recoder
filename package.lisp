@@ -56,20 +56,21 @@
 	   trd-analog-signal-list trd-discret-signal-list
 	   
 	   trd-record-number-by-udate	   
-	   trd-values-by-rec-number trd-discret-by-rec-number
+	   trd-analog-by-rec-number trd-analog-by-universal-date
+	   trd-analog-mid-by-udate
+   	   trd-analog-mid-by-snames
+	   trd-analog-stddev-by-udate
+	   trd-analog-stddev-by-snames
+	   
+	   trd-discret-by-rec-number
 	   trd-flag-on-intervals trd-flag-on-intervals-time	   
 
-	   trd-values-by-universal-date
-	   trd-mid-values-by-udate
-   	   trd-mid-values-by-snames
-	   trd-stddev-values-by-udate
-	   trd-stddev-values-by-snames
 	   make-html-trd
 	   make-transpose-html-trd)
   
   (:export test_01)
   (:export get-trd-by-utime-dirname)
+  (:export trd-export-csv trd-split-signal trd-export-csv-singal-string)
   )
 
 ;;;;(declaim (optimize (space 0) (compilation-speed 0)  (speed 0) (safety 3) (debug 3)))
-

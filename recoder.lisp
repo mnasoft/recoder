@@ -277,7 +277,7 @@
 		(gethash el (trd-discret-ht x)))
 	    signal-string-list)))
 
-(defmethod trd-values-by-rec-number ( (x trd) rec-number signal-list)
+(defmethod trd-analog-by-rec-number ( (x trd) rec-number signal-list)
   "Возвращает список значений тренда trd для записи под номером rec-number,
  соответствующий сигналам signal-list"
   (when (and (trd-file-descr x) (< -1 rec-number (trd-total-records x)))
@@ -345,10 +345,10 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmethod trd-values-by-universal-date ( (x trd) udate signal-list)
+(defmethod trd-analog-by-universal-date ( (x trd) udate signal-list)
   "Возвращает список значений тренда trd для записи под номером rec-number,
  соответствующий сигналам signal-list"
-  (trd-values-by-rec-number x
+  (trd-analog-by-rec-number x
 		  (trd-record-number-by-udate x udate)
 		  signal-list))
 
@@ -356,26 +356,26 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmethod trd-mid-values-by-udate ( (x trd) udate signal-list &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
+(defmethod trd-analog-mid-by-udate ( (x trd) udate signal-list &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
   "Возвращает список средних значений параметров "
   (when  (trd-file-descr x)
     (let* ((rez nil)
 	   (n-start (- (trd-record-number-by-udate x udate) n-before))
 	   (rezult (dotimes (i (+ n-before n-after 1) (transpose rez))
-		     (push (trd-values-by-rec-number x (+ n-start i) signal-list) rez))))
+		     (push (trd-analog-by-rec-number x (+ n-start i) signal-list) rez))))
       (mapcar #'math:averange-value rezult))))
 
-(defmethod trd-mid-values-by-snames ( (x trd) udate snames &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
+(defmethod trd-analog-mid-by-snames ( (x trd) udate snames &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
   "Возвращает список средних значений параметров, 
 записанных в тренде trd в момент времени udate для списка сигналов, определяемых их именами snames;
 Осреднение происходит в интервале записей от  n-before до n-after"
   (when  (trd-file-descr x)
-    (trd-mid-values-by-udate x udate (trd-analog-signal-list x snames) :n-before n-before :n-after n-after)))
+    (trd-analog-mid-by-udate x udate (trd-analog-signal-list x snames) :n-before n-before :n-after n-after)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmethod trd-stddev-values-by-udate ( (x trd) udate signal-list &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
+(defmethod trd-analog-stddev-by-udate ( (x trd) udate signal-list &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
   "Возвращает список стандартных отклонений для параметров,
 записанных в тренде trd в момент времени udate для списка сигналов signal-list;
 Осреднение происходит в интервале записей от  n-before до n-after"
@@ -383,15 +383,15 @@
     (let* ((rez nil)
 	   (n-start (- (trd-record-number-by-udate x udate) n-before))
 	   (rezult (dotimes (i (+ n-before n-after 1) (transpose rez))
-		     (push (trd-values-by-rec-number x (+ n-start i) signal-list) rez))))
+		     (push (trd-analog-by-rec-number x (+ n-start i) signal-list) rez))))
       (mapcar #'math:standard-deviation rezult))))
 
-(defmethod trd-stddev-values-by-snames ( (x trd) udate snames &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
+(defmethod trd-analog-stddev-by-snames ( (x trd) udate snames &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
   "Возвращает список стандартных отклонений для параметров,
 записанных в тренде trd в момент времени udate для списка сигналов, определяемых их именами snames;
 Осреднение происходит в интервале записей от  n-before до n-after"
   (when  (trd-file-descr x)
-    (trd-stddev-values-by-udate x udate (trd-analog-signal-list x snames) :n-before n-before :n-after n-after)))
+    (trd-analog-stddev-by-udate x udate (trd-analog-signal-list x snames) :n-before n-before :n-after n-after)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -409,8 +409,8 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
     (let ((trd (make-instance 'trd :trd-file-name trd-fname)))
       (trd-open trd)
       (let* ((s-list (trd-analog-signal-list trd str-signal-list))
-	     (data (mapcar #'(lambda (el) (trd-mid-values-by-udate trd el          s-list)) time))
-     	     (dev  (mapcar #'(lambda (el) (trd-stddev-values-by-udate trd el       s-list)) time)))
+	     (data (mapcar #'(lambda (el) (trd-analog-mid-by-udate trd el          s-list)) time))
+     	     (dev  (mapcar #'(lambda (el) (trd-analog-stddev-by-udate trd el       s-list)) time)))
 	(setf data (append data dev))
 	(push (mapcar #'(lambda (el) (a-signal-units el))                          s-list) data)
 	(push (mapcar #'(lambda (el) (a-signal-id el))                             s-list) data)
@@ -432,8 +432,8 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
       (let ((trd (make-instance 'trd :trd-file-name trd-fname)))
       (trd-open trd)
       (let* ((s-list (trd-analog-signal-list trd str-signal-list))
-	     (data (mapcar #'(lambda (el) (trd-mid-values-by-udate trd el          s-list)) time))
-     	     (dev  (mapcar #'(lambda (el) (trd-stddev-values-by-udate trd el       s-list)) time)))
+	     (data (mapcar #'(lambda (el) (trd-analog-mid-by-udate trd el          s-list)) time))
+     	     (dev  (mapcar #'(lambda (el) (trd-analog-stddev-by-udate trd el       s-list)) time)))
 	(setf data (append data dev))
 	(push (mapcar #'(lambda (el) (a-signal-units el))                          s-list) data)
 	(push (mapcar #'(lambda (el) (a-signal-id el))                             s-list) data)
@@ -455,3 +455,51 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
 	       (trd-close trd))))
      (mnas-path:find-filename dir-name extension))
     rezult))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod trd-export-csv ((x trd) a-sig-lst d-sig-lst &key (os t) (n-start 0) (n-end (trd-total-records x)))
+  "Производит вывод аналоговых сигналов тренда, 
+заданных параметром a-sig-lst (список сигналов),
+и дискретных сигналов, заданных параметром d-sig-lst (список сигналов),
+в поток os имеющий форматирование csv, начиная с номера записи n-start до номера записи n-end включительно.
+Перед выводом сигналов выводятся их обозначения."
+  (format os "~{~S~^,~}~%" (append (list "U") (mapcar #'(lambda (el) (a-signal-units el)) a-sig-lst) (mapcar #'(lambda (el) "0|1") d-sig-lst)))
+  (format os "~{~S~^,~}~%" (append (list "N") (mapcar #'(lambda (el) (a-signal-id el)) a-sig-lst) (mapcar #'(lambda (el) (d-signal-id el)) d-sig-lst)))
+  
+  (do ((i (max 0 n-start) (1+ i))
+       (e (min (+ 1 n-end) (trd-total-records x))))
+      ((>= i e) 'done)
+
+    (format os "~{~A~^,~}~%" (append (list i)
+				    (trd-analog-by-rec-number x i a-sig-lst)
+				    (trd-discret-by-rec-number x i d-sig-lst)))))
+
+(defmethod trd-split-signal ((x trd) singnal-str-list)
+  "Выполняет проверку того, что имена сигналов, заданные в переменной singnal-str-list,
+присутствуют для данного тренда в перечне аналоговых сигналов или дискретных сигналов
+или отсутствуют в обоих перечнях.
+   Возвращает список элементами которого являются:
+- список аналоговых сигнало;
+- список дискретных сигналов;
+- список строк с именами не соответствующие ни аналоговым ни дискретнымсигналам."
+  (let ((a-rez nil)
+	(d-rez nil)
+	(error-rez nil)
+	(error-fl t))
+    (mapcar #'(lambda (el)
+		(setf error-fl t)
+		(multiple-value-bind (v r) (gethash  el (trd-analog-ht x ) )
+		  (when r
+		    (push v a-rez)
+		    (setf error-fl nil)))
+		(multiple-value-bind (v r) (gethash  el (trd-discret-ht x ) )
+		  (when r (push v d-rez)
+			(setf error-fl nil)))
+		(when error-fl (push el error-rez)))
+	    singnal-str-list)
+    (list (nreverse a-rez) (nreverse d-rez) (nreverse error-rez))))
+
+(defmethod trd-export-csv-singal-string ((x trd) signal-str-list &key (os t) (n-start 0) (n-end (trd-total-records x)))
+  (let ((a-d-e (trd-split-signal x  signal-str-list )))
+    (trd-export-csv x (first a-d-e) (second a-d-e) :os os :n-start n-start :n-end n-end)
+    a-d-e))
