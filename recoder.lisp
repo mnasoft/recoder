@@ -4,6 +4,22 @@
 
 ;;; "recoder" goes here. Hacks and glory await!
 
+(defun apply-and (lst)
+  (let ((rez t))
+    (mapcar
+     #'(lambda (el)
+	 (setf rez (and rez el)))
+     lst)
+    rez))
+
+(defun apply-or (lst)
+  (let ((rez nil))
+    (mapcar
+     #'(lambda (el)
+	 (setf rez (or rez el)))
+     lst)
+    rez))
+
 (defun transpose (list)
   "Выполняет транспонирование"
   (apply #'mapcar #'list list))
@@ -364,6 +380,19 @@
 		  (if (logbitp (d-signal-num  el ) s-int) 1 0))
 	      d-signal-list))))
 
+(defmethod trd-discret-by-rec-number-t-nil ( (x trd) rec-number d-signal-list)
+  "Возвращает список значений тренда trd для записи под номером rec-number,
+ соответствующий сигналам d-signal-list"
+  (when (and (trd-file-descr x) (< -1 rec-number (trd-total-records x)))
+    (file-position (trd-file-descr x) 
+		   (+ (trd-start-offset x)
+		      (* rec-number (trd-record-length x))
+		      (trd-discret-offset x) ))
+    (let ((s-int (list-to-int (read-trd-file (trd-file-descr x) (trd-discret-length-byte x)))))
+      (mapcar #'(lambda (el)
+		  (logbitp (d-signal-num  el ) s-int))
+	      d-signal-list))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmethod trd-flag-on-intervals ((x trd) signal-str )
@@ -380,7 +409,7 @@ todo: доработать, чтоб возвращался последний �
 	 (rez nil)
 	 )
     (dotimes (i (trd-total-records x) (nreverse rez-lst))
-      (setf rez (first(trd-discret-by-rec-number x i flag-lst)))
+      (setf rez (first(trd-discret-by-rec-number-t-nil x i flag-lst)))
       (if rez
 	  (setf n-start (min i n-start)
 		n-end   (max i n-end))
@@ -527,7 +556,7 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
        (e (min (+ 1 n-end) (trd-total-records x))))
       ((>= i e) 'done)
 
-    (format os "~{~A~^,~}~%" (append (list i)
+    (format os "~{~G~^,~}~%" (append (list (* i (trd-delta-time x)))
 				    (trd-analog-by-rec-number x i a-sig-lst)
 				    (trd-discret-by-rec-number x i d-sig-lst)))))
 
@@ -560,3 +589,36 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
   (let ((a-d-e (trd-split-signal x  signal-str-list )))
     (trd-export-csv x (first a-d-e) (second a-d-e) :os os :n-start n-start :n-end n-end)
     a-d-e))
+
+(defmethod trd-split-by-conndition-intervals ((x trd) start-signal-str-lst end-signal-str-lst)
+  "Для тренда x выполняет поиск диапазонов, для которых
+значение сигнала start-signal-str принимало значение 1.
+todo: доработать, чтоб возвращался последний диапазон при поднятом флаге в конце"
+  (let* (
+	 (start-flag-lst (mapcar #'(lambda(el) (gethash el (trd-discret-ht x))) start-signal-str-lst))
+	 (end-flag-lst   (mapcar #'(lambda(el) (gethash el (trd-discret-ht x))) end-signal-str-lst))
+	 (fl-start nil)
+	 (fl-end   nil)
+	 (total-rec (trd-total-records x))
+	 (rez-lst nil)
+	 (n-start total-rec)
+	 (n-end -1)
+	 (start-rez nil))
+    
+    (dotimes (i (trd-total-records x) (nreverse rez-lst))
+      (setf fl-start (or fl-start (apply-and (trd-discret-by-rec-number-t-nil x i start-flag-lst))))
+      (if fl-start
+	  (progn
+;;;;	    (break "1: i = ~S fl-start = ~S fl-end = ~S " i fl-start fl-end)
+	    (setf fl-end nil
+		  n-start (min i n-start)
+		  n-end   (max i n-end))))
+      (setf fl-end   (or fl-end   (apply-and (trd-discret-by-rec-number-t-nil x i end-flag-lst))))
+      (if (and fl-start fl-end (< -1 n-end))
+	  (progn
+;;;;	    (break "2: i = ~S fl-start = ~S fl-end = ~S " i fl-start fl-end)
+	    (push (list n-start n-end) rez-lst)
+	    (setf 	 fl-start nil
+			 fl-end   nil
+			 n-start total-rec
+			 n-end -1))))))

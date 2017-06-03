@@ -62,7 +62,7 @@
 	   trd-analog-stddev-by-udate
 	   trd-analog-stddev-by-snames
 	   
-	   trd-discret-by-rec-number
+	   trd-discret-by-rec-number trd-discret-by-rec-number-t-nil
 	   trd-flag-on-intervals trd-flag-on-intervals-time	   
 
 	   make-html-trd
@@ -70,7 +70,11 @@
   
   (:export test_01)
   (:export get-trd-by-utime-dirname)
-  (:export trd-export-csv trd-split-signal trd-export-csv-singal-string)
+  (:export trd-export-csv trd-split-signal trd-export-csv-singal-string
+	   trd-split-by-conndition-intervals
+	   )
+  (:export apply-and  apply-or)
+
   )
 
 ;;;;(declaim (optimize (space 0) (compilation-speed 0)  (speed 0) (safety 3) (debug 3)))
