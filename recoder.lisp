@@ -556,7 +556,7 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
        (e (min (+ 1 n-end) (trd-total-records x))))
       ((>= i e) 'done)
 
-    (format os "~{~G~^,~}~%" (append (list (* i (trd-delta-time x)))
+    (format os "~{~F~^,~}~%" (append (list (* i (trd-delta-time x)))
 				    (trd-analog-by-rec-number x i a-sig-lst)
 				    (trd-discret-by-rec-number x i d-sig-lst)))))
 
