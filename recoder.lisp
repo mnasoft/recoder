@@ -447,51 +447,39 @@ todo: доработать, чтоб возвращался последний �
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun make-html-trd (trd-fname html-fname str-signal-list time ht-sname-oboznach)
-  "Вывод в данных из тренда в файл trd-fname в файл html-fname;
-Данные выводятся по строкам;
-trd-fname         - имя файла тренда;
-html-fname        - имя html-файла;
-str-signal-list   - список выводимых сигналов;
-time              - список, элементами которого являются универсальное время;
-ht-sname-oboznach - хеш-таблица, элементами которой являются:
-                    в качестве ключа    - имена сигналов;
-                    в качестве значений - обозначения сигналов
-Пример использования:"
-    (let ((trd (make-instance 'trd :trd-file-name trd-fname)))
-      (trd-open trd)
-      (let* ((s-list (trd-analog-signal-list trd str-signal-list))
-	     (data (mapcar #'(lambda (el) (trd-analog-mid-by-udate trd el          s-list)) time))
-     	     (dev  (mapcar #'(lambda (el) (trd-analog-stddev-by-udate trd el       s-list)) time)))
-	(setf data (append data dev))
-	(push (mapcar #'(lambda (el) (a-signal-units el))                          s-list) data)
-	(push (mapcar #'(lambda (el) (a-signal-id el))                             s-list) data)
-	(push (mapcar #'(lambda (el) (gethash (a-signal-id el) ht-sname-oboznach)) s-list) data)
-	(push (mapcar #'(lambda (el) (a-signal-description el) )                   s-list) data)
-	(html-table:list-list-html-table data html-fname))))
-
-(defun make-transpose-html-trd (trd-fname html-fname str-signal-list time ht-sname-oboznach)
+(defun make-html-trd (trd-fname html-fname str-signal-list time-lst ht-sname-oboznach &key (transpose nil))
   "Вывод в данных из тренда в файл trd-fname в файл html-fname;
 Данные выводятся по столбцам;
 trd-fname         - имя файла тренда;
 html-fname        - имя html-файла;
 str-signal-list   - список выводимых сигналов;
-time              - список, элементами которого являются универсальное время;
+time-lst          - список, элементами которого являются универсальное время;
 ht-sname-oboznach - хеш-таблица, элементами которой являются:
                     в качестве ключа    - имена сигналов;
                     в качестве значений - обозначения сигналов
-Пример использования:"
-      (let ((trd (make-instance 'trd :trd-file-name trd-fname)))
-      (trd-open trd)
-      (let* ((s-list (trd-analog-signal-list trd str-signal-list))
-	     (data (mapcar #'(lambda (el) (trd-analog-mid-by-udate trd el          s-list)) time))
-     	     (dev  (mapcar #'(lambda (el) (trd-analog-stddev-by-udate trd el       s-list)) time)))
-	(setf data (append data dev))
-	(push (mapcar #'(lambda (el) (a-signal-units el))                          s-list) data)
-	(push (mapcar #'(lambda (el) (a-signal-id el))                             s-list) data)
-	(push (mapcar #'(lambda (el) (gethash (a-signal-id el) ht-sname-oboznach)) s-list) data)
-	(push (mapcar #'(lambda (el) (a-signal-description el) )                   s-list) data)
-	(html-table:list-list-html-table (transpose data) html-fname))))
+Пример использования:
+
+"
+  (let ((trd (make-instance 'trd :trd-file-name trd-fname)))
+    (trd-open trd)
+    (let* ((s-list (trd-analog-signal-list trd str-signal-list))
+	   (rez nil)
+	   (data (mapcar #'(lambda (el) (trd-analog-mid-by-udate trd el    s-list)) time-lst))
+	   (dev  (mapcar #'(lambda (el) (trd-analog-stddev-by-udate trd el s-list)) time-lst))
+	   (d-time-str (mapcar #'(lambda (tm ) (list (print-universal-date tm :stream nil)
+						     (print-universal-time tm :stream nil)))
+			       time-lst)))
+      (setf data  (mapcar #'(lambda (tm da) (append tm da)) d-time-str data)
+	    dev   (mapcar #'(lambda (tm dv) (append tm dv)) d-time-str dev))
+      (setf rez (append  data dev ))
+      (push (append '("YYYY-MM-DD" "hh:mm:ss") (mapcar #'(lambda (el) (a-signal-units el)) s-list) ) rez)
+      (push (append '("-" "-") (mapcar #'(lambda (el) (a-signal-id el))    s-list) ) rez)
+      (push (append '("Date" "Time") (mapcar #'(lambda (el) (gethash (a-signal-id el) ht-sname-oboznach)) s-list)) rez)
+      (push (append '("Дата" "Время") (mapcar #'(lambda (el) (a-signal-description el)) s-list)) rez)
+      (when transpose (setf rez (transpose rez)))
+      (html-table:list-list-html-table rez html-fname))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun get-trd-by-utime-dirname (utime dir-name &key (extension "trd"))
   "Возвращает объект тренда, для которого существуют данные на момент 
@@ -507,6 +495,61 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
 	       (trd-close trd))))
      (mnas-path:find-filename dir-name extension))
     rezult))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun make-html-trd-foo (trd-dname html-fname str-signal-list time-lst ht-sname-oboznach &key (transpose nil))
+  "Вывод в данных из тренда в файл trd-dname в файл html-fname;
+Данные выводятся по столбцам;
+trd-dname         - имя файла тренда;
+html-fname        - имя html-файла;
+str-signal-list   - список выводимых сигналов;
+time-lst          - список, элементами которого являются универсальное время;
+ht-sname-oboznach - хеш-таблица, элементами которой являются:
+                    в качестве ключа    - имена сигналов;
+                    в качестве значений - обозначения сигналов
+Пример использования:
+
+"
+  (let ((trd-lst (mapcar #'(lambda (ut) (get-trd-by-utime-dirname ut trd-dname)) time-lst))
+	(rez                  nil)
+	(data                 nil)
+	(dev                  nil)
+	(d-time-str           nil)
+	
+	(a-signal-units       nil)
+	(a-signal-id          nil)
+	(ht-sname             nil)
+	(a-signal-description nil)	
+	)
+    (mapc #'(lambda (trd time)
+	      (trd-open trd)
+	      (let ((s-list (trd-analog-signal-list trd str-signal-list)))
+		(setf a-signal-units (mapcar #'(lambda (el) (a-signal-units el)) s-list)
+		      a-signal-id (mapcar #'(lambda (el) (a-signal-id el))       s-list)
+		      ht-sname (mapcar #'(lambda (el) (gethash (a-signal-id el) ht-sname-oboznach)) s-list)
+		      a-signal-description (mapcar #'(lambda (el) (a-signal-description el)) s-list)
+		      
+		      )
+
+		(push (trd-analog-mid-by-udate trd time s-list)    data)
+		(push (trd-analog-stddev-by-udate trd time s-list) dev)
+		(push (list (print-universal-date time :stream nil) (print-universal-time time :stream nil)) d-time-str)))
+	  trd-lst time-lst)
+    (setf data (reverse data)
+	  dev  (reverse dev)
+	  d-time-str (reverse d-time-str)
+	  )
+    (setf data  (mapcar #'(lambda (tm da) (append tm da)) d-time-str data)
+	  dev   (mapcar #'(lambda (tm dv) (append tm dv)) d-time-str dev))
+    (setf rez (append  data dev ))
+    (push (append '("YYYY-MM-DD" "hh:mm:ss") a-signal-units ) rez)
+    (push (append '("-" "-") a-signal-id )                    rez)
+    (push (append '("Date" "Time") ht-sname  ) rez)
+    (push (append '("Дата" "Время") a-signal-description) rez)
+    (when transpose (setf rez (transpose rez)))
+    (html-table:list-list-html-table rez html-fname)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmethod trd-export-csv ((x trd) a-sig-lst d-sig-lst &key (os t) (n-start 0) (n-end (trd-total-records x)))

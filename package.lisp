@@ -1,7 +1,7 @@
 ;;;; package.lisp
 
 (defpackage #:recoder
-  (:use #:cl)
+  (:use #:cl #:mnas-string)
   (:export *ascii-sym*
 	   *cp866*
 	   *cp1251*)
@@ -66,7 +66,8 @@
 	   trd-flag-on-intervals trd-flag-on-intervals-time	   
 
 	   make-html-trd
-	   make-transpose-html-trd)
+	   make-html-trd-foo  
+	   )
   
   (:export test_01)
   (:export get-trd-by-utime-dirname)
