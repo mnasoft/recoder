@@ -43,37 +43,69 @@
   (:export d-signal-num d-signal-id d-signal-description)
   (:export d-signal)
   
-  (:export trd-file-name trd-file-descr trd-id-string trd-version trd-date-time trd-reserv trd-total-records trd-delta-time
-	   trd-analog-number trd-discret-number trd-analog-ht trd-discret-ht )
-  
   (:export trd
-	   print-object
-	   trd-open
-	   trd-close
-	   trd-start-offset trd-record-length trd-discret-length-byte trd-analog-length-byte trd-discret-offset
+	   print-object)
+  
+;;;; Class trd members  
+  (:export trd-file-name
+	   trd-file-descr
+	   trd-id-string
+	   trd-version
+	   trd-utime-start
+	   trd-reserv
+	   trd-total-records
+	   trd-delta-time
+	   trd-analog-number
+	   trd-discret-number
+	   trd-analog-ht
+	   trd-discret-ht )
+  
+;;;; Open and Close trd  
+  (:export trd-open
+	   trd-close)
+  (:export trd-start-offset
+	   trd-record-length
+	   trd-discret-length-byte
+	   trd-analog-length-byte
+	   trd-discret-offset
+	   trd-utime-end
+	   trd-analog-signal-list
+	   trd-discret-signal-list
+	   trd-record-number-by-udate)
+;;;; Analog signal extraction  
+  (:export trd-analog-by-rec-number
+	   trd-analog-by-utime
+	   trd-analog-mid-by-utime
+	   trd-analog-mid-by-snames
+	   trd-analog-stddev-by-utime
+	   trd-analog-stddev-by-snames)
+;;;; Discret signal extraction    
+  (:export trd-discret-by-rec-number
+	   trd-discret-by-rec-number-t-nil)
 
-	   trd-date-time-end
-	   trd-analog-signal-list trd-discret-signal-list
-	   
-	   trd-record-number-by-udate	   
-	   trd-analog-by-rec-number trd-analog-by-universal-date
-	   trd-analog-mid-by-udate
-   	   trd-analog-mid-by-snames
-	   trd-analog-stddev-by-udate
-	   trd-analog-stddev-by-snames
-	   
-	   trd-discret-by-rec-number trd-discret-by-rec-number-t-nil
-	   trd-flag-on-intervals trd-flag-on-intervals-time	   
-
-	   make-html-trd
-	   make-html-trd-foo  
-	   )
+  (:export 
+   make-html-trd
+   make-html-trd-foo  
+   )
   
   (:export test_01)
   (:export get-trd-by-utime-dirname)
-  (:export trd-export-csv trd-split-signal trd-export-csv-singal-string
-	   trd-split-by-conndition-intervals
-	   )
+
+;;;; Signal separation
+  (:export trd-separate-signals
+	   trd-separate-a-signals
+	   trd-separate-d-signals
+	   trd-separate-not-signals)
+;;;; CSV 
+  (:export trd-export-csv
+	   trd-export-csv-singal-string)
+;;;; Slitting 
+  (:export trd-split-on-intervals-when-flag-is-on
+	   trd-split-on-intervals-of-time-when-flag-is-on
+	   trd-split-on-intervals-by-condition )
+;;;; Interval to time conversion
+  (:export trd-interval-to-secods trd-interval-to-minutes trd-interval-to-hours)
+	   
   (:export apply-and  apply-or)
 
   )

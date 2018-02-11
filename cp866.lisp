@@ -18,11 +18,15 @@
 (defparameter *cp866* (make-hash-table))
 
 (let ((i 0))
-  (mapc #'(lambda (el)
-	    (setf (gethash i *cp866*) el)
-	    (setf i (1+ i)))  *ascii-sym*))
+  (mapc
+   #'(lambda (el)
+       (setf (gethash i *cp866*) el)
+       (setf i (1+ i)))
+   *ascii-sym*))
 
 (let ((i #x80))
-  (mapc #'(lambda (el)
-	    (setf (gethash i *cp866*) el)
-	    (setf i (1+ i)))  *cp866-sym*))
+  (mapc
+   #'(lambda (el)
+       (setf (gethash i *cp866*) el)
+       (setf i (1+ i)))
+   *cp866-sym*))
