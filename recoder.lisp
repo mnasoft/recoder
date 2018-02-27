@@ -121,8 +121,8 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
 		      
 		      )
 
-		(push (trd-analog-mid-by-udate trd time s-list)    data)
-		(push (trd-analog-stddev-by-udate trd time s-list) dev)
+		(push (trd-analog-mid-by-utime trd time s-list)    data)
+		(push (trd-analog-stddev-by-utime trd time s-list) dev)
 		(push (list (print-universal-date time :stream nil) (print-universal-time time :stream nil)) d-time-str)))
 	  trd-lst time-lst)
     (setf data (reverse data)
@@ -140,3 +140,4 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
     (html-table:list-list-html-table rez html-fname)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
