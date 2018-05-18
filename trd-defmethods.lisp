@@ -388,4 +388,19 @@ end-signal-str-lst     - список имен [строк] дискретных
 
 (defmethod trd-interval-to-hours ((x trd) interval)
       "Преобразует диапазон времени, заданный в записях, часы"
-  (* 1/60 1/60 (trd-interval-to-secods x interval)))
+      (* 1/60 1/60 (trd-interval-to-secods x interval)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod trd-record-number-to-udate ((x trd) rec-number)
+  (+ (trd-utime-start x) (round (* rec-number (trd-delta-time  x)))))
+
+(export 'trd-record-number-to-udate)
+
+(defmethod trd-record-number-by-udate ((x trd) udate)
+  (round
+   (/
+    (- udate (trd-utime-start x))
+    (trd-delta-time x))))
+
+(export 'trd-record-number-by-udate)

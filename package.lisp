@@ -71,7 +71,7 @@
 	   trd-utime-end
 	   trd-analog-signal-list
 	   trd-discret-signal-list
-	   trd-record-number-by-udate)
+	   )
 ;;;; Analog signal extraction  
   (:export trd-analog-by-rec-number
 	   trd-analog-by-utime
