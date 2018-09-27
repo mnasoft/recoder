@@ -1,113 +1,132 @@
 ;;;; package.lisp
 
+(defpackage #:recoder)
+
 (defpackage #:recoder
   (:use #:cl #:mnas-string)
-  (:export *ascii-sym*
-	   *cp866*
-	   *cp1251*)
-  (:export list-to-int)
+  (:export recoder::*ascii-sym*
+	   recoder::*cp866*
+	   recoder::*cp1251*
+	   )
+  (:export recoder::list-to-int
+	   )
+  (:export recoder::recode-string
+	   )
+  (:export recoder::open-trd-file-read
+	   recoder::open-trd-file-write
+	   )
+  (:export recoder::read-trd-file
+	   recoder::write-trd-file
+	   )
+  (:export recoder::read-trd-file-short
+	   recoder::read-trd-file-int
+	   recoder::read-trd-file-long
+	   recoder::read-trd-file-long-long
+	   recoder::read-trd-file-float
+	   recoder::read-trd-file-double
+	   recoder::read-trd-file-quad
+	   recoder::read-trend-hdr
+	   )
+  (:export recoder::write-trd-file-short
+	   recoder::write-trd-file-int
+	   recoder::write-trd-file-long
+	   recoder::write-trd-file-long-long
+	   recoder::write-trd-file-float
+	   recoder::write-trd-file-double
+	   recoder::write-trd-file-quad)
   
-  (:export recode-string)
+  (:export recoder::transpose
+	   recoder::time-universal-encode
+	   recoder::recode-string
+	   )
+  (:export recoder::a-signal-num
+	   recoder::a-signal-id
+	   recoder::a-signal-description
+	   recoder::a-signal-units
+	   recoder::a-signal-min
+	   recoder::a-signal-max)
   
-  (:export open-trd-file-read
-	   open-trd-file-write)
-  
-  (:export read-trd-file
-	   write-trd-file)
-  
-  (:export read-trd-file-short
-	   read-trd-file-int
-	   read-trd-file-long
-	   read-trd-file-long-long
-	   read-trd-file-float
-	   read-trd-file-double
-	   read-trd-file-quad
-	   read-trend-hdr)
-  
-  (:export write-trd-file-short
-	   write-trd-file-int
-	   write-trd-file-long
-	   write-trd-file-long-long
-	   write-trd-file-float
-	   write-trd-file-double
-	   write-trd-file-quad)
-  
-  (:export transpose
-	   time-universal-encode
-	   recode-string)
-  
-  (:export a-signal-num  a-signal-id  a-signal-description  a-signal-units  a-signal-min  a-signal-max)
-  
-  (:export a-signal a-signal-value)
+  (:export recoder::a-signal
+	   recoder::a-signal-value)
 
-  (:export d-signal-num d-signal-id d-signal-description)
-  (:export d-signal)
-  
-  (:export trd
-	   print-object)
+  (:export recoder::d-signal-num
+	   recoder::d-signal-id
+	   recoder::d-signal-description
+	   )
+  (:export recoder::d-signal
+	   )
+  (:export recoder::trd
+	   recoder::print-object
+	   )
   
 ;;;; Class trd members  
-  (:export trd-file-name
-	   trd-file-descr
-	   trd-id-string
-	   trd-version
-	   trd-utime-start
-	   trd-reserv
-	   trd-total-records
-	   trd-delta-time
-	   trd-analog-number
-	   trd-discret-number
-	   trd-analog-ht
-	   trd-discret-ht )
-  
+  (:export recoder::trd-file-name
+	   recoder::trd-file-descr
+	   recoder::trd-id-string
+	   recoder::trd-version
+	   recoder::trd-utime-start
+	   recoder::trd-reserv
+	   recoder::trd-total-records
+	   recoder::trd-delta-time
+	   recoder::trd-analog-number
+	   recoder::trd-discret-number
+	   recoder::trd-analog-ht
+	   recoder::trd-discret-ht
+	   )
 ;;;; Open and Close trd  
-  (:export trd-open
-	   trd-close)
-  (:export trd-start-offset
-	   trd-record-length
-	   trd-discret-length-byte
-	   trd-analog-length-byte
-	   trd-discret-offset
-	   trd-utime-end
-	   trd-analog-signal-list
-	   trd-discret-signal-list
+  (:export recoder::trd-open
+	   recoder::trd-close
+	   )
+  (:export recoder::trd-start-offset
+	   recoder::trd-record-length
+	   recoder::trd-discret-length-byte
+	   recoder::trd-analog-length-byte
+	   recoder::trd-discret-offset
+	   recoder::trd-utime-end
+	   recoder::trd-analog-signal-list
+	   recoder::trd-discret-signal-list
 	   )
 ;;;; Analog signal extraction  
-  (:export trd-analog-by-rec-number
-	   trd-analog-by-utime
-	   trd-analog-mid-by-utime
-	   trd-analog-mid-by-snames
-	   trd-analog-stddev-by-utime
-	   trd-analog-stddev-by-snames)
+  (:export recoder::trd-analog-by-rec-number
+	   recoder::trd-analog-by-utime
+	   recoder::trd-analog-mid-by-utime
+	   recoder::trd-analog-mid-by-snames
+	   recoder::trd-analog-stddev-by-utime
+	   recoder::trd-analog-stddev-by-snames
+	   )
 ;;;; Discret signal extraction    
-  (:export trd-discret-by-rec-number
-	   trd-discret-by-rec-number-t-nil)
-
-  (:export 
-   make-html-trd
-   make-html-trd-foo  
-   )
-  
-  (:export test_01)
-  (:export get-trd-by-utime-dirname)
-
+  (:export recoder::trd-discret-by-rec-number
+	   recoder::trd-discret-by-rec-number-t-nil
+	   )
+  (:export recoder::make-html-trd
+	   recoder::make-html-trd-foo  
+	   )
+  (:export recoder::test_01
+	   )
+  (:export recoder::get-trd-by-utime-dirname
+	   )
 ;;;; Signal separation
-  (:export trd-separate-signals
-	   trd-separate-a-signals
-	   trd-separate-d-signals
-	   trd-separate-not-signals)
+  (:export recoder::trd-separate-signals
+	   recoder::trd-separate-a-signals
+	   recoder::trd-separate-d-signals
+	   recoder::trd-separate-not-signals
+	   )
 ;;;; CSV 
-  (:export trd-export-csv
-	   trd-export-csv-singal-string)
+  (:export recoder::trd-export-csv
+	   recoder::trd-export-csv-singal-string
+	   )
 ;;;; Slitting 
-  (:export trd-split-on-intervals-when-flag-is-on
-	   trd-split-on-intervals-of-time-when-flag-is-on
-	   trd-split-on-intervals-by-condition )
+  (:export recoder::trd-split-on-intervals-when-flag-is-on
+	   recoder::trd-split-on-intervals-of-time-when-flag-is-on
+	   recoder::trd-split-on-intervals-by-condition
+	   )
 ;;;; Interval to time conversion
-  (:export trd-interval-to-secods trd-interval-to-minutes trd-interval-to-hours)
-	   
-  (:export apply-and  apply-or)
-
-  )
+  (:export recoder::trd-interval-to-secods
+	   recoder::trd-interval-to-minutes
+	   recoder::trd-interval-to-hours
+	   )
+  (:export recoder::apply-and
+	   recoder::apply-or
+	   ))
 
 ;;;;(declaim (optimize (space 0) (compilation-speed 0)  (speed 0) (safety 3) (debug 3)))
