@@ -1,5 +1,6 @@
 ;;;; package.lisp
 
+
 (defpackage #:recoder)
 
 (defpackage #:recoder
@@ -127,6 +128,12 @@
 	   )
   (:export recoder::apply-and
 	   recoder::apply-or
-	   ))
+	   )
+;;;; Open directory  
+  (:export recoder::get-open-ternd
+	   recoder::get-open-ternds
+	   recoder::change-directory-default
+	   )
+  )
 
 ;;;;(declaim (optimize (space 0) (compilation-speed 0)  (speed 0) (safety 3) (debug 3)))
