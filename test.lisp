@@ -24,9 +24,14 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(get-open-ternd)
-(defparameter *trd* (make-instance 'trd :trd-file-name (get-open-ternd)))
-(trd-open *trd*)
-(make-instance 'trd :trd-file-name "D:/home/_namatv/_WorkPlan/2018/80/ЖГУ/Испытания/2018-11-06_092329.trd")
-(trd-open *trd*)
 
+
+(defparameter *trd* (make-instance 'trd :trd-file-name "D:/home/_namatv/_WorkPlan/2018/80/ЖГУ/Испытания/2018-11-06_092329.trd"))
+
+(trd-open *trd*)
+  
+"ET001""ET002" "ET003" "ET004" "ET005" "ET006" "ET007" "ET008" "ET009" "ET010" "ET011" "ET012" "ET013" "ET014" "ET015" "ET016" "ET017" "ET018" "ET019" "ET020" "ET021" "ET022" "ET023" "ET024" "ET025"
+
+"FG010" "FP030" "PP010"
+
+"OIL" "GAS"

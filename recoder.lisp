@@ -148,13 +148,3 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
   (mnas-file-dialog:get-open-file :filetypes '(("Файлы трендов" "*.trd")) :title "Выберите файлы трендов" :multiple t))
 
 (defun change-directory-default () (mnas-file-dialog:change-directory-default))
-
-;;;; (get-open-ternd)
-
-;;;; (get-open-ternds)
-
-;;;; (change-directory-default)
-
-
-
-
