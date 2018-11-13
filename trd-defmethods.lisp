@@ -3,8 +3,8 @@
 (in-package #:recoder)
 
 (defmethod print-object ((x trd) stream)
+  (format stream "Path= ~S~%" (trd-file-name x) )
   (when (trd-file-descr x)
-    (format stream "Path= ~S~%" (trd-file-name x) )
     (format stream "id=~S version=~A " (trd-id-string x) (trd-version x))
     (format stream "[ ")
     (mnas-string:print-universal-time (trd-utime-start x) :stream stream)

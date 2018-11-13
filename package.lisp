@@ -57,7 +57,7 @@
   (:export recoder::d-signal
 	   )
   (:export recoder::trd
-	   recoder::print-object
+;;;;	   recoder::print-object
 	   )
   
 ;;;; Class trd members  
