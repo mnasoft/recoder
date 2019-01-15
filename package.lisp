@@ -25,7 +25,7 @@
 	   recoder::read-trd-file-long-long
 	   recoder::read-trd-file-float
 	   recoder::read-trd-file-double
-	   recoder::read-trd-file-quad
+;;;;	   recoder::read-trd-file-quad
 	   recoder::read-trend-hdr
 	   )
   (:export recoder::write-trd-file-short
@@ -34,7 +34,8 @@
 	   recoder::write-trd-file-long-long
 	   recoder::write-trd-file-float
 	   recoder::write-trd-file-double
-	   recoder::write-trd-file-quad)
+;;;;	   recoder::write-trd-file-quad
+	   )
   
   (:export recoder::transpose
 	   recoder::time-universal-encode

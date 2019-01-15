@@ -38,8 +38,8 @@
   "Выполняет чтение float из потока in"
   (write-trd-file
    (int-to-list
-    (ie3fp:encode-ieee-float
-     (coerce val 'float))
+;;;;    (ie3fp:encode-ieee-float (coerce val 'float))
+    (ieee-floats:encode-float32 (coerce val 'float))    
     len)
    out
    len))
@@ -48,18 +48,18 @@
   "Выполняет чтение doudle из потока in"
   (write-trd-file
    (int-to-list
-    (ie3fp:encode-ieee-double
-     (coerce val 'double-float))
+;;;;(ie3fp:encode-ieee-double (coerce val 'double-float))
+    (ieee-floats:encode-float64 (coerce val 'double-float))
     len)
    out
    len))
 
-(defun write-trd-file-quad (val out &optional (len 16))
-  "Выполняет чтение quad из потока in"
-  (write-trd-file
-   (int-to-list
-    (ie3fp:encode-ieee-quad
-     (coerce val 'long-float))
-    len)
-   out
-   len))
+;(defun write-trd-file-quad (val out &optional (len 16))
+;  "Выполняет чтение quad из потока in"
+;  (write-trd-file
+;   (int-to-list
+;    (ie3fp:encode-ieee-quad
+;     (coerce val 'long-float))
+;    len)
+;   out
+;   len))

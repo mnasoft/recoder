@@ -61,7 +61,8 @@
     (multiple-value-bind (rez n file-stastus)
       (read-trd-file in len)
     (if file-stastus
-	(values (ie3fp:decode-ieee-float (list-to-int rez)) n file-stastus)
+;;;;	(values (ie3fp:decode-ieee-float (list-to-int rez)) n file-stastus)
+	(values (ieee-floats:decode-float32 (list-to-int rez)) n file-stastus)	
 	(values 0 n file-stastus))))
 
 (defun read-trd-file-double(in &optional (len 8))
@@ -69,13 +70,14 @@
       (multiple-value-bind (rez n file-stastus)
       (read-trd-file in len)
     (if file-stastus
-	(values (ie3fp:decode-ieee-double (list-to-int rez)) n file-stastus)
+;;;;	(values (ie3fp:decode-ieee-double (list-to-int rez)) n file-stastus)
+	(values (ieee-floats:decode-float64 (list-to-int rez)) n file-stastus)
 	(values 0 n file-stastus))))
 
-(defun read-trd-file-quad (in &optional (len 16))
-  "Выполняет чтение quad из потока in"
-        (multiple-value-bind (rez n file-stastus)
-      (read-trd-file in len)
-    (if file-stastus
-	(values (ie3fp:decode-ieee-quad (list-to-int rez)) n file-stastus)
-	(values 0 n file-stastus))))
+;(defun read-trd-file-quad (in &optional (len 16))
+;  "Выполняет чтение quad из потока in"
+;        (multiple-value-bind (rez n file-stastus)
+;      (read-trd-file in len)
+;    (if file-stastus
+;	(values (ie3fp:decode-ieee-quad (list-to-int rez)) n file-stastus)
+;	(values 0 n file-stastus))))
