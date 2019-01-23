@@ -404,3 +404,30 @@ end-signal-str-lst     - список имен [строк] дискретных
     (trd-delta-time x))))
 
 (export 'trd-record-number-by-udate)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod trd-analog-ht->org ((x trd) )
+    "Возврвщает список аналоговых сигналов тренда x"
+  (loop :for k :being :the hash-key :using (hash-value v) :of (trd-analog-ht x)
+	:collect  (list (a-signal-num v) (a-signal-id v) (a-signal-min v) (a-signal-max v) (a-signal-units v) (a-signal-description v))))
+
+(defmethod trd-discret-ht->org ((x trd) )
+  "Возврвщает список дискретных сигналов тренда x"
+  (loop :for k :being :the hash-key :using (hash-value v) :of (trd-discret-ht x)
+	:collect  (list (d-signal-num v) (d-signal-id v)  (d-signal-description v))))
+
+(defmethod trd-header->org ((x trd))
+  (let ((rez nil))
+    (push (list "Файл" (trd-file-name x )) rez)
+    (when (trd-file-descr x)
+      (progn
+	(push (list "Версия тренда" 	                     ( trd-version x) ) rez)
+	(push (list "Дата создания тренда"  (mnas-string:print-universal-date (trd-utime-start x) :stream nil)) rez)
+	(push (list "Время создания тренда" (mnas-string:print-universal-time (trd-utime-start x) :stream nil)) rez)
+	(push (list "К-во аналоговых+дискретных сигналов"    ( trd-reserv         x) ) rez)
+	(push (list "Общее число записей в тренде"           ( trd-total-records  x) ) rez)
+	(push (list "Интервал между записями тренда"         ( trd-delta-time     x) ) rez)
+	(push (list "Количество аналоговых сигналов"         ( trd-analog-number  x) ) rez)
+	(push (list "Количество дискретных сигналов"         ( trd-discret-number x) ) rez)))
+    (nreverse rez)))

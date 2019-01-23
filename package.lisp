@@ -135,6 +135,11 @@
 	   recoder::get-open-ternds
 	   recoder::change-directory-default
 	   )
+;;;; Expotr to org  
+  (:export recoder::trd-analog-ht->org
+	   recoder::trd-discret-ht->org
+	   recoder::trd-header->org 
+   )
   )
 
 ;;;;(declaim (optimize (space 0) (compilation-speed 0)  (speed 0) (safety 3) (debug 3)))
