@@ -117,7 +117,7 @@
   (:export recoder::trd-export-csv
 	   recoder::trd-export-csv-singal-string
 	   )
-;;;; Slitting 
+;;;; Splitting 
   (:export recoder::trd-split-on-intervals-when-flag-is-on
 	   recoder::trd-split-on-intervals-of-time-when-flag-is-on
 	   recoder::trd-split-on-intervals-by-condition
@@ -139,7 +139,10 @@
   (:export recoder::trd-analog-ht->org
 	   recoder::trd-discret-ht->org
 	   recoder::trd-header->org 
-   )
+	   )
+  (:export recoder::trd-a-ids
+	   recoder::trd-a-units
+	   )
   )
 
 ;;;;(declaim (optimize (space 0) (compilation-speed 0)  (speed 0) (safety 3) (debug 3)))

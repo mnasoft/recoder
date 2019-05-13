@@ -431,3 +431,25 @@ end-signal-str-lst     - список имен [строк] дискретных
 	(push (list "Количество аналоговых сигналов"         ( trd-analog-number  x) ) rez)
 	(push (list "Количество дискретных сигналов"         ( trd-discret-number x) ) rez)))
     (nreverse rez)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod trd-a-ids (a-sig-names (trd recoder:trd))
+    "Возвращает имена идентификаторов аналоговых сигналов
+	  a-sig-names - список имен сигналов;
+	  trd         - тренд."
+    (mapcar
+     #'(lambda (el)
+	 (recoder:a-signal-id
+	  (gethash el (recoder:trd-analog-ht trd))))
+     a-sig-names))
+
+(defmethod trd-a-units (a-sig-names (trd recoder:trd))
+    "Возвращает имена идентификаторов аналоговых сигналов
+	    a-sig-names - список имен сигналов;
+	    trd         - тренд."
+    (mapcar
+     #'(lambda (el)
+	 (recoder:a-signal-units
+	  (gethash el (recoder:trd-analog-ht trd))))
+     a-sig-names))
