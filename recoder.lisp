@@ -12,10 +12,6 @@
   (mapc #'(lambda (el) (when el (return-from apply-or t))) lst)
   nil)
 
-(defun transpose (list)
-  "Выполняет транспонирование"
-  (apply #'mapcar #'list list))
-
 (defun time-universal-encode (year month day hour min sec)
   "Функция кодирования в универсальный формат времени"
   (encode-universal-time sec min hour day month year))

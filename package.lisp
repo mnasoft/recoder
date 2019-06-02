@@ -37,8 +37,7 @@
 ;;;;	   recoder::write-trd-file-quad
 	   )
   
-  (:export recoder::transpose
-	   recoder::time-universal-encode
+  (:export recoder::time-universal-encode
 	   recoder::recode-string
 	   )
   (:export recoder::a-signal-num
