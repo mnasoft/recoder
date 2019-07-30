@@ -1,0 +1,85 @@
+#+OPTIONS: ':nil *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline
+#+OPTIONS: author:t broken-links:nil c:nil creator:nil
+#+OPTIONS: d:(not "LOGBOOK") date:t e:t email:nil f:t inline:t num:t
+#+OPTIONS: p:nil pri:nil prop:nil stat:t tags:t tasks:t tex:t
+#+OPTIONS: timestamp:t title:t toc:t todo:t |:t
+#+TITLE: RECODER
+#+DATE: <2019-07-30 Вт>
+#+AUTHOR:Nick Matvyeyev
+#+EMAIL: mnasoft@gmail.com
+#+LANGUAGE: en
+#+SELECT_TAGS: export
+#+EXCLUDE_TAGS: noexport
+#+CREATOR: Emacs 26.1 (Org mode 9.1.9)
+
+
+
+* Извлечение данных из тренда  
+** Аналоговых сигналов
+
+*recoder:trd-analog-by-rec-number*  trd rec-number signal-list
+
+*recoder:trd-analog-by-utime*       trd utime signal-list
+
+*recoder:trd-analog-mid-by-utime*   trd utime signal-list &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*)
+
+*recoder:trd-analog-mid-by-snames*  trd utime snames &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*)
+
+Возвращает список средних значений параметров,записанных в тренде trd в момент времени utime для списка сигналов, определяемых их именами snames.
+
+Осреднение происходит в интервале записей от  n-before до n-after.
+
+*recoder:trd-analog-stddev-by-utime*  trd utime signal-list &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*)
+
+*recoder:trd-analog-stddev-by-snames* trd utime snames      &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*)
+
+** Извлечение дискретных сигналов
+*recoder:trd-discret-by-rec-number*       (trd trd) rec-number d-signal-list
+
+Извлечение дискретных сигналов, заданных списком d-signal-list, из записи с номером rec-number тренда trd в виде 0 или 1.
+
+*recoder:trd-discret-by-rec-number-t-nil* (trd trd) rec-number d-signal-list
+
+Извлечение дискретных сигналов, заданных списком d-signal-list, из записи с номером rec-number тренда trd в виде NIL или T.
+
+*recoder:trd-discret-by-utime*            (trd trd) utime      d-signal-list
+
+Извлечение дискретных сигналов, заданных списком d-signal-list, из записи соответствующей времени utime тренда trd в виде 0 или 1.
+
+*recoder:trd-discret-by-utime-t-nil*      (trd trd) utime      d-signal-list
+
+Извлечение дискретных сигналов, заданных списком d-signal-list, из записи соответствующей времени utime тренда trd в виде NIL или T.
+
+* Формирование списка сигналов из списка имен сигналов 
+
+*recoder:trd-analog-signal-list* (x trd) signal-string-list
+
+Возвращает список аналоговых сигналов тренда trd, которые соответствуют списку обозначений сигналов из списка signal-string-list
+
+*recoder:trd-discret-signal-list* (x trd) signal-string-list
+
+Возвращает список дискретных сигналов тренда trd, которые соответствуют списку обозначений сигналов из списка signal-string-list
+
+
+* Примеры использования
+
+#+BEGIN_SRC lisp
+  (recoder:trd-record-number-by-utime)
+
+  (recoder:trd-analog-by-utime)
+
+  (let ((d-s-l (recoder:trd-discret-signal-list ot-234pm::*trd* '("PH016" "PH017"))))
+    (mapcar #'(lambda (ut)
+		(recoder:trd-discret-by-utime-t-nil ot-234pm::*trd* ut d-s-l))
+	    ot-234pm::*utimes*))
+#+END_SRC
+
+* ToDo
+
+** При выводе тренда функцией вывода выдавать его имя файла.
+  
+**  Разделить считывание заголовка тренда на
+*** Считывание и разбор собственно заголовка 30 байт
+*** Считывание и разбор и построение хеш-таблицы аналоговых сигналов
+*** Считывание и разбор и построение хеш-таблицы дискретных сигналов
+

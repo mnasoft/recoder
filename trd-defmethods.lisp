@@ -152,6 +152,7 @@
       (mapcar #'(lambda(el) (a-signal-value el (svref v-sh (a-signal-num el))))
 	      signal-list))))
 
+(export 'trd-record-number-by-utime)
 (defmethod trd-record-number-by-utime ( (x trd) utime)
   "Возвращает номер записи по универсальному времени"
   (floor (- utime (trd-utime-start x)) (trd-delta-time x)))
@@ -181,6 +182,14 @@
       (mapcar #'(lambda (el)
 		  (logbitp (d-signal-num  el ) s-int))
 	      d-signal-list))))
+
+(export 'trd-discret-by-utime)
+(defmethod trd-discret-by-utime ( (trd trd) utime d-signal-list)
+  (trd-discret-by-rec-number trd (trd-record-number-by-utime trd utime) d-signal-list))
+
+(export 'trd-discret-by-utime-t-nil)
+(defmethod trd-discret-by-utime-t-nil ( (trd trd) utime d-signal-list)
+  (trd-discret-by-rec-number-t-nil trd (trd-record-number-by-utime trd utime) d-signal-list))
 
 
 (defmethod trd-analog-by-utime ( (x trd) utime signal-list)
