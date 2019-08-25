@@ -12,8 +12,6 @@ s#+OPTIONS: ':nil *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline
 #+EXCLUDE_TAGS: noexport
 #+CREATOR: Emacs 26.1 (Org mode 9.1.9)
 
-
-
 * Извлечение данных из тренда  
 ** Аналоговых сигналов
 
@@ -61,7 +59,7 @@ s#+OPTIONS: ':nil *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline
 Возвращает список дискретных сигналов тренда trd, которые соответствуют списку обозначений сигналов из списка signal-string-list
 
 
-* Примеры использования
+* Примеры использования  
 
 #+BEGIN_SRC lisp
   (recoder:trd-record-number-by-utime)
@@ -74,7 +72,7 @@ s#+OPTIONS: ':nil *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline
 	    ot-234pm::*utimes*))
 #+END_SRC
 
-* ToDo
+* ToDo                   
 
 ** При выводе тренда функцией вывода выдавать его имя файла.
   

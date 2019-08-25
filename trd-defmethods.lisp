@@ -24,9 +24,12 @@
 
 (defmethod trd-open ((x trd))
   "Выполняет открытие файла тренда включая:
-- чтение заголовка;
-- разбор аналоговых сигналов;
-- разбор дискретных сигналов"
+@begin(list)
+ @item(чтение заголовка;)
+ @item(разбор аналоговых сигналов;)
+@item(разбор дискретных сигналов.)
+@end(list)
+"
   (trd-read-header x)
   (trd-read-analog-ht x )
   (trd-read-discret-ht x)
@@ -105,9 +108,11 @@
     (* (trd-discret-number x) *discret-wid*)))
 
 (defmethod trd-analog-length-byte ((x trd))
+  "trd-analog-length-byte"
   (* (trd-analog-number x) 2))
 
 (defmethod trd-discret-length-byte ((x trd))
+  "trd-discret-length-byte"
   (ceiling (/ (trd-discret-number x) 8)))
 
 (defmethod trd-record-length ((x trd))
@@ -185,10 +190,12 @@
 
 (export 'trd-discret-by-utime)
 (defmethod trd-discret-by-utime ( (trd trd) utime d-signal-list)
+  "trd-discret-by-utime"
   (trd-discret-by-rec-number trd (trd-record-number-by-utime trd utime) d-signal-list))
 
 (export 'trd-discret-by-utime-t-nil)
 (defmethod trd-discret-by-utime-t-nil ( (trd trd) utime d-signal-list)
+  "trd-discret-by-utime-t-nil"
   (trd-discret-by-rec-number-t-nil trd (trd-record-number-by-utime trd utime) d-signal-list))
 
 
@@ -298,6 +305,7 @@
 				    (trd-discret-by-rec-number x i d-sig-lst)))))
 
 (defmethod trd-export-csv-singal-string ((x trd) signal-str-list &key (os t) (n-start 0) (n-end (trd-total-records x)))
+  "trd-export-csv-singal-string"
   (let ((a-d-e (trd-separate-signals x  signal-str-list )))
     (trd-export-csv x (first a-d-e) (second a-d-e) :os os :n-start n-start :n-end n-end)
     a-d-e))
@@ -339,23 +347,35 @@ todo: доработать, чтоб возвращался последний �
      intervals)))
 
 (defmethod trd-split-on-intervals-by-condition ((x trd) start-signal-str-lst end-signal-str-lst) 
-  "Выполняет деление тренда на диапазоны. Возврвщает список.
+  "Выполняет деление тренда на диапазоны.
+
+Возвращает список.
+
 Каждый элемент, возвращаемого списка, состоит из двух номеров записей - начальной и конечной.
-   Параметры:
-   ==========
-x                      - объект типа trd [тренд];
-start-signal-str-lst   - список имен [строк] дискретных сингалов тренда;
-end-signal-str-lst     - список имен [строк] дискретных сингалов тренда.
+
+Параметры:
+@begin(list)
+ @item(@cl:param(x)                      - объект типа trd [тренд];)
+ @item(@cl:param(start-signal-str-lst)   - список имен [строк] дискретных сингалов тренда;)
+ @item(@cl:param(end-signal-str-lst)     - список имен [строк] дискретных сингалов тренда.)
+@end(list)
+
 Логика деления на диапазоны следующая зависит от того, имеются-ли элементы в end-signal-str-lst.
-   Если элементов в end-signal-str-lst нет:
-возвращаются диапазоны для, которых все сигналы, соответствующие 
-списку start-signal-str-lst установлены [равны единице].
-   Если элементы в end-signal-str-lst есть:
+
+Если элементов в end-signal-str-lst нет:
+@begin(list)
+ @item(возвращаются диапазоны для, которых все сигналы, соответствующие 
+       списку start-signal-str-lst установлены [равны единице].)
+@end(list)
+
+Если элементы в end-signal-str-lst есть:
 возвращаются диапазоны:
-   - в первой записи которых все сигналы, соответствующие 
-списку start-signal-str-lst установлены [равны единице];
-   - в следующей после последней записи которых 
-все сигналы, соответствующие списку end-signal-str-lst установлены [равны единице]
+@begin(list)
+ @item(в первой записи которых все сигналы, 
+       соответствующие списку start-signal-str-lst установлены [равны единице];)
+ @item(в следующей после последней записи которых все сигналы, 
+       соответствующие списку end-signal-str-lst установлены [равны единице].)
+@end(list)
 "
   (let* ((start-flag-lst (mapcar #'(lambda(el) (gethash el (trd-discret-ht x))) start-signal-str-lst))
 	 (end-flag-lst   (mapcar #'(lambda(el) (gethash el (trd-discret-ht x))) end-signal-str-lst))
@@ -402,11 +422,13 @@ end-signal-str-lst     - список имен [строк] дискретных
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmethod trd-record-number-to-udate ((x trd) rec-number)
+  "trd-record-number-to-udate"
   (+ (trd-utime-start x) (round (* rec-number (trd-delta-time  x)))))
 
 (export 'trd-record-number-to-udate)
 
 (defmethod trd-record-number-by-udate ((x trd) udate)
+  "trd-record-number-by-udate"
   (round
    (/
     (- udate (trd-utime-start x))
@@ -427,6 +449,7 @@ end-signal-str-lst     - список имен [строк] дискретных
 	:collect  (list (d-signal-num v) (d-signal-id v)  (d-signal-description v))))
 
 (defmethod trd-header->org ((x trd))
+  "trd-header->org"
   (let ((rez nil))
     (push (list "Файл" (trd-file-name x )) rez)
     (when (trd-file-descr x)
