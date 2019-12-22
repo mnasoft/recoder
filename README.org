@@ -49,8 +49,10 @@ s#+OPTIONS: ':nil *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline
 Извлечение дискретных сигналов, заданных списком d-signal-list, из записи соответствующей времени utime тренда trd в виде NIL или T.
 
 * Формирование списка сигналов из списка имен сигналов 
+#+BEGIN_SRC lisp
+ (recoder:trd-analog-signal-list *trd* signal-string-list)
+#+END_SRC
 
-*recoder:trd-analog-signal-list* (x trd) signal-string-list
 
 Возвращает список аналоговых сигналов тренда trd, которые соответствуют списку обозначений сигналов из списка signal-string-list
 
