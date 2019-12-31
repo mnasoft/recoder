@@ -2,7 +2,9 @@
 
 (in-package #:recoder)
 
-(defmethod print-object ((x trd) stream)
+(annot:enable-annot-syntax)
+
+(defmethod print-object ((x <trd>) stream)
   (format stream "Path= ~S~%" (trd-file-name x) )
   (when (trd-file-descr x)
     (format stream "id=~S version=~A " (trd-id-string x) (trd-version x))
@@ -22,20 +24,23 @@
 ==================================================~%")
     (maphash #'(lambda (k v) (format stream "~S ~S~%" k v)) (trd-discret-ht x) )))
 
-(defmethod trd-open ((x trd))
-  "Выполняет открытие файла тренда включая:
+
+@export
+@annot.doc:doc
+"@b(Описание:) trd-open выполняет открытие файла тренда включая:
 @begin(list)
  @item(чтение заголовка;)
  @item(разбор аналоговых сигналов;)
 @item(разбор дискретных сигналов.)
 @end(list)
 "
+(defmethod trd-open ((x <trd>))
   (trd-read-header x)
   (trd-read-analog-ht x )
   (trd-read-discret-ht x)
   x)
 
-(defmethod trd-read-header((x trd))
+(defmethod trd-read-header((x <trd>))
   "Выполняет открытие файла тренда и чтение заголовка тренда"
   (when (null (trd-file-descr x))
     (setf (trd-file-descr x) (open-trd-file-read (trd-file-name x)))
@@ -61,7 +66,7 @@
 	       (trd-record-length x)))))
   x)
 
-(defmethod trd-read-analog-ht((x trd))
+(defmethod trd-read-analog-ht((x <trd>))
   "Выполняет разбор аналоговых сигналов"
   (when (null (trd-analog-ht x))
     (setf (trd-analog-ht x)  (make-hash-table :test #'equal :size (trd-analog-number x)))
@@ -81,7 +86,7 @@
 								   :a-signal-min analog-min
 								   :a-signal-max analog-max))))))
 
-(defmethod trd-read-discret-ht((x trd))
+(defmethod trd-read-discret-ht((x <trd>))
   "Выполняет разбор дискретных сигналов"
   (when (null (trd-discret-ht x))
     (setf (trd-discret-ht x) (make-hash-table :test #'equal :size (trd-discret-number x)))
@@ -94,59 +99,74 @@
 								     :d-signal-num i
 								     :d-signal-id discret-id
 								     :d-signal-description discret-description))))))
-
-(defmethod trd-close ((x trd))
-  "Выполняет закрытие файла тренда"
+@export
+@annot.doc:doc
+"Выполняет закрытие файла тренда"
+(defmethod trd-close ((x <trd>))
   (when (trd-file-descr x)
     (close (trd-file-descr x))
     (setf (trd-file-descr x) nil)))
 
-(defmethod trd-start-offset ((x trd))
-  "Смещение для первой (нулевой) записи тренда"
+@export
+@annot.doc:doc
+"Смещение для первой (нулевой) записи тренда"
+(defmethod trd-start-offset ((x <trd>))
     (+ *head-wid*
     (* (trd-analog-number x) *analog-wid*)
     (* (trd-discret-number x) *discret-wid*)))
 
-(defmethod trd-analog-length-byte ((x trd))
-  "trd-analog-length-byte"
+@export
+@annot.doc:doc
+"trd-analog-length-byte"
+(defmethod trd-analog-length-byte ((x <trd>))
   (* (trd-analog-number x) 2))
 
-(defmethod trd-discret-length-byte ((x trd))
-  "trd-discret-length-byte"
+@export
+@annot.doc:doc
+"trd-discret-length-byte"
+(defmethod trd-discret-length-byte ((x <trd>))
   (ceiling (/ (trd-discret-number x) 8)))
 
-(defmethod trd-record-length ((x trd))
-  "Длина одной записи тренда"
+@export @annot.doc:doc
+"Длина одной записи тренда"
+(defmethod trd-record-length ((x <trd>))
   (+  (trd-analog-length-byte x)  (trd-discret-length-byte x)))
 
-(defmethod trd-discret-offset ((x trd))
-  "Смещение от начала записи до начала записи дискретных сигналов"
+@export @annot.doc:doc
+"Смещение от начала записи до начала записи дискретных сигналов"
+(defmethod trd-discret-offset ((x <trd>))
   (+ (* (trd-analog-number x) 2)))
 
-(defmethod trd-utime-end ((x trd))
-  "Возвращает время окончания тренда. время возвращается в универсальном формате (universal-time)"
+@export @annot.doc:doc
+"Возвращает время окончания тренда. 
+Время возвращается в универсальном формате (universal-time)"
+(defmethod trd-utime-end ((x <trd>))
   (+ (trd-utime-start x)
      (floor (* (trd-total-records x) (trd-delta-time x)))))
 
-(defmethod trd-analog-signal-list ( (x trd) signal-string-list)
-  "Возвращает список аналоговых сигналов тренда trd, 
+@export @annot.doc:doc
+"Возвращает список аналоговых сигналов тренда <trd>, 
 которые соответствуют списку обозначений сигналов из списка signal-string-list"
+(defmethod trd-analog-signal-list ( (x <trd>) signal-string-list)
   (when  (trd-file-descr x)
     (mapcar #'(lambda(el)
 		(gethash el (trd-analog-ht x)))
 	    signal-string-list)))
 
-(defmethod trd-discret-signal-list ( (x trd) signal-string-list)
-  "Возвращает список дискретных сигналов тренда trd, 
+@export @annot.doc:doc
+"Возвращает список дискретных сигналов тренда trd, 
 которые соответствуют списку обозначений сигналов из списка signal-string-list"
+(defmethod trd-discret-signal-list ( (x <trd>) signal-string-list)
   (when  (trd-file-descr x)
     (mapcar #'(lambda(el)
 		(gethash el (trd-discret-ht x)))
 	    signal-string-list)))
 
-(defmethod trd-analog-by-rec-number ( (x trd) rec-number signal-list)
-  "Возвращает список значений тренда trd для записи под номером rec-number,
+@export
+@annot.doc:doc
+"Возвращает список значений тренда <trd> для записи под номером rec-number,
  соответствующий сигналам signal-list"
+(defmethod trd-analog-by-rec-number ( (x <trd>) rec-number signal-list)
   (when (and (trd-file-descr x) (< -1 rec-number (trd-total-records x)))
     (file-position (trd-file-descr x) 
 		   (+ (trd-start-offset x) (* rec-number (trd-record-length x))))
@@ -157,14 +177,16 @@
       (mapcar #'(lambda(el) (a-signal-value el (svref v-sh (a-signal-num el))))
 	      signal-list))))
 
+
 (export 'trd-record-number-by-utime)
-(defmethod trd-record-number-by-utime ( (x trd) utime)
+(defmethod trd-record-number-by-utime ( (x <trd>) utime)
   "Возвращает номер записи по универсальному времени"
   (floor (- utime (trd-utime-start x)) (trd-delta-time x)))
 
-(defmethod trd-discret-by-rec-number ( (x trd) rec-number d-signal-list)
-  "Возвращает список значений тренда trd для записи под номером rec-number,
- соответствующий сигналам d-signal-list"
+@export @annot.doc:doc
+"Возвращает список значений тренда <trd> для записи под номером rec-number,
+соответствующий сигналам d-signal-list"
+(defmethod trd-discret-by-rec-number ( (x <trd>) rec-number d-signal-list)
   (when (and (trd-file-descr x) (< -1 rec-number (trd-total-records x)))
     (file-position (trd-file-descr x) 
 		   (+ (trd-start-offset x)
@@ -175,9 +197,10 @@
 		  (if (logbitp (d-signal-num  el ) s-int) 1 0))
 	      d-signal-list))))
 
-(defmethod trd-discret-by-rec-number-t-nil ( (x trd) rec-number d-signal-list)
-  "Возвращает список значений тренда trd для записи под номером rec-number,
- соответствующий сигналам d-signal-list"
+@export @annot.doc:doc
+"Возвращает список значений тренда trd для записи под номером rec-number,
+соответствующий сигналам d-signal-list"
+(defmethod trd-discret-by-rec-number-t-nil ( (x <trd>) rec-number d-signal-list)
   (when (and (trd-file-descr x) (< -1 rec-number (trd-total-records x)))
     (file-position (trd-file-descr x) 
 		   (+ (trd-start-offset x)
@@ -189,25 +212,26 @@
 	      d-signal-list))))
 
 (export 'trd-discret-by-utime)
-(defmethod trd-discret-by-utime ( (trd trd) utime d-signal-list)
+(defmethod trd-discret-by-utime ( (trd <trd>) utime d-signal-list)
   "trd-discret-by-utime"
   (trd-discret-by-rec-number trd (trd-record-number-by-utime trd utime) d-signal-list))
 
 (export 'trd-discret-by-utime-t-nil)
-(defmethod trd-discret-by-utime-t-nil ( (trd trd) utime d-signal-list)
+(defmethod trd-discret-by-utime-t-nil ( (trd <trd>) utime d-signal-list)
   "trd-discret-by-utime-t-nil"
   (trd-discret-by-rec-number-t-nil trd (trd-record-number-by-utime trd utime) d-signal-list))
 
-
-(defmethod trd-analog-by-utime ( (x trd) utime signal-list)
-  "Возвращает список значений тренда trd для записи под номером rec-number,
+@export @annot.doc:doc
+"Возвращает список значений тренда <trd> для записи под номером rec-number,
  соответствующий сигналам signal-list"
+(defmethod trd-analog-by-utime ( (x <trd>) utime signal-list)
   (trd-analog-by-rec-number x
-		  (trd-record-number-by-utime x utime)
-		  signal-list))
+			    (trd-record-number-by-utime x utime)
+			    signal-list))
 
-(defmethod trd-analog-mid-by-utime ( (x trd) utime signal-list &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
-  "Возвращает список средних значений параметров "
+@export @annot.doc:doc
+"Возвращает список средних значений параметров "
+(defmethod trd-analog-mid-by-utime ( (x <trd>) utime signal-list &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
   (when  (trd-file-descr x)
     (let* ((rez nil)
 	   (n-start (- (trd-record-number-by-utime x utime) n-before))
@@ -215,17 +239,19 @@
 		     (push (trd-analog-by-rec-number x (+ n-start i) signal-list) rez))))
       (mapcar #'math:averange-value rezult))))
 
-(defmethod trd-analog-mid-by-snames ( (x trd) utime snames &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
-  "Возвращает список средних значений параметров, 
+@export @annot.doc:doc
+"Возвращает список средних значений параметров, 
 записанных в тренде trd в момент времени utime для списка сигналов, определяемых их именами snames;
 Осреднение происходит в интервале записей от  n-before до n-after"
+(defmethod trd-analog-mid-by-snames ( (x <trd>) utime snames &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
   (when  (trd-file-descr x)
     (trd-analog-mid-by-utime x utime (trd-analog-signal-list x snames) :n-before n-before :n-after n-after)))
 
-(defmethod trd-analog-stddev-by-utime ( (x trd) utime signal-list &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
-  "Возвращает список стандартных отклонений для параметров,
+@export @annot.doc:doc
+"Возвращает список стандартных отклонений для параметров,
 записанных в тренде trd в момент времени utime для списка сигналов signal-list;
 Осреднение происходит в интервале записей от  n-before до n-after"
+(defmethod trd-analog-stddev-by-utime ( (x <trd>) utime signal-list &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
   (when  (trd-file-descr x)
     (let* ((rez nil)
 	   (n-start (- (trd-record-number-by-utime x utime) n-before))
@@ -233,10 +259,11 @@
 		     (push (trd-analog-by-rec-number x (+ n-start i) signal-list) rez))))
       (mapcar #'math:standard-deviation rezult))))
 
-(defmethod trd-analog-stddev-by-snames ( (x trd) utime snames &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
-  "Возвращает список стандартных отклонений для параметров,
+@export @annot.doc:doc
+"Возвращает список стандартных отклонений для параметров,
 записанных в тренде trd в момент времени utime для списка сигналов, определяемых их именами snames;
 Осреднение происходит в интервале записей от  n-before до n-after"
+(defmethod trd-analog-stddev-by-snames ( (x <trd>) utime snames &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
   (when  (trd-file-descr x)
     (trd-analog-stddev-by-utime x utime (trd-analog-signal-list x snames) :n-before n-before :n-after n-after)))
 
@@ -244,8 +271,8 @@
 ;;;; Singal separation to analog|discret|unexpected ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmethod trd-separate-signals ((x trd) singnal-str-list)
-  "Выполняет проверку того, что имена сигналов, заданные в переменной singnal-str-list,
+@export @annot.doc:doc
+"Выполняет проверку того, что имена сигналов, заданные в переменной singnal-str-list,
 присутствуют для данного тренда в перечне аналоговых сигналов или дискретных сигналов
 или отсутствуют в обоих перечнях.
    Возвращает список элементами которого являются:
@@ -253,6 +280,7 @@
 - список дискретных сигналов;
 - список строк с именами не соответствующими 
   ни аналоговым ни дискретным сигналам."
+(defmethod trd-separate-signals ((x <trd>) singnal-str-list)
   (let ((a-rez nil)
 	(d-rez nil)
 	(error-rez nil)
@@ -270,42 +298,45 @@
 	    singnal-str-list)
     (list (nreverse a-rez) (nreverse d-rez) (nreverse error-rez))))
 
-(defmethod trd-separate-a-signals ((x trd) singnal-str-list)
-  "Выделяет из переменной singnal-str-list аналоговые сигналы"
+@export @annot.doc:doc
+"Выделяет из переменной singnal-str-list аналоговые сигналы"
+(defmethod trd-separate-a-signals ((x <trd>) singnal-str-list)
   (first (trd-separate-signals x singnal-str-list)))
 
-(defmethod trd-separate-d-signals ((x trd) singnal-str-list)
-  "Выделяет из переменной singnal-str-list дискретные сигналы"
+@export @annot.doc:doc
+"Выделяет из переменной singnal-str-list дискретные сигналы"
+(defmethod trd-separate-d-signals ((x <trd>) singnal-str-list)
   (second (trd-separate-signals x singnal-str-list)))
 
-(defmethod trd-separate-not-signals ((x trd) singnal-str-list)
-  "Выделяет из переменной singnal-str-list неожиданные сигналы."
+@export @annot.doc:doc
+"Выделяет из переменной singnal-str-list неожиданные сигналы."
+(defmethod trd-separate-not-signals ((x <trd>) singnal-str-list)
   (second (trd-separate-signals x singnal-str-list)))
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; CVS export ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmethod trd-export-csv ((x trd) a-sig-lst d-sig-lst &key (os t) (n-start 0) (n-end (trd-total-records x)))
-  "Производит вывод аналоговых сигналов тренда, 
+@export @annot.doc:doc
+"Производит вывод аналоговых сигналов тренда, 
 заданных параметром a-sig-lst (список сигналов),
 и дискретных сигналов, заданных параметром d-sig-lst (список сигналов),
 в поток os имеющий форматирование csv, начиная с номера записи n-start до номера записи n-end включительно.
 Перед выводом сигналов выводятся их обозначения."
+(defmethod trd-export-csv ((x <trd>) a-sig-lst d-sig-lst &key (os t) (n-start 0) (n-end (trd-total-records x)))
   (format os "~{~S~^,~}~%" (append (list "U") (mapcar #'(lambda (el) (a-signal-units el)) a-sig-lst) (mapcar #'(lambda (el) "0|1") d-sig-lst)))
   (format os "~{~S~^,~}~%" (append (list "N") (mapcar #'(lambda (el) (a-signal-id el)) a-sig-lst) (mapcar #'(lambda (el) (d-signal-id el)) d-sig-lst)))
-  
   (do ((i (max 0 n-start) (1+ i))
        (e (min (+ 1 n-end) (trd-total-records x))))
       ((>= i e) 'done)
 
     (format os "~{~F~^,~}~%" (append (list (* i (trd-delta-time x)))
-				    (trd-analog-by-rec-number x i a-sig-lst)
-				    (trd-discret-by-rec-number x i d-sig-lst)))))
+				     (trd-analog-by-rec-number x i a-sig-lst)
+				     (trd-discret-by-rec-number x i d-sig-lst)))))
 
-(defmethod trd-export-csv-singal-string ((x trd) signal-str-list &key (os t) (n-start 0) (n-end (trd-total-records x)))
-  "trd-export-csv-singal-string"
+@export @annot.doc:doc
+"trd-export-csv-singal-string"
+(defmethod trd-export-csv-singal-string ((x <trd>) signal-str-list &key (os t) (n-start 0) (n-end (trd-total-records x)))
   (let ((a-d-e (trd-separate-signals x  signal-str-list )))
     (trd-export-csv x (first a-d-e) (second a-d-e) :os os :n-start n-start :n-end n-end)
     a-d-e))
@@ -314,10 +345,11 @@
 ;;;; Splitting ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmethod trd-split-on-intervals-when-flag-is-on ((x trd) d-signal-str )
-  "Для тренда x выполняет поиск диапазонов, для которых значение 
+@export @annot.doc:doc
+"Для тренда x выполняет поиск диапазонов, для которых значение 
 дискретного сигнала с именем d-signal-str имеет значение 1.
 todo: доработать, чтоб возвращался последний диапазон при поднятом флаге в конце"
+(defmethod trd-split-on-intervals-when-flag-is-on ((x <trd>) d-signal-str )
   (let* (
 	 (flag (gethash d-signal-str (trd-discret-ht x)))
 	 (flag-lst (list flag))
@@ -337,17 +369,19 @@ todo: доработать, чтоб возвращался последний �
 	    (setf n-start total-rec
 		  n-end -1))))))
 
-(defmethod trd-split-on-intervals-of-time-when-flag-is-on ((x trd) d-signal-str)
-  "Для тренда x выполняет поиск диапазонов, для которых
+@export @annot.doc:doc
+"Для тренда x выполняет поиск диапазонов, для которых
 значение сигнала d-signal-str принимало значение 1. 
 И возвращает длительность этих диапазонов"
+(defmethod trd-split-on-intervals-of-time-when-flag-is-on ((x <trd>) d-signal-str)
   (let ((intervals (trd-flag-on-intervals x d-signal-str)))
     (values
      (mapcar #'(lambda (el) (* -1 (trd-delta-time x) (apply #'- el))) intervals)
      intervals)))
 
-(defmethod trd-split-on-intervals-by-condition ((x trd) start-signal-str-lst end-signal-str-lst) 
-  "Выполняет деление тренда на диапазоны.
+
+@export @annot.doc:doc
+"Выполняет деление тренда на диапазоны.
 
 Возвращает список.
 
@@ -355,7 +389,7 @@ todo: доработать, чтоб возвращался последний �
 
 Параметры:
 @begin(list)
- @item(@cl:param(x)                      - объект типа trd [тренд];)
+ @item(@cl:param(x)                      - объект типа <trd> [тренд];)
  @item(@cl:param(start-signal-str-lst)   - список имен [строк] дискретных сингалов тренда;)
  @item(@cl:param(end-signal-str-lst)     - список имен [строк] дискретных сингалов тренда.)
 @end(list)
@@ -377,6 +411,7 @@ todo: доработать, чтоб возвращался последний �
        соответствующие списку end-signal-str-lst установлены [равны единице].)
 @end(list)
 "
+(defmethod trd-split-on-intervals-by-condition ((x <trd>) start-signal-str-lst end-signal-str-lst) 
   (let* ((start-flag-lst (mapcar #'(lambda(el) (gethash el (trd-discret-ht x))) start-signal-str-lst))
 	 (end-flag-lst   (mapcar #'(lambda(el) (gethash el (trd-discret-ht x))) end-signal-str-lst))
 	 (fl-start nil)
@@ -407,27 +442,30 @@ todo: доработать, чтоб возвращался последний �
 ;;; Interval-to-time ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmethod trd-interval-to-secods ((x trd) interval)
-  "Преобразует диапазон времени, заданный в записях, в секунды"
+@export @annot.doc:doc
+"Преобразует диапазон времени, заданный в записях, в секунды"
+(defmethod trd-interval-to-secods ((x <trd>) interval)
   (* (trd-delta-time x) (apply #'- (reverse interval))))
 
-(defmethod trd-interval-to-minutes ((x trd) interval)
-    "Преобразует диапазон времени, заданный в записях, в минуты"
+@export @annot.doc:doc
+"Преобразует диапазон времени, заданный в записях, в минуты"
+(defmethod trd-interval-to-minutes ((x <trd>) interval)
   (* 1/60 (trd-interval-to-secods x interval)))
 
-(defmethod trd-interval-to-hours ((x trd) interval)
-      "Преобразует диапазон времени, заданный в записях, часы"
-      (* 1/60 1/60 (trd-interval-to-secods x interval)))
+@export @annot.doc:doc
+"Преобразует диапазон времени, заданный в записях, часы"
+(defmethod trd-interval-to-hours ((x <trd>) interval)
+  (* 1/60 1/60 (trd-interval-to-secods x interval)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmethod trd-record-number-to-udate ((x trd) rec-number)
+(defmethod trd-record-number-to-udate ((x <trd>) rec-number)
   "trd-record-number-to-udate"
   (+ (trd-utime-start x) (round (* rec-number (trd-delta-time  x)))))
 
 (export 'trd-record-number-to-udate)
 
-(defmethod trd-record-number-by-udate ((x trd) udate)
+(defmethod trd-record-number-by-udate ((x <trd>) udate)
   "trd-record-number-by-udate"
   (round
    (/
@@ -438,18 +476,20 @@ todo: доработать, чтоб возвращался последний �
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmethod trd-analog-ht->org ((x trd) )
-    "Возврвщает список аналоговых сигналов тренда x"
+@export @annot.doc:doc
+"Возврвщает список аналоговых сигналов тренда x"
+(defmethod trd-analog-ht->org ((x <trd>) )
   (loop :for k :being :the hash-key :using (hash-value v) :of (trd-analog-ht x)
 	:collect  (list (a-signal-num v) (a-signal-id v) (a-signal-min v) (a-signal-max v) (a-signal-units v) (a-signal-description v))))
 
-(defmethod trd-discret-ht->org ((x trd) )
-  "Возврвщает список дискретных сигналов тренда x"
+@export @annot.doc:doc
+"Возврвщает список дискретных сигналов тренда x"
+(defmethod trd-discret-ht->org ((x <trd>) )
   (loop :for k :being :the hash-key :using (hash-value v) :of (trd-discret-ht x)
 	:collect  (list (d-signal-num v) (d-signal-id v)  (d-signal-description v))))
 
-(defmethod trd-header->org ((x trd))
-  "trd-header->org"
+@export @annot.doc:doc "trd-header->org"
+(defmethod trd-header->org ((x <trd>))
   (let ((rez nil))
     (push (list "Файл" (trd-file-name x )) rez)
     (when (trd-file-descr x)
@@ -466,22 +506,25 @@ todo: доработать, чтоб возвращался последний �
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmethod trd-a-ids (a-sig-names (trd recoder:trd))
-    "Возвращает имена идентификаторов аналоговых сигналов
-	  a-sig-names - список имен сигналов;
-	  trd         - тренд."
+@export @annot.doc:doc
+"Возвращает имена идентификаторов аналоговых сигналов
+ a-sig-names - список имен сигналов;
+ trd         - тренд."
+(defmethod trd-a-ids (a-sig-names (trd <trd>))
+
     (mapcar
      #'(lambda (el)
 	 (recoder:a-signal-id
-	  (gethash el (recoder:trd-analog-ht trd))))
+	  (gethash el (trd-analog-ht trd))))
      a-sig-names))
 
-(defmethod trd-a-units (a-sig-names (trd recoder:trd))
-    "Возвращает имена идентификаторов аналоговых сигналов
-	    a-sig-names - список имен сигналов;
-	    trd         - тренд."
+@export @annot.doc:doc
+"Возвращает имена идентификаторов аналоговых сигналов
+ a-sig-names - список имен сигналов;
+ trd         - тренд."
+(defmethod trd-a-units (a-sig-names (trd <trd>))
     (mapcar
      #'(lambda (el)
 	 (recoder:a-signal-units
-	  (gethash el (recoder:trd-analog-ht trd))))
+	  (gethash el (trd-analog-ht trd))))
      a-sig-names))

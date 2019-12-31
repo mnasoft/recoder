@@ -2,25 +2,30 @@
 
 (in-package #:recoder)
 
-;;; "recoder" goes here. Hacks and glory await!
+(annot:enable-annot-syntax)
 
+@export
 (defun apply-and (lst)
   (mapc #'(lambda (el) (unless el (return-from  apply-and nil))) lst)
   t)
 
+@export
 (defun apply-or (lst)
   (mapc #'(lambda (el) (when el (return-from apply-or t))) lst)
   nil)
 
+@export @annot.doc:doc 
+"Функция кодирования в универсальный формат времени"
 (defun time-universal-encode (year month day hour min sec)
-  "Функция кодирования в универсальный формат времени"
   (encode-universal-time sec min hour day month year))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+@export @annot.doc:doc
+"@b(Описание:) recode-string выполняет преобразование символов, 
+передаваемых в параметре bufer, имеющих кодировку code-page (*cp1251*|*cp866*), 
+в кодировку utf8."
 (defun recode-string (bufer &key (start 0) (len (length bufer))  (break-nul T) (code-page *cp1251*))
-  "Выполняет преобразование символов, передаваемых в параметре bufer,
-имеющих кодировку code-page (*cp1251*|*cp866*), в кодировку utf8."
   (do*
    ( (i start (1+ i))
      (ch (gethash (nth i bufer) code-page) (gethash (nth i bufer) code-page))
@@ -32,7 +37,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun make-html-trd (trd-fname html-fname str-signal-list time-lst ht-sname-oboznach &key (transpose nil))
+@export @annot.doc:doc
   "Вывод в данных из тренда в файл trd-fname в файл html-fname;
 Данные выводятся по столбцам;
 trd-fname         - имя файла тренда;
@@ -43,8 +48,8 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
                     в качестве ключа    - имена сигналов;
                     в качестве значений - обозначения сигналов
 Пример использования:
-
 "
+(defun make-html-trd (trd-fname html-fname str-signal-list time-lst ht-sname-oboznach &key (transpose nil))
   (let ((trd (make-instance 'trd :trd-file-name trd-fname)))
     (trd-open trd)
     (let* ((s-list (trd-analog-signal-list trd str-signal-list))
@@ -66,10 +71,11 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun get-trd-by-utime-dirname (utime dir-name &key (extension "trd"))
-  "Возвращает объект тренда, для которого существуют данные на момент 
+@export @annot.doc:doc
+"Возвращает объект тренда, для которого существуют данные на момент 
 универсального времени utime в каталоге dir-name
 "
+(defun get-trd-by-utime-dirname (utime dir-name &key (extension "trd"))
   (let ((rezult nil))
     (mapc  
      #'(lambda (el)
@@ -83,8 +89,8 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun make-html-trd-foo (trd-dname html-fname str-signal-list time-lst ht-sname-oboznach &key (transpose nil))
-  "Вывод в данных из тренда в файл trd-dname в файл html-fname;
+@export @annot.doc:doc
+"Вывод в данных из тренда в файл trd-dname в файл html-fname;
 Данные выводятся по столбцам;
 trd-dname         - имя файла тренда;
 html-fname        - имя html-файла;
@@ -96,6 +102,7 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
 Пример использования:
 
 "
+(defun make-html-trd-foo (trd-dname html-fname str-signal-list time-lst ht-sname-oboznach &key (transpose nil))
   (let ((trd-lst (mapcar #'(lambda (ut) (get-trd-by-utime-dirname ut trd-dname)) time-lst))
 	(rez                  nil)
 	(data                 nil)
@@ -137,10 +144,13 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+@export
 (defun get-open-ternd ()
   (mnas-file-dialog:get-open-file :filetypes '(("Файлы трендов" "*.trd")) :title "Выберите файл тренда"))
 
+@export
 (defun get-open-ternds ()
   (mnas-file-dialog:get-open-file :filetypes '(("Файлы трендов" "*.trd")) :title "Выберите файлы трендов" :multiple t))
 
+@export
 (defun change-directory-default () (mnas-file-dialog:change-directory-default))

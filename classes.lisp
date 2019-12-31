@@ -2,7 +2,11 @@
 
 (in-package #:recoder)
 
-(defclass a-signal ()
+(annot:enable-annot-syntax)
+
+@annot.class:export-class
+@annot.class:export-accessors
+(defclass <a-signal> ()
   ((a-signal-num         :accessor a-signal-num         :initarg :a-signal-num         :initform nil :documentation "Номер сигнала в списке сигналов. Первый сигнал имеет номер 0")
    (a-signal-id          :accessor a-signal-id          :initarg :a-signal-id          :initform nil :documentation "Обозначение сигнала, char[10]")
    (a-signal-description :accessor a-signal-description :initarg :a-signal-description :initform nil :documentation "Описание сигнала, char[40]")
@@ -25,8 +29,9 @@
 "))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defclass d-signal ()
+@annot.class:export-class
+@annot.class:export-accessors
+(defclass <d-signal> ()
   ((d-signal-num         :accessor d-signal-num         :initarg :d-signal-num         :initform nil :documentation "Номер сигнала в списке сигналов. Первый сигнал имеет номер 0")
    (d-signal-id          :accessor d-signal-id          :initarg :d-signal-id          :initform nil :documentation "Обозначение сигнала, char[10]")
    (d-signal-description :accessor d-signal-description :initarg :d-signal-description :initform nil :documentation "Описание сигнала, char[40]"))
@@ -43,7 +48,9 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defclass trd ()
+@annot.class:export-class
+@annot.class:export-accessors
+(defclass <trd> ()
   ((trd-file-name         :accessor trd-file-name      :initarg :trd-file-name      :initform nil :documentation "Имя файла в файловой системе")
    (trd-file-descr        :accessor trd-file-descr                                  :initform nil :documentation "Файл тренда")
    (trd-id-string         :accessor trd-id-string                                   :initform nil :documentation "Строка идентифицирующая то, что это файл тренда")
@@ -56,13 +63,13 @@
    (trd-discret-number    :accessor trd-discret-number                              :initform nil :documentation "Количество дискретных сигналов")
    (trd-analog-ht         :accessor trd-analog-ht                                   :initform nil :documentation "Хеш-таблица аналоговых сигналов")
    (trd-discret-ht        :accessor trd-discret-ht                                  :initform nil :documentation "Хеш-таблица дискретных сигналов"))
-  (:documentation "Trd - класс служащий для предоставления интерфейса к файлу-тренду, содержащему записи аналоговых и дискретных параметров.
+  (:documentation "<trd> - класс служащий для предоставления интерфейса к файлу-тренду, содержащему записи аналоговых и дискретных параметров.
 
 Файл-тренд состоит из:
 @begin(enum)
 @item(Записи заголовка тренда;)
-@item(Записей дескрипторов (описаний) аналоговых сигналов, см. a-signal;)
-@item(Записей дескрипторов (описаний) дискретных сигналов, см. d-signal;)
+@item(Записей дескрипторов (описаний) аналоговых сигналов, см. <a-signal>;)
+@item(Записей дескрипторов (описаний) дискретных сигналов, см. <d-signal>;)
 @item(Записей анналоговых и дискретных сигналов, состоящий из последовательно записанных списка аналоговых сигналов и упакованного списка дискретных сигналов;
 
 4.1 Каждый аналоговый сигнал кодируется целочисленным значением длиной 2 байта, 

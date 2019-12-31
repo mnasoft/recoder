@@ -2,7 +2,7 @@
 
 (in-package #:recoder)
 
-;;; "recoder" goes here. Hacks and glory await!
+(annot:enable-annot-syntax)
 
 (defparameter
     *cp1251-sym*
@@ -15,6 +15,7 @@
     "а" 	"б" 	"в" 	"г" 	"д" 	"е" 	"ж" 	"з" 	"и" 	"й" 	"к" 	"л" 	"м" 	"н" 	"о" 	"п"
     "р" 	"с" 	"т" 	"у" 	"ф" 	"х" 	"ц" 	"ч" 	"ш" 	"щ" 	"ъ" 	"ы" 	"ь" 	"э" 	"ю" 	"я"))
 
+@export
 (defparameter *cp1251* (make-hash-table))
 
 (let ((i 0))
