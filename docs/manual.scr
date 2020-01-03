@@ -1,0 +1,141 @@
+@begin(section)
+@title(Overview)
+
+Проект предназначен для безсетевого способа синхронизации проектов Common Lisp между
+различными персональными компьютерами.
+
+@end(section)
+
+@begin(section)
+@title(Classes)
+
+@cl:with-package[name="recoder"](
+@cl:doc(class trd)
+)
+
+@end(section)
+
+@begin(section)
+@title(Signal classes)
+
+@cl:with-package[name="recoder"](
+@cl:doc(class a-signal)
+@cl:doc(class d-signal)
+)
+
+@end(section)
+
+
+@begin(section)
+@title(Variables)
+
+@cl:with-package[name="recoder"](
+@cl:doc(variable *head-id-wid*)
+@cl:doc(variable *head-version-wid*)
+@cl:doc(variable *head-date-wid*)
+@cl:doc(variable *head-time-wid*)
+@cl:doc(variable *head-wid*)
+@cl:doc(variable *signal-id-wid*)
+@cl:doc(variable *signal-description-wid*)
+@cl:doc(variable *signal-units-wid*)
+@cl:doc(variable *signal-LowLimit-wid*)
+@cl:doc(variable *signal-HighLimit-wid*)
+@cl:doc(variable *analog-wid*)
+@cl:doc(variable *discret-wid*)
+@cl:doc(variable *ushort-max*)
+@cl:doc(variable *mid-value-number-offset*)
+)
+
+@end(section)
+
+
+@begin(section)
+@title(Method)
+
+@cl:with-package[name="recoder"](
+@cl:doc(generic trd-open (trd))
+)
+
+@cl:with-package[name="cl-user"](
+@cl:doc(method print-object (x trd) stream)
+)
+
+@cl:with-package[name="recoder"](
+
+@cl:doc(method trd-open (x trd))
+@cl:doc(method trd-read-header (x trd))
+@cl:doc(method trd-read-analog-ht (x trd))
+@cl:doc(method trd-read-discret-ht (x trd))
+@cl:doc(method trd-close (x trd))
+@cl:doc(method trd-start-offset (x trd))
+@cl:doc(method trd-analog-length-byte (x trd))
+@cl:doc(method trd-discret-length-byte (x trd))
+@cl:doc(method trd-record-length (x trd))
+@cl:doc(method trd-discret-offset (x trd))
+@cl:doc(method trd-utime-end (x trd))
+@cl:doc(method trd-analog-signal-list (x trd) signal-string-list)
+@cl:doc(method trd-discret-signal-list (x trd) signal-string-list)
+@cl:doc(method trd-analog-by-rec-number (x trd) rec-number signal-list)
+@cl:doc(method trd-record-number-by-utime (x trd) utime)
+@cl:doc(method trd-discret-by-rec-number (x trd) rec-number d-signal-list)
+@cl:doc(method trd-discret-by-rec-number-t-nil (x trd) rec-number d-signal-list)
+@cl:doc(method trd-discret-by-utime (trd trd) utime d-signal-list)
+@cl:doc(method trd-discret-by-utime-t-nil (trd trd) utime d-signal-list)
+@cl:doc(method trd-analog-by-utime (x trd) utime signal-list)
+@cl:doc(method trd-analog-mid-by-utime (x trd) utime signal-list &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
+@cl:doc(method trd-analog-mid-by-snames (x trd) utime snames &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
+@cl:doc(method trd-analog-stddev-by-utime (x trd) utime signal-list &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
+@cl:doc(method trd-analog-stddev-by-snames (x trd) utime snames &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
+@cl:doc(method trd-separate-signals (x trd) singnal-str-list)
+@cl:doc(method trd-separate-a-signals (x trd) singnal-str-list)
+@cl:doc(method trd-separate-d-signals (x trd) singnal-str-list)
+@cl:doc(method trd-separate-not-signals (x trd) singnal-str-list)
+@cl:doc(method trd-export-csv (x trd) a-sig-lst d-sig-lst &key (os t) (n-start 0) (n-end (trd-total-records x)))
+@cl:doc(method trd-export-csv-singal-string (x trd) signal-str-list &key (os t) (n-start 0) (n-end (trd-total-records x)))
+@cl:doc(method trd-split-on-intervals-when-flag-is-on (x trd) d-signal-str)
+@cl:doc(method trd-split-on-intervals-of-time-when-flag-is-on (x trd) d-signal-str)
+@cl:doc(method trd-split-on-intervals-by-condition (x trd) start-signal-str-lst end-signal-str-lst)
+@cl:doc(method trd-interval-to-secods (x trd) interval)
+@cl:doc(method trd-interval-to-minutes (x trd) interval)
+@cl:doc(method trd-interval-to-hours (x trd) interval)
+@cl:doc(method trd-record-number-to-udate (x trd) rec-number)
+@cl:doc(method trd-record-number-by-udate (x trd) udate)
+@cl:doc(method trd-analog-ht->org (x trd))
+@cl:doc(method trd-discret-ht->org (x trd))
+@cl:doc(method trd-header->org (x trd))
+@cl:doc(method trd-a-ids a-sig-names (trd recoder:trd))
+@cl:doc(method trd-a-units a-sig-names (trd recoder:trd))
+
+)
+
+@end(section)
+
+
+@begin(section)
+@title(Lists)
+
+This is a list with two items:
+
+@begin(list)
+@item(As promised)
+@item(Just two)
+@end(list)
+
+And this is an enumerated list:
+
+@begin(enum)
+@item(This is the first item)
+@item(And this the second)
+@end(enum)
+
+The real numbers have these properties, among others:
+
+@begin(deflist)
+@term(Associative Law for Addition)
+@def($(x + y) + z = x + (y + z)$)
+
+@term(Commutative Law for Addition)
+@def ($$x + y = y + x$$)
+@end(deflist)
+
+@end(section)
