@@ -78,7 +78,7 @@
 	      analog-units       (recode-string (read-trd-file in *signal-units-wid*))
 	      analog-min         (read-trd-file-double in)
 	      analog-max         (read-trd-file-double in)
-	      (gethash analog-id (trd-analog-ht x)) (make-instance 'a-signal
+	      (gethash analog-id (trd-analog-ht x)) (make-instance '<a-signal>
 								   :a-signal-num i
 								   :a-signal-id  analog-id
 								   :a-signal-description analog-description
@@ -95,7 +95,7 @@
       (dotimes (i (trd-discret-number x) 'done)
 	(setf discret-id          (recode-string (read-trd-file in *signal-id-wid*))
 	      discret-description (recode-string (read-trd-file in *signal-description-wid*))
-	      (gethash discret-id (trd-discret-ht x)) (make-instance 'd-signal
+	      (gethash discret-id (trd-discret-ht x)) (make-instance '<d-signal>
 								     :d-signal-num i
 								     :d-signal-id discret-id
 								     :d-signal-description discret-description))))))
