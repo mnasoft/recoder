@@ -4,6 +4,21 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+
+@cl:with-package[name="cl-user"](
+@cl:doc(method print-object (x trd) stream)
+)
+
+@cl:with-package[name="recoder"](
+
+
+
+)
+
+@end(section)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defun mid-values-by-snames (dir-name utime snames &key (extension "trd") (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
   (trd-mid-values-by-snames (get-trd-by-utime-dirname utime dir-name :extension extension)
 			    utime snames :n-before n-before :n-after n-after))

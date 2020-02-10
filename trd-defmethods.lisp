@@ -506,25 +506,3 @@ todo: доработать, чтоб возвращался последний �
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-@export @annot.doc:doc
-"Возвращает имена идентификаторов аналоговых сигналов
- a-sig-names - список имен сигналов;
- trd         - тренд."
-(defmethod trd-a-ids (a-sig-names (trd <trd>))
-
-    (mapcar
-     #'(lambda (el)
-	 (recoder:a-signal-id
-	  (gethash el (trd-analog-ht trd))))
-     a-sig-names))
-
-@export @annot.doc:doc
-"Возвращает имена идентификаторов аналоговых сигналов
- a-sig-names - список имен сигналов;
- trd         - тренд."
-(defmethod trd-a-units (a-sig-names (trd <trd>))
-    (mapcar
-     #'(lambda (el)
-	 (recoder:a-signal-units
-	  (gethash el (trd-analog-ht trd))))
-     a-sig-names))

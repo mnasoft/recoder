@@ -1,0 +1,55 @@
+* Ссылки
+1) Операции git  [[file:~/org/sbcl/Git-memo.org][Git-memo.org]]
+2) [[file:~/org/sbcl/codex.org][Генерирование документации при помощи Codex]]
+3) http://commondoc.github.io/codex/docs/tutorial.html
+4) [[/home/namatv/.slynkrc]]
+ 
+* Генерирование документации
+
+#+name: pwd
+#+BEGIN_SRC shell
+pwd
+#+END_SRC
+
+#+RESULTS: pwd
+: /home/namatv/quicklisp/local-projects/clisp/gnuplot
+
+#+name: basename-pwd
+#+BEGIN_SRC shell
+basename `pwd`
+#+END_SRC
+
+#+RESULTS: basename-pwd
+: gnuplot
+
+#+name:make-graph
+#+BEGIN_SRC lisp :var pwd=pwd :var basename-pwd=basename-pwd
+  ;;;; (require :codex)
+  ;;;; (require :mnas-package)
+  ;;;;
+  ;;;; (require :recoder)
+  (let ((pkg :recoder)
+	(fpath (concatenate
+		'string
+		(cond ((uiop:getenv "MSYS_HOME")) (t ""))
+		pwd "/docs/build/"
+		basename-pwd "/html/")))
+    (codex:document pkg)
+    (mnas-package:view-call-graph   pkg :out-type "png" :viewer nil :fpath fpath :fname "call-graph")
+    (mnas-package:view-system-graph pkg :out-type "png" :viewer nil :fpath fpath :fname "system-graph")
+    (mnas-package:view-class-graph  pkg :out-type "png" :viewer nil :fpath fpath :fname "class-graph")
+    (mnas-package:view-symbol-graph pkg :out-type "png" :viewer nil :fpath fpath :fname "symbol-graph"))
+#+END_SRC
+
+#+RESULTS: make-graph
+: #GRAPH(VC=13 RC=4)
+: (T:"valid-colorspec" T:"out-plot" T:"make-plot" T:"make-func-polynom-fit" T:"*point-type-fill*" T:"*color-names*" T:"*point-type-box-fill*" T:"*point-type-box*" T:"*point-type-open*" T:"*point-type-fill-box*" T:"*point-type-all*" T:"*const-names*" T:"*color-names-list*" )
+: ((T:"valid-colorspec"->T:"*color-names*") (T:"out-plot"->T:"*point-type-all*") (T:"make-plot"->T:"*point-type-all*") (T:"make-func-polynom-fit"->T:"*const-names*") ))
+
+* Публикация
+#+name: copy-to-n133619
+#+BEGIN_SRC shell :var make-graph=make-graph
+cp -rf ./docs/build/* "\\\\n133619\\home\\_namatv\\public_html\\Site\\Development\\Common-Lisp-Programs\\"
+#+END_SRC
+
+#+RESULTS: copy-to-n133619

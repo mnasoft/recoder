@@ -50,7 +50,7 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
 Пример использования:
 "
 (defun make-html-trd (trd-fname html-fname str-signal-list time-lst ht-sname-oboznach &key (transpose nil))
-  (let ((trd (make-instance 'trd :trd-file-name trd-fname)))
+  (let ((trd (make-instance '<trd> :trd-file-name trd-fname)))
     (trd-open trd)
     (let* ((s-list (trd-analog-signal-list trd str-signal-list))
 	   (rez nil)
@@ -79,7 +79,7 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
   (let ((rezult nil))
     (mapc  
      #'(lambda (el)
-	 (let ((trd (make-instance 'trd :trd-file-name el)))
+	 (let ((trd (make-instance '<trd> :trd-file-name el)))
 	   (trd-open trd)
 	   (if (<= (trd-utime-start trd) utime (trd-utime-end trd))
 	       (setf rezult trd)
@@ -154,3 +154,33 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
 
 @export
 (defun change-directory-default () (mnas-file-dialog:change-directory-default))
+
+@export
+@annot.doc:doc
+"Возвращает имена идентификаторов аналоговых сигналов
+@begin(list)
+ @item(a-sig-names - список имен сигналов; )
+ @item(trd         - тренд. )
+@end(list)
+"
+(defmethod trd-a-ids (a-sig-names (atrd <trd>))
+    (mapcar
+     #'(lambda (el)
+	 (recoder:a-signal-id
+	  (gethash el (trd-analog-ht atrd))))
+     a-sig-names))
+
+@export
+@annot.doc:doc
+"Возвращает имена идентификаторов аналоговых сигналов
+@begin(list)
+ @item(a-sig-names - список имен сигналов;)
+ @item( trd         - тренд.)
+@end(list)
+"
+(defmethod trd-a-units (a-sig-names (trd <trd>))
+    (mapcar
+     #'(lambda (el)
+	 (recoder:a-signal-units
+	  (gethash el (trd-analog-ht trd))))
+     a-sig-names))
