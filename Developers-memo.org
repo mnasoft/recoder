@@ -47,9 +47,21 @@ basename `pwd`
 : ((T:"valid-colorspec"->T:"*color-names*") (T:"out-plot"->T:"*point-type-all*") (T:"make-plot"->T:"*point-type-all*") (T:"make-func-polynom-fit"->T:"*const-names*") ))
 
 * Публикация
-#+name: copy-to-n133619
+#+name: publish
 #+BEGIN_SRC shell :var make-graph=make-graph
-cp -rf ./docs/build/* "\\\\n133619\\home\\_namatv\\public_html\\Site\\Development\\Common-Lisp-Programs\\"
+  if [[ `hostname` == "mnasoft-00" ]]
+  then
+ echo "mnasoft-00"
+      mkdir -p "$HOME/public_html/Common-Lisp-Programs/"
+      rm -rf   "$HOME/public_html/Common-Lisp-Programs/`pwd`/"
+      cp -rf ./docs/build/* "$HOME/public_html/Common-Lisp-Programs/"
+  fi
+  if [[ `hostname` == "ko11-118383" ]]
+  then
+      cp -rf ./docs/build/* "\\\\n133619\\home\\_namatv\\public_html\\Site\\Development\\Common-Lisp-Programs\\"
+  fi
 #+END_SRC
 
 #+RESULTS: copy-to-n133619
+: mnasoft-00
+
