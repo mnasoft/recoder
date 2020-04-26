@@ -237,7 +237,7 @@
 	   (n-start (- (trd-record-number-by-utime x utime) n-before))
 	   (rezult (dotimes (i (+ n-before n-after 1) (transpose rez))
 		     (push (trd-analog-by-rec-number x (+ n-start i) signal-list) rez))))
-      (mapcar #'math:averange-value rezult))))
+      (mapcar #'math:average-value rezult))))
 
 @export @annot.doc:doc
 "Возвращает список средних значений параметров, 
