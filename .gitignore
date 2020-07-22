@@ -3,7 +3,8 @@
 *.lisp-temp
 *~
 *.trd
-\#*#
+\#*\#
+build
 
 # =========================
 # Directory show style
