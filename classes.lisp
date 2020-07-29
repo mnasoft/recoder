@@ -1,8 +1,8 @@
 ;;;; classes.lisp
 
-(in-package #:recoder)
-
 (annot:enable-annot-syntax)
+
+(in-package #:recoder)
 
 @annot.class:export-class
 @annot.class:export-accessors
