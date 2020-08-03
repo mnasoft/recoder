@@ -13,6 +13,12 @@ s#+OPTIONS: ':nil *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline
 #+CREATOR: Emacs 26.1 (Org mode 9.1.9)
 
 * Извлечение данных из тренда  
+** Поиск файла тренда в каталоге
+#+BEGIN_SRC 
+(defun get-trd-by-utime-dirname (utime dir-name &key (extension "trd"))
+#+END_SRC
+Возвращает объект тренда, для которого существуют данные на момент 
+универсального времени utime в каталоге dir-name 
 ** Аналоговых сигналов
 
 *recoder:trd-analog-by-rec-number*  trd rec-number signal-list
@@ -30,6 +36,17 @@ s#+OPTIONS: ':nil *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline
 *recoder:trd-analog-stddev-by-utime*  trd utime signal-list &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*)
 
 *recoder:trd-analog-stddev-by-snames* trd utime snames      &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*)
+*** Пример извлечения сигналов из тренда
+
+#+BEGIN_SRC lisp
+    (mnas-format:round-2d-list 
+     (math:transpose
+      (list 
+       (mapcar  #'recoder:a-signal-id *CPIPES-A*)
+       (mapcar  #'recoder:a-signal-units *CPIPES-A*)
+       (recoder:trd-analog-by-utime  *trd*  *utime* *CPIPES-A*)))))
+#+END_SRC
+
 
 ** Извлечение дискретных сигналов
 *recoder:trd-discret-by-rec-number*       (trd trd) rec-number d-signal-list
