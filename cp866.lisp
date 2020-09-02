@@ -2,8 +2,6 @@
 
 (in-package #:recoder)
 
-(annot:enable-annot-syntax)
-
 (defparameter
     *cp866-sym*
   '("А" 	"Б"	"В"	"Г"	"Д"	"Е"	"Ж"	"З"	"И"	"Й"	"К"	"Л"	"М"	"Н"	"О"	"П"
@@ -15,7 +13,7 @@
     "р" 	"с" 	"т" 	"у" 	"ф" 	"х" 	"ц" 	"ч" 	"ш" 	"щ" 	"ъ" 	"ы" 	"ь" 	"э" 	"ю" 	"я"
     "Ё" 	"ё" 	"Є" 	"є" 	"Ї" 	"ї" 	"Ў" 	"ў" 	"°" 	"∙" 	"·" 	"√" 	"№" 	"¤" 	"■" 	" "))
 
-@export
+(export '*cp866*)
 (defparameter *cp866* (make-hash-table))
 
 (let ((i 0))

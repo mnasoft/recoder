@@ -1,11 +1,14 @@
 ;;;; classes.lisp
 
-(annot:enable-annot-syntax)
-
 (in-package #:recoder)
 
-@annot.class:export-class
-@annot.class:export-accessors
+(export '<a-signal>)
+(export 'a-signal-num)
+(export 'a-signal-id)
+(export 'a-signal-description)
+(export 'a-signal-units)
+(export 'a-signal-min)
+(export 'a-signal-max)
 (defclass <a-signal> ()
   ((a-signal-num         :accessor a-signal-num         :initarg :a-signal-num         :initform nil :documentation "Номер сигнала в списке сигналов. Первый сигнал имеет номер 0")
    (a-signal-id          :accessor a-signal-id          :initarg :a-signal-id          :initform nil :documentation "Обозначение сигнала, char[10]")
@@ -29,8 +32,10 @@
 "))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-@annot.class:export-class
-@annot.class:export-accessors
+(export '<d-signal>)
+(export 'd-signal-num)
+(export 'd-signal-id)
+(export 'd-signal-description)
 (defclass <d-signal> ()
   ((d-signal-num         :accessor d-signal-num         :initarg :d-signal-num         :initform nil :documentation "Номер сигнала в списке сигналов. Первый сигнал имеет номер 0")
    (d-signal-id          :accessor d-signal-id          :initarg :d-signal-id          :initform nil :documentation "Обозначение сигнала, char[10]")
@@ -48,8 +53,20 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-@annot.class:export-class
-@annot.class:export-accessors
+(export '<trd>)
+(export 'trd-file-name)
+(export 'trd-file-descr)
+(export 'trd-id-string)
+(export 'trd-version)
+(export 'trd-utime-start)
+(export 'trd-reserv)
+(export 'trd-total-records)
+(export 'trd-delta-time)
+(export 'trd-analog-number)
+(export 'trd-discret-number)
+(export 'trd-analog-ht)
+(export ' trd-discret-ht)
+
 (defclass <trd> ()
   ((trd-file-name         :accessor trd-file-name      :initarg :trd-file-name      :initform nil :documentation "Имя файла в файловой системе")
    (trd-file-descr        :accessor trd-file-descr                                  :initform nil :documentation "Файл тренда")

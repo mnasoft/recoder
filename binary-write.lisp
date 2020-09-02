@@ -2,8 +2,6 @@
 
 (in-package #:recoder)
 
-(annot:enable-annot-syntax)
-
 (defun int-to-list(int-val len)
   "Выполняет преобразование целого числа в список целых 
 чисел, находящихся в диапазоне от 0 до 255"
@@ -11,46 +9,47 @@
     (dotimes (i len (reverse bbb))
       (push (ldb (byte 8  (* 8 i)) int-val) bbb))))
 
-@export
-@annot.doc:doc "Выполняет открытие файла тренда"
+(export 'open-trd-file-write )
+
 (defun open-trd-file-write (path)
+  "Выполняет открытие файла тренда"
   (open path :element-type 'unsigned-byte :direction :io :if-exists :overwrite))
 
-@export
-@annot.doc:doc 
+(export 'write-trd-file )
+
+(defun write-trd-file (byte-list out &optional (byte-number (length  byte-list)))
 "Выполняет запись  bite-number элементов списка byte-list в поток out"
-(defun write-trd-file(byte-list out &optional (byte-number (length  byte-list)))
   (dotimes (i byte-number)
     (write-byte (pop byte-list ) out)))
 
-@export
-@annot.doc:doc 
-"Выполняет запись short в поток out"
+(export 'write-trd-file-short)
+
 (defun write-trd-file-short(int-val out &optional (len 2))
+"Выполняет запись short в поток out"
   (write-trd-file (int-to-list int-val len) out len))
 
-@export
-@annot.doc:doc 
-"Выполняет запись int в поток out"
+(export 'write-trd-file-int)
+
 (defun write-trd-file-int(int-val out &optional (len 4))
+"Выполняет запись int в поток out"
   (write-trd-file (int-to-list int-val len) out len))
 
-@export
-@annot.doc:doc 
-"Выполняет запись long в поток out"
+(export 'write-trd-file-long )
+
 (defun write-trd-file-long (int-val out &optional (len 4))
+"Выполняет запись long в поток out"
   (write-trd-file (int-to-list int-val len) out len))
 
-@export
-@annot.doc:doc 
-"Выполняет чтение long-long из потока in"
-(defun write-trd-file-long-long (int-val out &optional (len 8))
-    (write-trd-file (int-to-list int-val len) out len))
+(export 'write-trd-file-long-long )
 
-@export
-@annot.doc:doc 
-"Выполняет чтение float из потока in"
+(defun write-trd-file-long-long (int-val out &optional (len 8))
+"Выполняет чтение long-long из потока in"
+  (write-trd-file (int-to-list int-val len) out len))
+
+(export 'write-trd-file-float)
+
 (defun write-trd-file-float(val out &optional (len 4))
+"Выполняет чтение float из потока in"
   (write-trd-file
    (int-to-list
 ;;;;    (ie3fp:encode-ieee-float (coerce val 'float))
@@ -59,10 +58,10 @@
    out
    len))
 
-@export
-@annot.doc:doc 
-"Выполняет чтение doudle из потока in"
+(export 'write-trd-file-double)
+
 (defun write-trd-file-double(val out &optional (len 8))
+"Выполняет чтение doudle из потока in"
   (write-trd-file
    (int-to-list
 ;;;;(ie3fp:encode-ieee-double (coerce val 'double-float))

@@ -2,29 +2,27 @@
 
 (in-package #:recoder)
 
-(annot:enable-annot-syntax)
+(export 'list-to-int )
 
-@export
-@annot.doc:doc
+(defun list-to-int (list-of-int)
 "@b(Описание:) list-to-int выполняет преобразование списка целых чисел 
 находящихся в диапазоне 0 - 255 в целое число"
-(defun list-to-int (list-of-int)
   (do ((i 0 (+ i 8))
        (lst list-of-int (cdr lst))
        (rez 0))
       ((null lst) rez)
-  (setf (ldb (byte 8 i) rez) (car lst))))
+    (setf (ldb (byte 8 i) rez) (car lst))))
 
-@export
-@annot.doc:doc
-"@b(Описание:) open-trd-file-read выполняет открытие файла тренда."
+(export 'open-trd-file-read )
+
 (defun open-trd-file-read (path)
+"@b(Описание:) open-trd-file-read выполняет открытие файла тренда."
   (open path :element-type 'unsigned-byte))
 
-@export
-@annot.doc:doc 
-"Выполняет чтение bite-number из потока in"
+(export 'read-trd-file )
+
 (defun read-trd-file (in byte-number)
+"Выполняет чтение bite-number из потока in"
   (let ((lst nil)
 	(bt nil))
     (dotimes (i byte-number)
@@ -34,48 +32,48 @@
 	  (push bt lst)))
     (values (nreverse lst) byte-number t)))
 
-@export
-@annot.doc:doc 
-"Выполняет чтение short из потока in"
+(export 'read-trd-file-short)
+
 (defun read-trd-file-short(in &optional (len 2))
+"Выполняет чтение short из потока in"
   (multiple-value-bind (rez n file-stastus)
       (read-trd-file in len)
     (if file-stastus
 	(values (list-to-int rez) n file-stastus)
 	(values 0 n file-stastus))))
 
-@export
-@annot.doc:doc 
-"Выполняет чтение int из потока in"
+(export 'read-trd-file-int)
+
 (defun read-trd-file-int(in &optional (len 4))
+"Выполняет чтение int из потока in"
   (multiple-value-bind (rez n file-stastus)
       (read-trd-file in len)
     (if file-stastus
 	(values (list-to-int rez) n file-stastus)
 	(values 0 n file-stastus))))
 
-@export
-@annot.doc:doc 
-"Выполняет чтение long из потока in"
+(export 'read-trd-file-long)
+
 (defun read-trd-file-long(in &optional (len 4))
+"Выполняет чтение long из потока in"
   (multiple-value-bind (rez n file-stastus)
       (read-trd-file in len)
     (if file-stastus
 	(values (list-to-int rez) n file-stastus)
 	(values 0 n file-stastus))))
 
-@export
-@annot.doc:doc 
-"Выполняет чтение long-long из потока in"
+(export 'read-trd-file-long-long)
+
 (defun read-trd-file-long-long(in &optional (len 8))
+"Выполняет чтение long-long из потока in"
   (multiple-value-bind (rez n file-stastus)
       (read-trd-file in len)
     (values   (list-to-int rez) n file-stastus)))
 
-@export
-@annot.doc:doc 
-"Выполняет чтение float из потока in"
+(export 'read-trd-file-float)
+
 (defun read-trd-file-float(in &optional (len 4))
+"Выполняет чтение float из потока in"
   (multiple-value-bind (rez n file-stastus)
       (read-trd-file in len)
     (if file-stastus
@@ -83,10 +81,10 @@
 	(values (ieee-floats:decode-float32 (list-to-int rez)) n file-stastus)	
 	(values 0 n file-stastus))))
 
-@export
-@annot.doc:doc 
-"Выполняет чтение doudle из потока in"
+(export 'read-trd-file-double)
+
 (defun read-trd-file-double(in &optional (len 8))
+"Выполняет чтение doudle из потока in"
   (multiple-value-bind (rez n file-stastus)
       (read-trd-file in len)
     (if file-stastus

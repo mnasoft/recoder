@@ -2,8 +2,6 @@
 
 (in-package #:recoder)
 
-(annot:enable-annot-syntax)
-
 (defparameter
     *cp1251-sym*
   '("Ђ"  	"Ѓ" 	"‚" 	"ѓ" 	"„" 	"…" 	"†" 	"‡" 	"€" 	"‰" 	"Љ" 	"‹" 	"Њ" 	"Ќ" 	"Ћ" 	"Џ"
@@ -15,7 +13,7 @@
     "а" 	"б" 	"в" 	"г" 	"д" 	"е" 	"ж" 	"з" 	"и" 	"й" 	"к" 	"л" 	"м" 	"н" 	"о" 	"п"
     "р" 	"с" 	"т" 	"у" 	"ф" 	"х" 	"ц" 	"ч" 	"ш" 	"щ" 	"ъ" 	"ы" 	"ь" 	"э" 	"ю" 	"я"))
 
-@export
+(export '*cp1251*)
 (defparameter *cp1251* (make-hash-table))
 
 (let ((i 0))
