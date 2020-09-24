@@ -246,7 +246,7 @@
 	   (n-start (- (trd-record-number-by-utime x utime) n-before))
 	   (rezult (dotimes (i (+ n-before n-after 1) (transpose rez))
 		     (push (trd-analog-by-rec-number x (+ n-start i) signal-list) rez))))
-      (mapcar #'math:average-value rezult))))
+      (mapcar #'math/stat:average-value rezult))))
 
 (export 'trd-analog-mid-by-snames )
 
@@ -268,7 +268,7 @@
 	   (n-start (- (trd-record-number-by-utime x utime) n-before))
 	   (rezult (dotimes (i (+ n-before n-after 1) (transpose rez))
 		     (push (trd-analog-by-rec-number x (+ n-start i) signal-list) rez))))
-      (mapcar #'math:standard-deviation rezult))))
+      (mapcar #'math/stat:standard-deviation rezult))))
 
 (export 'trd-analog-stddev-by-snames )
 
