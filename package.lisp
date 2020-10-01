@@ -6,38 +6,52 @@
 	   trd-analog-ht->org
 	   *cp1251*
 	   read-trd-file-long
-	   trd-analog-mid-by-snames trd-a-units
-	   trd-discret-by-utime trd-delta-time
-	   a-signal-num trd-export-csv
+	   trd-analog-mid-by-snames
+	   trd-a-units
+	   trd-discret-by-utime
+	   trd-delta-time
+	   a-signal-num
+	   trd-export-csv
 	   write-trd-file-int
-	   trd-export-csv-singal-string apply-or
-	   <trd> trd-separate-a-signals
+	   trd-export-csv-singal-string
+	   apply-or
+	   <trd>
+	   trd-separate-a-signals
 	   trd-header->org
 	   trd-interval-to-minutes
 	   read-trd-file-long-long
 	   trd-discret-length-byte
-	   write-trd-file-long trd-id-string
+	   write-trd-file-long
+	   trd-id-string
 	   trd-analog-by-utime
-	   read-trd-file-float make-html-trd-foo
+	   read-trd-file-float
+	   make-html-trd-foo
 	   write-trd-file-float
-	   trd-analog-number a-signal-min
-	   a-signal-id a-signal-value
-	   get-trd-by-utime-dirname
-	   d-signal-description write-trd-file
+	   trd-analog-number
+	   a-signal-min
+	   a-signal-id
+	   a-signal-value
+	   find-trd-by-utime-dirname
+	   d-signal-description
+	   write-trd-file
 	   get-open-ternds
 	   change-directory-default
 	   read-trd-file-short
 	   write-trd-file-short
 	   trd-record-length
-	   trd-analog-signal-list make-html-trd
-	   write-trd-file-long-long d-signal-id
+	   trd-analog-signal-list
+	   make-html-trd
+	   write-trd-file-long-long
+	   d-signal-id
 	   trd-record-number-to-udate
 	   read-trd-file-double
-	   time-universal-encode get-open-ternd
+	   time-universal-encode
+	   get-open-ternd
 	   trd-discret-number
 	   trd-discret-by-utime-t-nil
 	   trd-analog-stddev-by-snames
-	   trd-utime-end trd-open
+	   trd-utime-end
+	   trd-open
 	   apply-and a-signal-description
 	   trd-discret-ht->org read-trd-file
 	   trd-split-on-intervals-when-flag-is-on

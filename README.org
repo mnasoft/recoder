@@ -15,7 +15,7 @@ s#+OPTIONS: ':nil *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline
 * Извлечение данных из тренда  
 ** Поиск файла тренда в каталоге
 #+BEGIN_SRC 
-(defun get-trd-by-utime-dirname (utime dir-name &key (extension "trd"))
+(defun find-trd-by-utime-dirname (utime dir-name &key (extension "trd"))
 #+END_SRC
 Возвращает объект тренда, для которого существуют данные на момент 
 универсального времени utime в каталоге dir-name 
@@ -67,7 +67,7 @@ s#+OPTIONS: ':nil *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline
 
 * Формирование списка сигналов из списка имен сигналов 
 #+BEGIN_SRC lisp
- (recoder:trd-analog-signal-list *trd* signal-string-list)
+  (recoder:trd-analog-signal-list *trd* signal-string-list)
 #+END_SRC
 
 
@@ -90,13 +90,4 @@ s#+OPTIONS: ':nil *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline
 		(recoder:trd-discret-by-utime-t-nil ot-234pm::*trd* ut d-s-l))
 	    ot-234pm::*utimes*))
 #+END_SRC
-
-* ToDo                   
-
-** При выводе тренда функцией вывода выдавать его имя файла.
-  
-**  Разделить считывание заголовка тренда на
-*** Считывание и разбор собственно заголовка 30 байт
-*** Считывание и разбор и построение хеш-таблицы аналоговых сигналов
-*** Считывание и разбор и построение хеш-таблицы дискретных сигналов
 

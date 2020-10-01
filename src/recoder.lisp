@@ -68,8 +68,8 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(export 'get-trd-by-utime-dirname )
-(defun get-trd-by-utime-dirname (utime dir-name &key (extension "trd"))
+(export 'find-trd-by-utime-dirname )
+(defun find-trd-by-utime-dirname (utime dir-name &key (extension "trd"))
 "Возвращает объект тренда, для которого существуют данные на момент 
 универсального времени utime в каталоге dir-name
 "
@@ -100,7 +100,7 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
 Пример использования:
 
 "
-  (let ((trd-lst (mapcar #'(lambda (ut) (get-trd-by-utime-dirname ut trd-dname)) time-lst))
+  (let ((trd-lst (mapcar #'(lambda (ut) (find-trd-by-utime-dirname ut trd-dname)) time-lst))
 	(rez                  nil)
 	(data                 nil)
 	(dev                  nil)

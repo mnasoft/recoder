@@ -244,7 +244,7 @@
   (when  (trd-file-descr x)
     (let* ((rez nil)
 	   (n-start (- (trd-record-number-by-utime x utime) n-before))
-	   (rezult (dotimes (i (+ n-before n-after 1) (transpose rez))
+	   (rezult (dotimes (i (+ n-before n-after 1) (math/core:transpose rez))
 		     (push (trd-analog-by-rec-number x (+ n-start i) signal-list) rez))))
       (mapcar #'math/stat:average-value rezult))))
 
