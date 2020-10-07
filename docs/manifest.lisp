@@ -3,4 +3,6 @@
  :documents ((:title "Recoder"
 		     :authors ("Nick Matvyeyev")
 		     :output-format (:type :multi-html :template :minima)
-		     :sources ("manual.scr"))))
+	      :sources ("recoder.scr"
+			"recoder-graph.scr"
+			))))
