@@ -1,6 +1,6 @@
 ;;;; binary-read.lisp
 
-(in-package #:recoder)
+(in-package #:recoder/binary)
 
 (export 'list-to-int )
 

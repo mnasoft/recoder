@@ -1,6 +1,6 @@
 ;;;; cp1251.lisp
 
-(in-package #:recoder)
+(in-package #:recoder/binary)
 
 (defparameter
     *cp1251-sym*
@@ -14,6 +14,7 @@
     "р" 	"с" 	"т" 	"у" 	"ф" 	"х" 	"ц" 	"ч" 	"ш" 	"щ" 	"ъ" 	"ы" 	"ь" 	"э" 	"ю" 	"я"))
 
 (export '*cp1251*)
+
 (defparameter *cp1251* (make-hash-table))
 
 (let ((i 0))

@@ -1,0 +1,8 @@
+
+@begin(section) @title(trd-split)
+ @cl:with-package[name="recoder"](
+  @cl:doc(method trd-split-on-intervals-when-flag-is-on (trd <trd>) d-signal-str)
+  @cl:doc(method trd-split-on-intervals-of-time-when-flag-is-on (trd <trd>) d-signal-str)
+  @cl:doc(method trd-split-on-intervals-by-condition (trd <trd>) start-signal-str-lst end-signal-str-lst)
+ )
+@end(section) 

@@ -1,0 +1,8 @@
+
+@begin(section) @title(trd-export)
+
+@cl:with-package[name="recoder"](
+ @cl:doc(method trd-export-csv (trd <trd>) a-sig-lst d-sig-lst &key (os t) (n-start 0) (n-end (trd-total-records trd)))
+ @cl:doc(method trd-export-csv-singal-string (trd <trd>) signal-str-list &key (os t) (n-start 0) (n-end (trd-total-records trd)))
+)
+@end(section)

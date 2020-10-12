@@ -10,11 +10,16 @@
   (codex:document :recoder)
 #+END_SRC
 
+#+RESULTS: codex
+: NIL
+
 #+name: graphs
 #+BEGIN_SRC lisp :var codex=codex
    (loop
      :for i :in '(
 		  :recoder
+                  :recoder/a-signal
+                  :recoder/d-signal
 		  )
      :do (mnas-package:make-codex-documentation i i))
 #+END_SRC
@@ -40,3 +45,91 @@
 	rsync -Pazh --delete ../docs/build/$CDIR/html/ $CPL/$CDIR
      fi
 #+END_SRC
+
+#+RESULTS: publish
+| sending                              | incremental | file | list       |         |   |         |      |            |         |          |               |
+| ./                                   |             |      |            |         |   |         |      |            |         |          |               |
+| call-graph-recoder-a-signal.gv       |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 1.28K       | 100% | 0.00kB/s   | 0:00:00 |   | 1.28K   | 100% | 0.00kB/s   | 0:00:00 | (xfr#1,  | to-chk=41/43) |
+| call-graph-recoder-a-signal.gv.png   |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 32.77K      |  13% | 31.25MB/s  | 0:00:00 |   | 245.37K | 100% | 33.43MB/s  | 0:00:00 | (xfr#2,  | to-chk=40/43) |
+| call-graph-recoder-d-signal.gv       |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 578         | 100% | 80.64kB/s  | 0:00:00 |   | 578     | 100% | 80.64kB/s  | 0:00:00 | (xfr#3,  | to-chk=39/43) |
+| call-graph-recoder-d-signal.gv.png   |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 32.77K      |  28% | 4.46MB/s   | 0:00:00 |   | 114.54K | 100% | 10.92MB/s  | 0:00:00 | (xfr#4,  | to-chk=38/43) |
+| call-graph-recoder.gv                |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 8.50K       | 100% | 830.27kB/s | 0:00:00 |   | 8.50K   | 100% | 754.79kB/s | 0:00:00 | (xfr#5,  | to-chk=37/43) |
+| call-graph-recoder.gv.png            |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 32.77K      |   0% | 2.84MB/s   | 0:00:01 |   | 4.26M   | 100% | 46.14MB/s  | 0:00:00 | (xfr#6,  | to-chk=36/43) |
+| class-graph-recoder-a-signal.gv      |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 58          | 100% | 0.64kB/s   | 0:00:00 |   | 58      | 100% | 0.64kB/s   | 0:00:00 | (xfr#7,  | to-chk=35/43) |
+| class-graph-recoder-a-signal.gv.png  |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 7.64K       | 100% | 84.79kB/s  | 0:00:00 |   | 7.64K   | 100% | 84.79kB/s  | 0:00:00 | (xfr#8,  | to-chk=34/43) |
+| class-graph-recoder-d-signal.gv      |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 58          | 100% | 0.64kB/s   | 0:00:00 |   | 58      | 100% | 0.64kB/s   | 0:00:00 | (xfr#9,  | to-chk=33/43) |
+| class-graph-recoder-d-signal.gv.png  |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 7.85K       | 100% | 87.10kB/s  | 0:00:00 |   | 7.85K   | 100% | 87.10kB/s  | 0:00:00 | (xfr#10, | to-chk=32/43) |
+| class-graph-recoder.gv               |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 53          | 100% | 0.59kB/s   | 0:00:00 |   | 53      | 100% | 0.59kB/s   | 0:00:00 | (xfr#11, | to-chk=31/43) |
+| class-graph-recoder.gv.png           |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 4.45K       | 100% | 49.43kB/s  | 0:00:00 |   | 4.45K   | 100% | 49.43kB/s  | 0:00:00 | (xfr#12, | to-chk=30/43) |
+| method.html                          |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 8.21K       | 100% | 91.11kB/s  | 0:00:00 |   | 8.21K   | 100% | 91.11kB/s  | 0:00:00 | (xfr#13, | to-chk=29/43) |
+| symbol-graph-recoder-a-signal.gv     |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 112         | 100% | 1.24kB/s   | 0:00:00 |   | 112     | 100% | 1.24kB/s   | 0:00:00 | (xfr#14, | to-chk=28/43) |
+| symbol-graph-recoder-a-signal.gv.png |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 14.57K      | 100% | 161.71kB/s | 0:00:00 |   | 14.57K  | 100% | 161.71kB/s | 0:00:00 | (xfr#15, | to-chk=27/43) |
+| symbol-graph-recoder-d-signal.gv     |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 45          | 100% | 0.50kB/s   | 0:00:00 |   | 45      | 100% | 0.50kB/s   | 0:00:00 | (xfr#16, | to-chk=26/43) |
+| symbol-graph-recoder-d-signal.gv.png |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 116         | 100% | 1.29kB/s   | 0:00:00 |   | 116     | 100% | 1.29kB/s   | 0:00:00 | (xfr#17, | to-chk=25/43) |
+| symbol-graph-recoder.gv              |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 1.35K       | 100% | 14.96kB/s  | 0:00:00 |   | 1.35K   | 100% | 14.96kB/s  | 0:00:00 | (xfr#18, | to-chk=24/43) |
+| symbol-graph-recoder.gv.png          |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 32.77K      |   8% | 363.64kB/s | 0:00:00 |   | 374.73K | 100% | 3.05MB/s   | 0:00:00 | (xfr#19, | to-chk=23/43) |
+| system-graph-recoder-a-signal.gv     |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 114         | 100% | 0.95kB/s   | 0:00:00 |   | 114     | 100% | 0.95kB/s   | 0:00:00 | (xfr#20, | to-chk=22/43) |
+| system-graph-recoder-a-signal.gv.png |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 16.07K      | 100% | 134.11kB/s | 0:00:00 |   | 16.07K  | 100% | 134.11kB/s | 0:00:00 | (xfr#21, | to-chk=21/43) |
+| system-graph-recoder-d-signal.gv     |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 114         | 100% | 0.95kB/s   | 0:00:00 |   | 114     | 100% | 0.95kB/s   | 0:00:00 | (xfr#22, | to-chk=20/43) |
+| system-graph-recoder-d-signal.gv.png |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 16.71K      | 100% | 138.26kB/s | 0:00:00 |   | 16.71K  | 100% | 138.26kB/s | 0:00:00 | (xfr#23, | to-chk=19/43) |
+| system-graph-recoder.gv              |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 2.29K       | 100% | 18.99kB/s  | 0:00:00 |   | 2.29K   | 100% | 18.99kB/s  | 0:00:00 | (xfr#24, | to-chk=18/43) |
+| system-graph-recoder.gv.png          |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 32.77K      |   2% | 271.19kB/s | 0:00:03 |   | 1.09M   | 100% | 7.83MB/s   | 0:00:00 | (xfr#25, | to-chk=17/43) |
+| trd-analog.html                      |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 7.17K       | 100% | 52.65kB/s  | 0:00:00 |   | 7.17K   | 100% | 52.65kB/s  | 0:00:00 | (xfr#26, | to-chk=16/43) |
+| trd-discret.html                     |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 5.29K       | 100% | 38.85kB/s  | 0:00:00 |   | 5.29K   | 100% | 38.85kB/s  | 0:00:00 | (xfr#27, | to-chk=15/43) |
+| trd-export.html                      |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 3.77K       | 100% | 27.66kB/s  | 0:00:00 |   | 3.77K   | 100% | 27.66kB/s  | 0:00:00 | (xfr#28, | to-chk=14/43) |
+| trd-separate.html                    |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 4.53K       | 100% | 33.29kB/s  | 0:00:00 |   | 4.53K   | 100% | 33.29kB/s  | 0:00:00 | (xfr#29, | to-chk=13/43) |
+| trd-split.html                       |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 5.75K       | 100% | 42.19kB/s  | 0:00:00 |   | 5.75K   | 100% | 42.19kB/s  | 0:00:00 | (xfr#30, | to-chk=12/43) |
+| variables.html                       |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 5.63K       | 100% | 41.37kB/s  | 0:00:00 |   | 5.63K   | 100% | 41.37kB/s  | 0:00:00 | (xfr#31, | to-chk=11/43) |
+| графы-recoder-a-signal.html          |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 3.00K       | 100% | 22.02kB/s  | 0:00:00 |   | 3.00K   | 100% | 22.02kB/s  | 0:00:00 | (xfr#32, | to-chk=10/43) |
+| графы-recoder-d-signal.html          |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 3.00K       | 100% | 22.02kB/s  | 0:00:00 |   | 3.00K   | 100% | 22.02kB/s  | 0:00:00 | (xfr#33, | to-chk=9/43)  |
+| графы-recoder.html                   |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 2.91K       | 100% | 21.36kB/s  | 0:00:00 |   | 2.91K   | 100% | 21.36kB/s  | 0:00:00 | (xfr#34, | to-chk=8/43)  |
+| класс-<a-signal>.html                |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 16.38K      | 100% | 120.28kB/s | 0:00:00 |   | 16.38K  | 100% | 120.28kB/s | 0:00:00 | (xfr#35, | to-chk=7/43)  |
+| класс-<d-signal>.html                |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 10.37K      | 100% | 76.14kB/s  | 0:00:00 |   | 10.37K  | 100% | 76.14kB/s  | 0:00:00 | (xfr#36, | to-chk=6/43)  |
+| класс-<trd>.html                     |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 26.47K      | 100% | 194.35kB/s | 0:00:00 |   | 26.47K  | 100% | 194.35kB/s | 0:00:00 | (xfr#37, | to-chk=5/43)  |
+| обзор.html                           |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 3.48K       | 100% | 25.54kB/s  | 0:00:00 |   | 3.48K   | 100% | 25.54kB/s  | 0:00:00 | (xfr#38, | to-chk=4/43)  |
+| static/                              |             |      |            |         |   |         |      |            |         |          |               |
+| static/highlight.css                 |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 1.57K       | 100% | 11.54kB/s  | 0:00:00 |   | 1.57K   | 100% | 11.54kB/s  | 0:00:00 | (xfr#39, | to-chk=2/43)  |
+| static/highlight.js                  |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 22.99K      | 100% | 167.54kB/s | 0:00:00 |   | 22.99K  | 100% | 167.54kB/s | 0:00:00 | (xfr#40, | to-chk=1/43)  |
+| static/style.css                     |             |      |            |         |   |         |      |            |         |          |               |
+|                                      | 4.32K       | 100% | 31.47kB/s  | 0:00:00 |   | 4.32K   | 100% | 31.47kB/s  | 0:00:00 | (xfr#41, | to-chk=0/43)  |
+| mnasoft-00                           |             |      |            |         |   |         |      |            |         |          |               |

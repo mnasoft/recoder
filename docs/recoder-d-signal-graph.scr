@@ -1,0 +1,8 @@
+ @begin(section) @title(Графы recoder-d-signal)
+  @begin(list)
+   @item(system-graph @image[src=./system-graph-recoder-d-signal.gv.png]())
+   @item(call-graph   @image[src=./call-graph-recoder-d-signal.gv.png]())
+   @item(symbol-graph @image[src=./symbol-graph-recoder-d-signal.gv.png]())
+   @item(class-graph  @image[src=./class-graph-recoder-d-signal.gv.png]())
+  @end(list)
+ @end(section)

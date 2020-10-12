@@ -1,91 +1,73 @@
 ;;;; package.lisp
 
 (defpackage #:recoder
-  (:use #:cl #:mnas-string)
-  (:export <a-signal>
-	   a-signal-units
-	   a-signal-num
-	   a-signal-min
-	   a-signal-id
-	   a-signal-value
-	   a-signal-description
-	   a-signal-max
-	   )
-  (:export <d-signal>
-	   d-signal-description
-	   d-signal-id
-           d-signal-num
-	   )
+  (:use #:cl #:mnas-string #:recoder/binary #:recoder/d-signal #:recoder/a-signal)
+
+  (:export trd-analog-ht->org
+           trd-analog-mid-by-snames
+           trd-analog-by-utime
+           trd-analog-signal-list
+           trd-analog-stddev-by-snames
+           trd-analog-mid-by-utime
+           trd-analog-by-rec-number
+           trd-analog-length-byte 
+           trd-analog-stddev-by-utime
+           trd-analog-ht 
+           trd-analog-number
+           trd-file-descr
+           )
+  (:export trd-discret-by-utime
+           trd-discret-length-byte
+           trd-discret-number
+           trd-discret-by-utime-t-nil
+           trd-discret-offset
+           trd-discret-by-rec-number-t-nil
+           trd-discret-signal-list
+           trd-discret-by-rec-number
+           trd-discret-ht->org
+           trd-discret-ht
+           )
+  (:export trd-separate-a-signals
+           trd-separate-not-signals
+           trd-separate-signals
+           trd-separate-d-signals
+           )
+  (:export trd-a-units
+           trd-a-ids
+           )
   (:export <trd>
-	   trd-analog-ht->org
-	   trd-analog-mid-by-snames
-	   trd-a-units
-	   trd-discret-by-utime
+	   trd-total-records
 	   trd-delta-time
 	   trd-export-csv
-	   trd-separate-a-signals
 	   trd-header->org
 	   trd-interval-to-minutes
 	   trd-record-number-to-udate
-	   trd-discret-length-byte
 	   trd-id-string
-	   trd-analog-by-utime
+	   
 	   trd-record-length
-	   trd-analog-signal-list
-	   trd-discret-number
-	   trd-discret-by-utime-t-nil
-	   trd-analog-stddev-by-snames
+	   
 	   trd-utime-end
 	   trd-open
-	   trd-a-ids
-	   trd-discret-offset
-	   trd-analog-mid-by-utime
-	   trd-discret-by-rec-number-t-nil
+	   
 	   trd-version
-	   trd-separate-not-signals
 	   trd-file-name
-	   trd-analog-by-rec-number
-	   trd-separate-signals
-	   trd-analog-length-byte *ascii-sym*
-	   trd-analog-stddev-by-utime
+	   
 	   trd-interval-to-hours
 	   trd-record-number-by-udate
-	   trd-discret-signal-list
 	   trd-start-offset 
 	   trd-reserv recode-string
 	   trd-split-on-intervals-of-time-when-flag-is-on
-	   trd-analog-ht trd-total-records
+	   
 	   trd-split-on-intervals-by-condition
 	   trd-interval-to-secods
-	   trd-close trd-discret-by-rec-number
+	   trd-close 
 	   trd-utime-start
-	   trd-separate-d-signals
 	   trd-record-number-by-utime
-	   trd-analog-number
+	   
 	   trd-export-csv-singal-string
-	   trd-discret-ht->org
-	   trd-discret-ht
 	   trd-split-on-intervals-when-flag-is-on
 	   )
-  (:export *cp1251*
-	   *cp866*
-	   *mid-value-number-offset*
-	   )
-  (:export read-trd-file-long
-	   read-trd-file-long-long
-	   read-trd-file-float
-	   read-trd-file-int trd-file-descr
-	   read-trd-file-double
-	   read-trd-file
-	   read-trd-file-short
-	   )
-  (:export write-trd-file-int
-	   write-trd-file-long
-	   write-trd-file-float
-	   write-trd-file
-	   write-trd-file-long-long
-	   write-trd-file-double 
-	   write-trd-file-short
+  (:export *mid-value-number-offset*
 	   )
   (:export apply-and
 	   apply-or
@@ -99,7 +81,6 @@
 	   get-open-ternd
 	   change-directory-default
 	   time-universal-encode
-	   list-to-int
 	   )
   (:export open-trd-file-write
 	   open-trd-file-read

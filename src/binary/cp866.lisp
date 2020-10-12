@@ -1,6 +1,6 @@
 ;;;; cp866.lisp
 
-(in-package #:recoder)
+(in-package #:recoder/binary)
 
 (defparameter
     *cp866-sym*
@@ -14,6 +14,7 @@
     "Ё" 	"ё" 	"Є" 	"є" 	"Ї" 	"ї" 	"Ў" 	"ў" 	"°" 	"∙" 	"·" 	"√" 	"№" 	"¤" 	"■" 	" "))
 
 (export '*cp866*)
+
 (defparameter *cp866* (make-hash-table))
 
 (let ((i 0))

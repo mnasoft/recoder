@@ -1,0 +1,14 @@
+
+@begin(section) @title(trd-analog)
+ @cl:with-package[name="recoder"](
+  @cl:doc(method trd-analog-length-byte (trd <trd>))
+  @cl:doc(method trd-analog-signal-list (trd <trd>) signal-string-list)
+  @cl:doc(method trd-analog-by-rec-number (trd <trd>) rec-number signal-list)
+  @cl:doc(method trd-analog-by-utime (trd <trd>) utime signal-list)
+  @cl:doc(method trd-analog-mid-by-utime (trd <trd>) utime signal-list &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
+  @cl:doc(method trd-analog-mid-by-snames (trd <trd>) utime snames &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
+  @cl:doc(method trd-analog-stddev-by-utime (trd <trd>) utime signal-list &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
+  @cl:doc(method trd-analog-stddev-by-snames (trd <trd>) utime snames &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
+  @cl:doc(method trd-analog-ht->org (trd <trd>))
+ )
+@end(section) 

@@ -3,24 +3,29 @@
 (in-package #:recoder)
 
 (export 'apply-and )
+
 (defun apply-and (lst)
   (mapc #'(lambda (el) (unless el (return-from  apply-and nil))) lst)
   t)
 
 (export 'apply-or )
+
 (defun apply-or (lst)
   (mapc #'(lambda (el) (when el (return-from apply-or t))) lst)
   nil)
 
 (export 'time-universal-encode )
+
 (defun time-universal-encode (year month day hour min sec)
-"Функция кодирования в универсальный формат времени"
+  "Функция кодирования в универсальный формат времени"
   (encode-universal-time sec min hour day month year))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (export 'recode-string )
+
 (defun recode-string (bufer &key (start 0) (len (length bufer))  (break-nul T) (code-page *cp1251*))
-"@b(Описание:) recode-string выполняет преобразование символов, 
+  "@b(Описание:) recode-string выполняет преобразование символов, 
 передаваемых в параметре bufer, имеющих кодировку code-page (*cp1251*|*cp866*), 
 в кодировку utf8."
   (do*
@@ -35,6 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (export 'make-html-trd )
+
 (defun make-html-trd (trd-fname html-fname str-signal-list time-lst ht-sname-oboznach &key (transpose nil))
   "Вывод в данных из тренда в файл trd-fname в файл html-fname;
 Данные выводятся по столбцам;
@@ -69,8 +75,9 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (export 'find-trd-by-utime-dirname )
+
 (defun find-trd-by-utime-dirname (utime dir-name &key (extension "trd"))
-"Возвращает объект тренда, для которого существуют данные на момент 
+  "Возвращает объект тренда, для которого существуют данные на момент 
 универсального времени utime в каталоге dir-name
 "
   (let ((rezult nil))
@@ -87,8 +94,9 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (export 'make-html-trd-foo )
+
 (defun make-html-trd-foo (trd-dname html-fname str-signal-list time-lst ht-sname-oboznach &key (transpose nil))
-"Вывод в данных из тренда в файл trd-dname в файл html-fname;
+  "Вывод в данных из тренда в файл trd-dname в файл html-fname;
 Данные выводятся по столбцам;
 trd-dname         - имя файла тренда;
 html-fname        - имя html-файла;
@@ -142,40 +150,47 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (export 'get-open-ternd )
+
 (defun get-open-ternd ()
   (mnas-file-dialog:get-open-file :filetypes '(("Файлы трендов" "*.trd")) :title "Выберите файл тренда"))
 
 (export 'get-open-ternds )
+
 (defun get-open-ternds ()
   (mnas-file-dialog:get-open-file :filetypes '(("Файлы трендов" "*.trd")) :title "Выберите файлы трендов" :multiple t))
 
 (export 'change-directory-default )
+
 (defun change-directory-default () (mnas-file-dialog:change-directory-default))
 
 (export 'trd-a-ids )
-(defmethod trd-a-ids (a-sig-names (atrd <trd>))
-"Возвращает имена идентификаторов аналоговых сигналов
+
+(defmethod trd-a-ids (a-sig-names (trd <trd>))
+  "@b(Описание:) метод @b(trd-a-ids) возвращает имена 
+идентификаторов аналоговых сигналов.
 @begin(list)
  @item(a-sig-names - список имен сигналов; )
  @item(trd         - тренд. )
 @end(list)
 "
-    (mapcar
-     #'(lambda (el)
-	 (recoder:a-signal-id
-	  (gethash el (trd-analog-ht atrd))))
-     a-sig-names))
+  (mapcar
+   #'(lambda (el)
+       (a-signal-id
+	(gethash el (trd-analog-ht trd))))
+   a-sig-names))
 
 (export 'trd-a-units )
+
 (defmethod trd-a-units (a-sig-names (trd <trd>))
-"Возвращает имена идентификаторов аналоговых сигналов
+  "@b(Описание:) метод @b(trd-a-units) возвращает размерности 
+аналоговых сигналов.
 @begin(list)
  @item(a-sig-names - список имен сигналов;)
- @item( trd         - тренд.)
+ @item( trd        - тренд.)
 @end(list)
 "
-    (mapcar
-     #'(lambda (el)
-	 (recoder:a-signal-units
-	  (gethash el (trd-analog-ht trd))))
-     a-sig-names))
+  (mapcar
+   #'(lambda (el)
+       (a-signal-units
+	(gethash el (trd-analog-ht trd))))
+   a-sig-names))

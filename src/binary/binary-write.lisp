@@ -1,6 +1,6 @@
 ;;;; binary-write.lisp
 
-(in-package #:recoder)
+(in-package #:recoder/binary)
 
 (defun int-to-list(int-val len)
   "Выполняет преобразование целого числа в список целых 
