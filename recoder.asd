@@ -26,7 +26,8 @@
 		((:file "defparameters")
 		 (:file "trd-defmethods")
 		 (:file "recoder")
-;;;;	       (:file "test")
+		 (:file "example") 
+		 ;; (:file "test") 
 		 ))))
 
 (defsystem "recoder/docs"

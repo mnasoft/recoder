@@ -55,7 +55,8 @@
 	   trd-interval-to-hours
 	   trd-record-number-by-udate
 	   trd-start-offset 
-	   trd-reserv recode-string
+	   trd-reserv
+	   recode-string
 	   trd-split-on-intervals-of-time-when-flag-is-on
 	   
 	   trd-split-on-intervals-by-condition

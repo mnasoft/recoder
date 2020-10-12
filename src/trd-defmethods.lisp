@@ -302,8 +302,9 @@
 (export 'trd-analog-by-utime )
 
 (defmethod trd-analog-by-utime ( (trd <trd>) utime signal-list)
-"Возвращает список значений тренда <trd> для записи под номером rec-number,
- соответствующий сигналам signal-list"
+"@b(Описание:) метод @b(trd-analog-by-utime) возвращает список
+значений аналоговых сигналов, содержащися в списке @b(signal-list),
+тренда @b(trd), соответствующих моменту времени @b(utime)."
   (trd-analog-by-rec-number trd
 			    (trd-record-number-by-utime trd utime)
 			    signal-list))
@@ -311,7 +312,9 @@
 (export 'trd-analog-mid-by-utime )
 
 (defmethod trd-analog-mid-by-utime ( (trd <trd>) utime signal-list &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
-"Возвращает список средних значений параметров "
+"@b(Описание:) метод @b(trd-analog-mid-by-utime)  возвращает список
+осредненных значений аналоговых сигналов, содержащися в списке @b(signal-list),
+тренда @b(trd), соответствующих моменту времени @b(utime)."
   (when  (trd-file-descr trd)
     (let* ((rez nil)
 	   (n-start (- (trd-record-number-by-utime trd utime) n-before))
@@ -637,14 +640,3 @@ todo: доработать, чтоб возвращался последний �
 	(push (list "Количество аналоговых сигналов"         ( trd-analog-number  trd) ) rez)
 	(push (list "Количество дискретных сигналов"         ( trd-discret-number trd) ) rez)))
     (nreverse rez)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(progn 
-  (defparameter *trd-fname* (concatenate 'string
-                                         (namestring
-                                          (asdf:system-source-directory :recoder))
-                                         "trd" "/" "2018-11-06_092329.trd")
-    "Для примеров.")
-  (defparameter *trd* (make-instance 'recoder:<trd> :trd-file-name *trd-fname*))
-  (recoder:trd-open *trd*))
