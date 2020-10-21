@@ -1,7 +1,5 @@
 ;;;; test.lisp
 
-
-
 (defpackage #:recoder/trd
   (:use #:cl #:recoder)
   (:export ))
@@ -58,47 +56,58 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (require :mnas-org-mode)
+(require :math)
+
+(defun analog-table-units (u-times &rest rest)
+  (mapcar
+   #'(lambda (td-signals)
+       (analog-units (first td-signals) u-times (second td-signals)))
+   rest))
 
 (defun analog-table (u-times &rest rest)
-  (apply #'mapcar #'append
-         (mapcar
-          #'(lambda (td-signals)
-              (analog-signals
-               (first td-signals)
-               u-times
-               (second td-signals)))
-          rest)))
-
-(mapcar
- #'(lambda (ut)
-     (append `(,(mnas-org-mode:utime->date ut)
-               ,(mnas-org-mode:utime->time ut))))
- u-times)
-
-
+  (let ((rez
+	  (apply #'mapcar #'append
+		 (mapcar
+		  #'(lambda (td-signals)
+		      (analog-signals
+		       (first td-signals)
+		       u-times
+		       (second td-signals)))
+		  rest))))
+    (setf rez 
+	  (mapcar
+	   #'(lambda (ut data)
+	       (append (mnas-org-mode:utime->date-time ut) data ))
+	   u-times
+	   rez))
+    (math/list-matr:prepend-rows
+     `(,(append '("Дата" "Время") (analog-table-units u-times rest)))
+     rez)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (require :termo-container)
 
 (defparameter *trd-tc-dir*
-  (make-instance '<trd-tc-dir> :directory "/home/namatv/pm-233/trd-C100"))
+  (make-instance '<trd-tc-dir> :directory "D:/home/_namatv/_WorkPlan/2020/80/Испытания 10211.ДМ80.237ПМ/trd-C100/1"))
 
 (defparameter *trd-CPIPES-dir*
-  (make-instance '<trd-dir> :directory "/home/namatv/pm-233/trd-CPiPES"))
+  (make-instance '<trd-dir> :directory "D:/home/_namatv/_WorkPlan/2020/80/Испытания 10211.ДМ80.237ПМ/trd-CPiPES"))
 
-(analog-signals *trd-CPIPES-dir* `(,(encode-universal-time 00 19 12 01 10 2021)) `("GQ010" "EN1" "EN2" "EN3" "T04"))
-(analog-units   *trd-CPIPES-dir* `(,(encode-universal-time 00 19 12 01 10 2021)) `("GQ010" "EN1" "EN2" "EN3" "T04"))
 
-(analog-signals *trd-tc-dir* `(,(encode-universal-time 00 19 12 01 10 2020)) `("GQ010" "EN1" "EN2" "EN3" "T04"))
-(analog-units *trd-tc-dir*   `(,(encode-universal-time 00 19 12 01 10 2020)) `("GQ010" "EN1" "EN2" "EN3" "T04"))
+(let ((ut-s `(,(encode-universal-time 07 12 14 29 07 2020))))
+  ut-s
+  (analog-signals *trd-CPIPES-dir* ut-s `("GQ010" "EN1" "EN2" "EN3" "T04"))
+  (analog-units   *trd-CPIPES-dir* ut-s `("GQ010" "EN1" "EN2" "EN3" "T04"))
+  (analog-signals *trd-tc-dir*     ut-s `("GQ010" "EN1" "EN2" "EN3" "T04"))
+;;  (analog-units   *trd-tc-dir*     ut-s `("GQ010" "EN1" "EN2" "EN3" "T04"))
 
-(analog-table
-         `(,(encode-universal-time 00 19 12 01 10 2020)
-            ,(encode-universal-time 00 10 12 01 10 2020))
-         `(,*trd-CPIPES-dir* ("GQ010" "EN1" "EN2" "EN3" "T04"))
-         `(,*trd-tc-dir* ("GQ010" "EN1" "EN2" "EN3" "T04"))
-         `(,*trd-tc-dir* ("GQ010" "EN1" "EN2" "EN3" "T04")))
+  )
+
+(let ((ut-s `(,(encode-universal-time 07 12 14 29 07 2020))))
+  (analog-table-units ut-s
+		      `(,*trd-CPIPES-dir* ("GQ010" "EN1" "EN2" "EN3" "T04"))
+		      `(,*trd-tc-dir*     ("GQ010" "EN1" "EN2" "EN3" "T04"))))
 
 
 
