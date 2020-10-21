@@ -1,10 +1,10 @@
 ;;;; test.lisp
 
-(defpackage #:recoder/trd
+(defpackage #:recoder/dir
   (:use #:cl #:recoder)
-  (:export ))
+  (:export analog-table))
 
-(in-package :recoder/trd)
+(in-package :recoder/dir)
 
 (defclass <dir> ()
   ((directory :accessor <dir>-directory :initarg :directory :initform #P"~" :documentation "Каталог, из которого считываются тренды.")))
@@ -13,8 +13,12 @@
 
 (defclass <trd-tc-dir> (<dir>) ())
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defmethod analog-signals ((td <trd-dir>) u-times signal-ids)
-  "@b(Описание:) метод @b(analog-signals) возвращает список сигналов
+  "@b(Описание:) метод @b(analog-signals) возвращает список значений сигналов,
+соответствующих моментам времени из списка @b(u-times).
 "
   (mapcar
    #'(lambda (ut)
@@ -55,14 +59,13 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(require :mnas-org-mode)
-(require :math)
-
 (defun analog-table-units (u-times &rest rest)
   (mapcar
    #'(lambda (td-signals)
        (analog-units (first td-signals) u-times (second td-signals)))
    rest))
+
+(export '(analog-table))
 
 (defun analog-table (u-times &rest rest)
   (let ((rez
@@ -83,10 +86,10 @@
     (math/list-matr:prepend-rows
      `(,(append '("Дата" "Время") (analog-table-units u-times rest)))
      rez)))
-
+#|
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(require :termo-container)
+
 
 (defparameter *trd-tc-dir*
   (make-instance '<trd-tc-dir> :directory "D:/home/_namatv/_WorkPlan/2020/80/Испытания 10211.ДМ80.237ПМ/trd-C100/1"))
@@ -140,3 +143,5 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+|#
