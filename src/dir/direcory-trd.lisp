@@ -2,19 +2,30 @@
 
 (defpackage #:recoder/dir
   (:use #:cl #:recoder)
-  (:export analog-table))
+  (:export analog-table)
+  (:export <trd-dir>
+	   <trd-tc-dir>)
+  )
 
 (in-package :recoder/dir)
 
 (defclass <dir> ()
   ((directory :accessor <dir>-directory :initarg :directory :initform #P"~" :documentation "Каталог, из которого считываются тренды.")))
 
+(export '(<trd-dir>))
+
 (defclass <trd-dir> (<dir>) ())
+
+(export '(<trd-tc-dir>))
 
 (defclass <trd-tc-dir> (<dir>) ())
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod analog-ids ((td <trd-dir>) u-times signal-ids)
+  "@b(Описание:) метод @b(analog-signals) возвращает список идентификаторов сигналов.
+"
+  signal-ids)
 
 (defmethod analog-signals ((td <trd-dir>) u-times signal-ids)
   "@b(Описание:) метод @b(analog-signals) возвращает список значений сигналов,
@@ -43,6 +54,12 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defmethod analog-ids ((td <trd-tc-dir>) u-times signal-ids)
+  "@b(Описание:) метод @b(analog-signals) возвращает список идентификаторов сигналов.
+"
+  (let ((trd-tc (t-c:make-<trd-tc> (<dir>-directory td) "*-_.txt")))
+    (t-c:<trd-tc>-header trd-tc )))
+
 (defmethod analog-signals ((td <trd-tc-dir>) u-times signal-ids)
   "@b(Описание:) метод @b(analog-signals) возвращает список сигналов
 "
@@ -59,6 +76,12 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defun analog-table-ids (u-times &rest rest)
+  (mapcar
+   #'(lambda (td-signals)
+       (analog-ids (first td-signals) u-times (second td-signals)))
+   rest))
+
 (defun analog-table-units (u-times &rest rest)
   (mapcar
    #'(lambda (td-signals)
@@ -68,29 +91,39 @@
 (export '(analog-table))
 
 (defun analog-table (u-times &rest rest)
-  (let ((rez
-	  (apply #'mapcar #'append
-		 (mapcar
-		  #'(lambda (td-signals)
-		      (analog-signals
-		       (first td-signals)
-		       u-times
-		       (second td-signals)))
-		  rest))))
-    (setf rez 
-	  (mapcar
-	   #'(lambda (ut data)
-	       (append (mnas-org-mode:utime->date-time ut) data ))
-	   u-times
-	   rez))
-    (math/list-matr:prepend-rows
-     `(,(append '("Дата" "Время") (analog-table-units u-times rest)))
-     rez)))
-#|
+  (let ((rez (apply #'mapcar #'append (mapcar #'(lambda (td-signals) (analog-signals (first td-signals) u-times (second td-signals))) rest))))
+    (setf rez (mapcar #'(lambda (ut data) (append (mnas-org-mode:utime->date-time ut) data )) u-times rez))
+    (setf rez (math/list-matr:prepend-rows
+	       (list
+		(append '("Дата" "Время")
+			(apply #'append (apply #'analog-table-ids  (append (list u-times) rest))))
+		(append '("<YYYY-MM-DD>" "hh:mm:ss")
+			(apply #'append (apply #'analog-table-units (append (list u-times) rest)))))
+	       rez))
+    (mnas-format:round-2d-list rez)
+    ))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defparameter *trd-C100-dir*
+  (make-instance '<trd-tc-dir> :directory "d:/PRG/msys32/home/namatv/quicklisp/local-projects/ZM/PM/pm-237/trd-C100"))
 
+(defparameter *trd-CPIPES-dir*
+  (make-instance '<trd-dir> :directory "d:/PRG/msys32/home/namatv/quicklisp/local-projects/ZM/PM/pm-237/trd-CPiPES"))
 
+(defparameter *trd-NIO-dir*
+  (make-instance '<trd-dir> :directory "d:/PRG/msys32/home/namatv/quicklisp/local-projects/ZM/PM/pm-237/trd-NIO"))
+
+(analog-signals *trd-NIO-dir* `(,(encode-universal-time 07 12 14 29 07 2020)) nil )
+
+(let ((ut-s `(,(encode-universal-time 07 12 14 29 07 2020))))
+  (analog-table ut-s
+		`(,*trd-CPIPES-dir* ("GQ010" "EN1" "EN2" "EN3" "T04"))
+		`(,*trd-C100-dir*   ("GQ010" "EN1" "EN2" "EN3" "T04"))
+		`(,*trd-NIO-dir*    ,(append (loop :for i :from 1 :to 76 :collect (format nil "T15_~2,'0D" i)) '("CF104" "CF140")))
+		))
+
+#|
 (defparameter *trd-tc-dir*
   (make-instance '<trd-tc-dir> :directory "D:/home/_namatv/_WorkPlan/2020/80/Испытания 10211.ДМ80.237ПМ/trd-C100/1"))
 
@@ -106,13 +139,6 @@
 ;;  (analog-units   *trd-tc-dir*     ut-s `("GQ010" "EN1" "EN2" "EN3" "T04"))
 
   )
-
-(let ((ut-s `(,(encode-universal-time 07 12 14 29 07 2020))))
-  (analog-table-units ut-s
-		      `(,*trd-CPIPES-dir* ("GQ010" "EN1" "EN2" "EN3" "T04"))
-		      `(,*trd-tc-dir*     ("GQ010" "EN1" "EN2" "EN3" "T04"))))
-
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
