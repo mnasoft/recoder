@@ -57,16 +57,15 @@
 	   trd-start-offset 
 	   trd-reserv
 	   recode-string
-	   trd-split-on-intervals-of-time-when-flag-is-on
-	   
-	   trd-split-on-intervals-by-condition
 	   trd-interval-to-secods
 	   trd-close 
 	   trd-utime-start
 	   trd-record-number-by-utime
-	   
 	   trd-export-csv-singal-string
-	   trd-split-on-intervals-when-flag-is-on
+	   )
+  (:export split-on-intervals-of-time-when-flag-is-on
+	   split-on-intervals-when-flag-is-on
+   	   split-on-intervals-by-condition
 	   )
   (:export *mid-value-number-offset*
 	   )

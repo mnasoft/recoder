@@ -89,7 +89,7 @@
   :description "Преднзначен для работы группами трендов, помещенными в отдельные каталоги."
   :author "Nick Matvyeyev <mnasoft@gmail.com>"
   :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"
-  :depends-on ("recoder" "termo-container" "mnas-org-mode" "math")
+  :depends-on ("recoder" "termo-container" "mnas-org-mode" "math" "mnas-format")
   :serial nil
   :components
   ((:module "src/dir"

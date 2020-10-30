@@ -255,6 +255,13 @@
  Возвращает номер записи по универсальному времени"
   (floor (- utime (trd-utime-start trd)) (trd-delta-time trd)))
 
+(export 'trd-utime-by-record-number)
+
+(defmethod trd-utime-by-record-number ((trd <trd>) record-number)
+  "@b(Описание:) метод @b(trd-record-number-by-utime)
+ Возвращает номер записи по универсальному времени"
+   (+ (trd-utime-start trd) (floor record-number (/ 1 (trd-delta-time trd)))))
+
 (export 'trd-discret-by-rec-number )
 
 (defmethod trd-discret-by-rec-number ( (trd <trd>) rec-number d-signal-list)
@@ -437,11 +444,14 @@
 ;;;; Splitting ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(export 'trd-split-on-intervals-when-flag-is-on )
+(export 'split-on-intervals-when-flag-is-on )
 
-(defmethod trd-split-on-intervals-when-flag-is-on ((trd <trd>) d-signal-str )
-"Для тренда trd выполняет поиск диапазонов, для которых значение 
+(defmethod split-on-intervals-when-flag-is-on ((trd <trd>) d-signal-str )
+"@b(Описание:) метод @b(split-on-intervals-when-flag-is-on) для 
+тренда @b(trd) выполняет поиск диапазонов, для которых значение 
 дискретного сигнала с именем d-signal-str имеет значение 1.
+
+ Начало и конец диапазона выражено в порядковы номерах записи с начала тренда.
 todo: доработать, чтоб возвращался последний диапазон при поднятом флаге в конце"
   (let* (
 	 (flag (gethash d-signal-str (trd-discret-ht trd)))
@@ -461,10 +471,26 @@ todo: доработать, чтоб возвращался последний �
 	    (push (list n-start n-end) rez-lst)
 	    (setf n-start total-rec
 		  n-end -1))))))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(export 'split-on-utime-when-flag-is-on )
 
-(export 'trd-split-on-intervals-of-time-when-flag-is-on )
+(defmethod split-on-utimes-when-flag-is-on ((trd <trd>) d-signal-str )
+  "@b(Описание:) метод @b(split-on-intervals-when-flag-is-on) для 
+тренда @b(trd) выполняет поиск диапазонов, для которых значение 
+дискретного сигнала с именем d-signal-str имеет значение 1.
 
-(defmethod trd-split-on-intervals-of-time-when-flag-is-on ((trd <trd>) d-signal-str)
+ Начало и конец диапазона выражено в порядковы номерах записи с начала тренда.
+todo: доработать, чтоб возвращался последний диапазон при поднятом флаге в конце"
+  (mapcar
+   #'(lambda (el)
+       (list (trd-utime-by-record-number trd (first el))
+	     (trd-utime-by-record-number trd (second el))))
+   (split-on-intervals-when-flag-is-on trd  d-signal-str)))
+
+(export 'split-on-intervals-of-time-when-flag-is-on )
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod split-on-intervals-of-time-when-flag-is-on ((trd <trd>) d-signal-str)
 "Для тренда trd выполняет поиск диапазонов, для которых
 значение сигнала d-signal-str принимало значение 1. 
 И возвращает длительность этих диапазонов"
@@ -473,9 +499,9 @@ todo: доработать, чтоб возвращался последний �
      (mapcar #'(lambda (el) (* -1 (trd-delta-time trd) (apply #'- el))) intervals)
      intervals)))
 
-(export 'trd-split-on-intervals-by-condition )
+(export 'split-on-intervals-by-condition )
 
-(defmethod trd-split-on-intervals-by-condition ((trd <trd>) start-signal-str-lst end-signal-str-lst)
+(defmethod split-on-intervals-by-condition ((trd <trd>) start-signal-str-lst end-signal-str-lst)
 "Выполняет деление тренда на диапазоны.
 
 Возвращает список.

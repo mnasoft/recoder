@@ -1,12 +1,23 @@
-* [2/4] Задачи
-1. [ ] Разделить проект на части.
-2. [ ] При выводе тренда функцией вывода выдавать его имя файла.
-   - [ ] Разделить считывание заголовка тренда на
-   - [ ] Считывание и разбор собственно заголовка 30 байт
-   - [ ] Считывание и разбор и построение хеш-таблицы аналоговых сигналов
-   - [ ] Считывание и разбор и построение хеш-таблицы дискретных сигналов
-3. [X] get-trd-by-utime-dirname -> find-trd-by-utime-dirname переименовать.
-4. [ ] документировать
+* [4/6] Задачи
+1. [-] Написать 
+   - [ ] метод для нахождения выборок значений для аналоговых сигналов тренда для определенного интервала времени, выраженного в универсальном формате.
+   - [X] метод для нахождения универсального времени по номеру записи тренда - trd-utime-by-record-number.
+   - [ ] метод поиска который бы позволял:
+     - искать как в прямом (увеличение записей) так и в обратном направлении;
+     - начинать поиск с начала, с конца или с произвольного моммента времени;
+     - искать до тех пор пока не встретится условие, определяемое функцией такого количества параметров
+2. [X] Разделить проект на части.
+3. [X] При выводе тренда функцией вывода выдавать его имя файла.
+   - [X] Разделить считывание заголовка тренда на
+     - [X] Считывание и разбор собственно заголовка 30 байт
+     - [X] Считывание и разбор и построение хеш-таблицы аналоговых сигналов
+     - [X] Считывание и разбор и построение хеш-таблицы дискретных сигналов
+4. [X] Переименовать.
+   - [X] get-trd-by-utime-dirname -> find-trd-by-utime-dirname;
+   - [X] trd-split-on-intervals-of-time-when-flag-is-on -> split-on-intervals-of-time-when-flag-is-on;
+   - [X] trd-split-on-intervals-when-flag-is-on -> split-on-intervals-when-flag-is-on;
+   - [X] trd-split-on-intervals-by-condition -> split-on-intervals-by-condition.
+5. [ ] документировать
    - [ ] <a-signal>
      + [ ] a-signal-units
      + [ ] a-signal-num
@@ -56,9 +67,7 @@
      - [ ] trd-discret-signal-list
      - [ ] trd-start-offset 
      - [ ] trd-reserv recode-string
-     - [ ] trd-split-on-intervals-of-time-when-flag-is-on
      - [ ] trd-analog-ht trd-total-records
-     - [ ] trd-split-on-intervals-by-condition
      - [ ] trd-interval-to-secods
      - [ ] trd-close trd-discret-by-rec-number
      - [ ] trd-utime-start
@@ -68,7 +77,10 @@
      - [ ] trd-export-csv-singal-string
      - [ ] trd-discret-ht->org
      - [ ] trd-discret-ht
-     - [ ] trd-split-on-intervals-when-flag-is-on
+   - [ ] split-on-intervals
+     - [ ] split-on-intervals-when-flag-is-on
+     - [ ] split-on-intervals-of-time-when-flag-is-on
+     - [ ] split-on-intervals-by-condition
    - [ ] defparameters
      - [ ] *cp1251*
      - [ ] *cp866*
@@ -103,4 +115,4 @@
    - [ ] list-to-int
    - [ ] open-trd-file-write
    - [ ] open-trd-file-read
-5. [X] Переименовать имена параметров (trd <trd>) -> (trd <trd>).
+6. [X] Переименовать имена параметров (trd <trd>) -> (trd <trd>).
