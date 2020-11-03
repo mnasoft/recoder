@@ -66,6 +66,7 @@
   (:export split-on-intervals-of-time-when-flag-is-on
 	   split-on-intervals-when-flag-is-on
    	   split-on-intervals-by-condition
+	   split-on-utimes-when-flag-is-on 
 	   )
   (:export *mid-value-number-offset*
 	   )
@@ -75,8 +76,7 @@
   (:export make-html-trd-foo
 	   make-html-trd
 	   )
-  (:export
-	   find-trd-by-utime-dirname
+  (:export find-trd-by-utime-dirname
 	   get-open-ternds
 	   get-open-ternd
 	   change-directory-default
@@ -84,7 +84,10 @@
 	   )
   (:export open-trd-file-write
 	   open-trd-file-read
-	   ))
+	   )
+  (:export  trd-utime-by-record-number
+	    analogs-in-records
+	    analogs-in-utimes))
 
 ;;;;(declaim (optimize (space 0) (compilation-speed 0)  (speed 0) (safety 3) (debug 3)))
 ;;;; (declaim (optimize (compilation-speed 0) (debug 3) (safety 0) (space 0) (speed 0)))

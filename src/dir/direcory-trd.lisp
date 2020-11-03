@@ -103,3 +103,73 @@
     (mnas-format:round-2d-list rez)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defgeneric split-on-intervals-when-flag-is-on (trd d-signal-str)
+  (:documentation
+   "@b(Описание:) обобщенная_функция @b(split-on-intervals-when-flag-is-on)
+разделяет тренд на интервалы (выраженные в номерах записей), для которых 
+флаг @b(d-signal-str) имеет значение 1.
+"))
+
+(defmethod split-on-intervals-when-flag-is-on ((trd-dir <trd-dir>) d-signal-str)
+  "@b(Описание:) метод @b(split-on-intervals-when-flag-is-on) возвращает список, 
+каждый элемент которого содержит два элемента. Первый - список интервалов, при 
+которых значение дискретного флага @b(d-signal-str) равно 1.
+Второй - объект тренда, для которого найден список интервалов.
+ 
+ @b(Пример использования:)
+@begin[lang=lisp](code)
+ (split-on-intervals-when-flag-is-on *trd-CPIPES-dir* \"Oil2Gas\")
+ (((13355 14081))
+ Path= \"d:/PRG/msys32/home/namatv/quicklisp/local-projects/ZM/PM/pm-237/trd-CPiPES/2020-per/20200814_132922.trd\"
+ ... 
+ ((10931 11252) (15413 15677) (19598 19858) (24705 24971) (29177 29440)
+  (33479 33755) (37542 37813) (42104 42367))
+ Path= \"d:/PRG/msys32/home/namatv/quicklisp/local-projects/ZM/PM/pm-237/trd-CPiPES/2020-per/20200814_132922.trd\")
+@end(code)
+"
+  (let ((trd (make-instance 'recoder:<trd>)))
+    (apply #'append
+	   (mapcar
+	    #'(lambda (el)
+		(let ((rez nil))
+		  (recoder:trd-close trd)
+		  (setf (recoder:trd-file-name trd) el)
+		  (recoder:trd-open trd)
+		  (setf rez (split-on-intervals-when-flag-is-on trd d-signal-str))
+		  (recoder:trd-close trd)
+		  (when rez (list rez trd))))
+	    (mnas-path:find-filename (<dir>-directory trd-dir) "trd")))))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defgeneric split-on-utimes-when-flag-is-on (trd d-signal-str)
+  (:documentation
+   "@b(Описание:) обобщенная_функция @b(split-on-intervals-when-flag-is-on)
+разделяет тренд (или последовательность трендов) на временные интервалы, 
+для которых флаг @b(d-signal-str) имеет значение 1."))
+
+(defmethod split-on-utimes-when-flag-is-on ((trd-dir <trd-dir>) d-signal-str )
+  "@b(Описание:) метод @b(split-on-intervals-when-flag-is-on) возвращает список, 
+каждый элемент которого содержит два элемента - начало и конец временного интервала,
+для которого значение дискретного флага @b(d-signal-str) равно 1.
+
+ @b(Пример использования:)
+@begin[lang=lisp](code)
+ (split-on-utimes-when-flag-is-on *trd-CPIPES-dir* \"Oil2Gas\")
+ => ((3805688905 3805689050) (3805706924 3805707019) (3805708537 3805708637)
+     ...
+     (3806396457 3806396513) (3806397270 3806397324) (3806398182 3806398235))
+@end(code)
+"
+  (let ((trd (make-instance 'recoder:<trd>)))
+    (apply #'append
+	   (mapcar
+	    #'(lambda (el)
+		(let ((rez nil))
+		  (recoder:trd-close trd)
+		  (setf (recoder:trd-file-name trd) el)
+		  (recoder:trd-open trd)
+		  (setf rez
+			(split-on-utimes-when-flag-is-on trd d-signal-str))
+		  rez))
+	    (mnas-path:find-filename (<dir>-directory trd-dir) "trd")))))
