@@ -2,7 +2,6 @@
 
 (defpackage #:recoder
   (:use #:cl #:mnas-string #:recoder/binary #:recoder/d-signal #:recoder/a-signal)
-
   (:export trd-analog-ht->org
            trd-analog-mid-by-snames
            trd-analog-by-utime
@@ -87,7 +86,13 @@
 	   )
   (:export  trd-utime-by-record-number
 	    analogs-in-records
-	    analogs-in-utimes))
+	    analogs-in-utimes)
+  (:export <trd-seq>
+	   <trd-seq>-a-sig
+	   <trd-seq>-d-sig
+	   <trd-seq>-signal-strings
+	   update
+	   ))
 
 ;;;;(declaim (optimize (space 0) (compilation-speed 0)  (speed 0) (safety 3) (debug 3)))
 ;;;; (declaim (optimize (compilation-speed 0) (debug 3) (safety 0) (space 0) (speed 0)))

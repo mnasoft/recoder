@@ -4,52 +4,37 @@
 
 (in-package :recoder)
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmethod trd-find-if-01 (predicate (trd <trd>) signal-str &key from-end (start 0) end key)
-  "
-- [ ] метод поиска который бы позволял:
-  - искать как в прямом (увеличение записей) так и в обратном направлении;
-  - начинать поиск с начала, с конца или с произвольного моммента времени;
-  - искать до тех пор пока не встретится условие, определяемое функцией такого количества параметров.
-"
-  (let* ((s-list (trd-separate-signals trd signal-str))
-	 (a-signals (first  s-list))
-	 (d-signals (second s-list)))
-    (trd-analog-discret-by-rec-number trd start a-signals d-signals)))
-
-(trd-find-if-01
- #'(lambda (a-signals d-signals) nil)
- *trd*
- '("GQ010" "EN1" "EN2" "EN3" "T04" "Oil2Gas" "FK301" "FK310")
- :start 12000
- )
-
-(trd-discret-by-rec-number  *trd* 12300  (trd-discret-signal-list *trd* '("Oil2Gas")))
-
-(do ((i start (1+ i))) ((funcall predicate trd i )))
-
-(trd-separate-signals *trd* '("GQ010" "EN1" "EN2" "EN3" "T04" "Oil2Gas"))
-
-(maphash #'(lambda (k v) (format t "~S~%" k))
-	 (trd-analog-ht *trd*)
-	 )
-
-(gethash "GQ010" (trd-analog-ht *trd*))
-
-(loop :for i :from start :below (trd-total-records trd)
-      )
-
 (defparameter *trd* (make-instance
-		     'recoder:<trd>
-		     :trd-file-name
-		     "d:/PRG/msys32/home/namatv/quicklisp/local-projects/ZM/PM/pm-237/trd-CPiPES/2020-per/20200814_132922.trd"))
+		     'recoder:<trd-seq>
+		     :trd-file-name "d:/PRG/msys32/home/namatv/quicklisp/local-projects/ZM/PM/pm-237/trd-CPiPES/2020-per/20200814_132922.trd"
+		     :signal-strings '("GQ010" "EN1" "EN2" "EN3" "T04" "Oil2Gas" "FK280" "FK290" "FK310" "FK301")))
+
+(elt *trd* 11338)
+
+(position-if
+ #'(lambda (el)
+     (= 1
+	(first (nthcdr 9 el))))
+ *trd*
+ :start 11252
+ ) ; => 11338 (14 bits, #x2C4A)
+
+(nthcdr 9 (elt *trd* (+ 11252 (* 5 17))))
 
 (recoder:trd-open *trd*)
 
-(split-on-utimes-when-flag-is-on *trd* "Oil2Gas")
+(split-on-intervals-when-flag-is-on *trd* "Oil2Gas")
 
+((10931 11252) (15413 15677) (19598 19858) (24705 24971) (29177 29440)
+ (33479 33755) (37542 37813) (42104 42367))
+
+;;;; (trd-discret-by-rec-number  *trd* 12300  (trd-discret-signal-list *trd* '("Oil2Gas")))
+
+
+
+(trd-separate-signals *trd* '("GQ010" "EN1" "EN2" "EN3" "T04" "Oil2Gas"))
 
 (mapcar #'math/stat:average-value (analogs-in-utimes *trd* 3806391948 3806392012 (trd-analog-signal-list *trd* '("GQ010" "EN1" "EN2" "EN3" "T04"))))
 

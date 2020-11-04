@@ -25,6 +25,7 @@
                 :components
 		((:file "defparameters")
 		 (:file "trd-defmethods")
+		 (:file "trd-seq-defmethods")
 		 (:file "recoder")
 		 (:file "example") 
 		 ;; (:file "test") 
