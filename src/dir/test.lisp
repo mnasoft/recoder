@@ -18,17 +18,6 @@
 ;;;;               +------FH30--> в дренаж   ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun make-ht-by-sig-names (sig-names)
-  (let ((ht (make-hash-table :test #'equal)))
-    (loop :for s :in sig-names
-	  :for i :from 0 :below (length sig-names)
-	  :do  (setf (gethash s ht) i ))
-    ht))
-
-(defun sig     (key data ht) (nth (gethash key ht) data))
-(defun sig-on  (key data ht) (eq 1 (sig key data ht)))
-(defun sig-off (key data ht) (eq 0 (sig key data ht)))
-
 (defun aver-max-min (seq)
   (list (math/stat:average-value seq)
         (math/stat:max-value seq)
@@ -45,14 +34,15 @@
 			"Oil2Gas" "Gas2Oil"
 			"FK250" "FK251" "FK260" "FK261" "FK270" "FK271"
 			"FK280" "FK281" "FK290" "FK291" "FK300" "FK301" "FK310" "FK311"))
-  (defparameter *ht* (make-ht-by-sig-names *sig*))
+  ;; (defparameter *ht* (make-ht-by-sig-names *sig*))
   (defparameter *trd* (make-instance
 		       'recoder:<trd-seq>
 		       :trd-file-name "d:/PRG/msys32/home/namatv/quicklisp/local-projects/ZM/PM/pm-237/trd-CPiPES/2020-per/20200814_132922.trd"
 		       :signal-strings *sig*)))
 
 
-(elt *trd* (+ 10931 (* 5 10)))
+(sig "GQ010" (elt *trd* (+ 10931 (* 5 10))) *trd*)
+
 (elt *trd* 11082)
 
 (split-on-intervals-when-flag-is-on *trd* "Oil2Gas")
