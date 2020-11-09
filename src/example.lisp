@@ -14,7 +14,7 @@
 
 
 (defparameter *t-seq* (make-instance '<trd-seq> :trd-file-name *trd-fname*
-                                                :signal-strings '("V2" "ET300"))
+                                                :s-sig '("V2" "ET300"))
   "Для примеров.")
 
 (trd-open *t-seq*)
@@ -24,7 +24,20 @@
 
 (length *t-seq*)  ; => 15706 (14 bits, #x3D5A)
 
-(find-if #'(lambda (el) (> el 800.0)) *t-seq* :key #'second)
-(elt *t-seq* 15705)
+(find-if
+ #'(lambda (el)
+     (> (sig "ET300" el *t-seq*) 800.0 ))
+ *t-seq*)
 
-(position-if #'(lambda (el) (> el 700.0)) *t-seq* :key #'second :from-end t :start 5000)
+(position-if
+ #'(lambda (el)
+     (> (sig "ET300" el *t-seq*) 800.0 ))
+ *t-seq*)
+
+(position-if #'(lambda (el) (> el 700.0))
+	     *t-seq*
+	     :key #'(lambda (el) (sig "ET300" el *t-seq*))
+	     :from-end t
+	     :start 5000)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

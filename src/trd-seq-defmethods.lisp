@@ -74,8 +74,3 @@
 (defmethod sig-off (key data (trd-seq <trd-seq>))
   (= 0 (sig key data trd-seq)))
 
-(sig "GQ010" (elt *trd* 10000) *trd*)
-
-(sig-off "FK310" (elt *trd* 10000) *trd*)
-
-(<trd-seq>-d-sig *trd*)

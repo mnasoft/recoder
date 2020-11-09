@@ -113,9 +113,9 @@
 
 (defmethod split-on-intervals-when-flag-is-on ((trd-dir <trd-dir>) d-signal-str)
   "@b(Описание:) метод @b(split-on-intervals-when-flag-is-on) возвращает список, 
-каждый элемент которого содержит два элемента. Первый - список интервалов, при 
-которых значение дискретного флага @b(d-signal-str) равно 1.
-Второй - объект тренда, для которого найден список интервалов.
+ каждый элемент которого содержит два элемента. Первый - список интервалов, при 
+ которых значение дискретного флага @b(d-signal-str) равно 1.
+ Второй - объект тренда, для которого найден список интервалов.
  
  @b(Пример использования:)
 @begin[lang=lisp](code)
@@ -128,28 +128,34 @@
  Path= \"d:/PRG/msys32/home/namatv/quicklisp/local-projects/ZM/PM/pm-237/trd-CPiPES/2020-per/20200814_132922.trd\")
 @end(code)
 "
-  (let ((trd (make-instance 'recoder:<trd>)))
-    (apply #'append
-	   (mapcar
-	    #'(lambda (el)
-		(let ((rez nil))
-		  (recoder:trd-close trd)
-		  (setf (recoder:trd-file-name trd) el)
-		  (recoder:trd-open trd)
-		  (setf rez (split-on-intervals-when-flag-is-on trd d-signal-str))
-		  (recoder:trd-close trd)
-		  (when rez (list rez trd))))
-	    (mnas-path:find-filename (<dir>-directory trd-dir) "trd")))))
+  (let* ((trd (make-instance 'recoder:<trd>))
+	 (lst (apply #'append
+		     (mapcar
+		      #'(lambda (el)
+			  (let ((rez nil))
+			    (recoder:trd-close trd)
+			    (setf (recoder:trd-file-name trd) el)
+			    (recoder:trd-open trd)
+			    (setf rez (split-on-intervals-when-flag-is-on trd d-signal-str))
+			    (recoder:trd-close trd)
+			    (when rez (list el rez))))
+		      (mnas-path:find-filename (<dir>-directory trd-dir) "trd")))))
+    (do ((f (first  lst) (first  lst))
+	 (s (second lst) (second lst))
+	 (rez nil))
+	((and (null f) (null s)) (nreverse rez))
+      (push (list f s) rez) (setf lst (cddr lst)))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defgeneric split-on-utimes-when-flag-is-on (trd d-signal-str)
   (:documentation
-   "@b(Описание:) обобщенная_функция @b(split-on-intervals-when-flag-is-on)
+   "@b(Описание:) обобщенная_функция @b(split-on-utimes-when-flag-is-on)
 разделяет тренд (или последовательность трендов) на временные интервалы, 
 для которых флаг @b(d-signal-str) имеет значение 1."))
 
 (defmethod split-on-utimes-when-flag-is-on ((trd-dir <trd-dir>) d-signal-str )
-  "@b(Описание:) метод @b(split-on-intervals-when-flag-is-on) возвращает список, 
+  "@b(Описание:) метод @b(split-on-utimes-when-flag-is-on) возвращает список, 
 каждый элемент которого содержит два элемента - начало и конец временного интервала,
 для которого значение дискретного флага @b(d-signal-str) равно 1.
 

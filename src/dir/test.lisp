@@ -19,11 +19,57 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun aver-max-min (seq)
-  (list (math/stat:average-value seq)
-        (math/stat:max-value seq)
-        (math/stat:min-value seq)))
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (let ((mid-v (math/stat:average-value seq))
+	(max-v (math/stat:max-value seq))
+	(min-v (math/stat:min-value seq)))
+    (list mid-v max-v min-v)))
 
+(defun aver-dmax-dmin (seq)
+  (let ((mid-v (math/stat:average-value seq))
+	(max-v (math/stat:max-value seq))
+	(min-v (math/stat:min-value seq)))
+  (list mid-v (- max-v mid-v) (- min-v mid-v))))
+
+(defun foo-Oil2Gas (trd interval)
+  (let ((rez nil)
+	(utime (trd-utime-by-record-number trd (first interval))))
+    (setf rez (cons (first interval) rez))
+    (setf rez (cons (position-if
+		     #'(lambda (el)
+			 (and (> (sig "FA016" el trd) 0.5))) trd :start (first rez))
+		    rez))
+    (setf rez (cons (position-if
+		     #'(lambda (el)
+			 (and (< (sig "FA026" el trd) 0.5))) trd :start (first rez))
+		    rez))
+    (setf rez (cons (position-if
+		     #'(lambda (el)
+			 (and (sig-on "FK301" el trd))) trd :start (first rez))
+		    rez))
+    (setf rez (cons (position-if
+		     #'(lambda (el)
+			 (and (sig-on "FK301" el trd)
+			      (sig-on "FK280" el trd)
+			      (sig-on "FK290" el trd)
+			      (sig-on "FK310" el trd))) trd :start (first rez)) rez))
+    ;; (setf rez (cons (+ (first rez) (* 5 30)) rez))
+    (setf rez (nreverse rez))
+;;;(break "rez=~S:" rez )
+    (append (mnas-org-mode:utime->date-time utime) 
+	  (apply #'append
+		 (mapcar #'(lambda (start end)
+			     (apply #'append (cons (list (* (- end start) 0.2))
+						   (mapcar #'aver-dmax-dmin
+							   (analogs-in-records 
+							    trd  start end
+							    (trd-analog-signal-list trd '("GQ010" "EN2")))))))
+;;; "EN2" "T04" "T04max" "T04min"
+			 rez
+			 (cdr rez))))))
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (progn
   (defparameter *sig* '("GQ010"
@@ -34,82 +80,54 @@
 			"Oil2Gas" "Gas2Oil"
 			"FK250" "FK251" "FK260" "FK261" "FK270" "FK271"
 			"FK280" "FK281" "FK290" "FK291" "FK300" "FK301" "FK310" "FK311"))
-  (defparameter *ht*  (make-ht-by-sig-names *sig*))
   (defparameter *trd* (make-instance
 		       'recoder:<trd-seq>
 		       :trd-file-name "~/quicklisp/local-projects/ZM/PM/pm-237/trd-CPiPES/2020-per/20200814_132922.trd"
 		       :s-sig *sig*)))
 
-
-(sig "GQ010" (elt *trd* (+ 10931 (* 5 10))) *trd*)
-
-(elt *trd* 11082)
+(trd-open *trd*)
 
 (split-on-intervals-when-flag-is-on *trd* "Oil2Gas")
 
-(defun foo-Oil2Gas (trd interval)
-  (let ((rez nil))
-    (setf rez (cons (first interval) rez))
-    (setf rez (cons (position-if #'(lambda (el) (and (> (sig "FA016" el *ht*) 0.5))) trd :start (first rez)) rez))
-    ;;  (setf rez (cons (position-if #'(lambda (el) (and (< (sig "FA026" el *ht*) 0.5))) trd :start (first rez)) rez))
-    (setf rez (cons (position-if #'(lambda (el) (and (sig-on "FK301" el *ht*))) trd :start (first rez)) rez))
-    (setf rez (cons (position-if #'(lambda (el) (and (sig-on "FK301" el *ht*)
-						     (sig-on "FK280" el *ht*)
-						     (sig-on "FK290" el *ht*)
-						     (sig-on "FK310" el *ht*))) trd :start (first rez)) rez))
-    (setf rez (cons (+ (first rez) (* 5 30)) rez))
-    (setf rez (nreverse rez))
-    (mapcar #'(lambda (start end)
-		(cons (* (- end start) 0.2)
-			(mapcar #'aver-max-min
-				(analogs-in-records 
-				 trd  start end
-				 (trd-analog-signal-list trd '("GQ010")))))) ;;;; "EN2" "T04" "T04max" "T04min"
-	    rez
-	    (cdr rez))))
-    
-(foo-Oil2Gas *trd* '(10931 11252))
+(defparameter *per-foo-Oil2Gas*
+  (apply #'append
+	 (mapcar
+	  #'(lambda (t-i)
+	      (let ((trd-seq (make-instance 'recoder:<trd-seq> :trd-file-name (first t-i) :s-sig *sig*)))
+		(trd-open trd-seq)
+;;; (break "0000:")
+		(mapcar
+		 #'(lambda (int)
+;;;(break "0000:~S" int)
+		     (foo-Oil2Gas trd-seq int))
+		 (second t-i))))
+	  (cdr *i-t*))))
 
-((10931 11252) (15413 15677) (19598 19858) (24705 24971) (29177 29440)
-	       (33479 33755) (37542 37813) (42104 42367))
+(defparameter *trd*
+  (make-instance 'recoder:<trd-seq>
+		 :trd-file-name "d:/PRG/msys32/home/namatv/quicklisp/local-projects/ZM/PM/pm-237/trd-CPiPES/2020-per/20200814_132922.trd"
+		 :s-sig *sig*))
 
-(trd-separate-signals *trd* '("GQ010" "EN1" "EN2" "EN3" "T04" "Oil2Gas"))
+(trd-open *trd*)
 
-(mapcar #'math/stat:average-value (analogs-in-utimes *trd* 3806391948 3806392012 (trd-analog-signal-list *trd* '("GQ010" "EN1" "EN2" "EN3" "T04"))))
+(foo-Oil2Gas *trd* '(13355 14081))
 
-(trd-analog-mid-by-utime *trd*  (+ 3806391948 30) (trd-analog-signal-list *trd* '("GQ010" "EN1" "EN2" "EN3" "T04")))
+(first *i-t*) 
 
-(math/stat:max-value (nth 0 (analogs-in-records *trd* 3806391948 3806392012 (trd-analog-signal-list *trd* '("GQ010" "EN1" "EN2" "EN3" "T04")))))
-(math/stat:min-value (nth 2 (analogs-in-utimes *trd* 3806391948 3806392012 (trd-analog-signal-list *trd* '("GQ010" "EN1" "EN2" "EN3" "T04")))))
+(defparameter *i-t* 
+  (split-on-intervals-when-flag-is-on *trd-CPIPES-dir* "Oil2Gas"))
 
-
-
-(recoder:trd-utime-by-record-number *trd* 0)
+(split-on-utimes-when-flag-is-on *trd-CPIPES-dir* "Oil2Gas")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;; (require :recoder/dir)
 
 (defparameter *trd-CPIPES-dir*
-  (make-instance '<trd-dir> :directory "d:/PRG/msys32/home/namatv/quicklisp/local-projects/ZM/PM/pm-237/trd-CPiPES/2020-per"))
+  (make-instance 'recoder/dir:<trd-dir> :directory "d:/PRG/msys32/home/namatv/quicklisp/local-projects/ZM/PM/pm-237/trd-CPiPES/2020-per"))
 
-(split-on-intervals-when-flag-is-on *trd-CPIPES-dir* "Oil2Gas")
+(recoder/dir: *trd-CPIPES-dir* ) 
+ 
+(defparameter *i-t* 
+  (split-on-intervals-when-flag-is-on *trd-CPIPES-dir* "Oil2Gas"))
 
-(split-on-utimes-when-flag-is-on    *trd-CPIPES-dir* "Oil2Gas")
-
-
-
-(analogs-in-utimes 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(let ((ut-s `(,(encode-universal-time 07 12 14 29 07 2020))))
-  (analog-table ut-s
-		`(,*trd-CPIPES-dir* ("GQ010" "EN1" "EN2" "EN3" "T04"))
-		`(,*trd-C100-dir*   ("GQ010" "EN1" "EN2" "EN3" "T04"))
-		`(,*trd-NIO-dir*    ,(append (loop :for i :from 1 :to 76 :collect (format nil "T15_~2,'0D" i)) '("CF104" "CF140")))
-		))
-
-(recoder:trd-split-on-intervals-of-time-when-flag-is-on trd d-signal-str) 
-(recoder:trd-split-on-intervals-by-condition trd start-signal-str-lst end-signal-str-lst)
-(recoder:split-on-intervals-when-flag-is-on)
