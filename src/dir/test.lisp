@@ -34,11 +34,11 @@
 			"Oil2Gas" "Gas2Oil"
 			"FK250" "FK251" "FK260" "FK261" "FK270" "FK271"
 			"FK280" "FK281" "FK290" "FK291" "FK300" "FK301" "FK310" "FK311"))
-  ;; (defparameter *ht* (make-ht-by-sig-names *sig*))
+  (defparameter *ht*  (make-ht-by-sig-names *sig*))
   (defparameter *trd* (make-instance
 		       'recoder:<trd-seq>
-		       :trd-file-name "d:/PRG/msys32/home/namatv/quicklisp/local-projects/ZM/PM/pm-237/trd-CPiPES/2020-per/20200814_132922.trd"
-		       :signal-strings *sig*)))
+		       :trd-file-name "~/quicklisp/local-projects/ZM/PM/pm-237/trd-CPiPES/2020-per/20200814_132922.trd"
+		       :s-sig *sig*)))
 
 
 (sig "GQ010" (elt *trd* (+ 10931 (* 5 10))) *trd*)
