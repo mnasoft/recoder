@@ -19,45 +19,6 @@
 						     (trd-analog-signal-list trd signals)))))) 
 		  records (cdr records)))))
 
-(defun find-divisor (val)
-  "@b(Описание:) функция @b(find-divisor)
-
- @b(Пример использования:)
-@begin[lang=lisp](code)
- (find-divisor 10.964739714723287d0)
-@end(code)
-"
-  (do ((divisor 1))
-      ((<= 1 (abs (* val divisor)) 10) divisor)
-    (cond
-      ((< (abs (* val divisor)) 1) (setf divisor (* divisor 10)))
-      ((< 1 (abs (* val divisor))) (setf divisor (/ divisor 10))))))
-
-(defun my-round (val &optional (sb-kernel::divisor 1))
-  "
- @b(Пример использования:)
-@begin[lang=lisp](code)
- (my-round 10.964739714723287d0 1/100) 
- => 10.96
-@end(code)
-"
-  (* (round val sb-kernel::divisor)
-     (coerce sb-kernel::divisor 'single-float)))
-
-(defun my-round-n (val &optional (numbers 4) (base-val val))
-  (my-round val
-            (/ (expt 10 (* -1 (- numbers 1)))
-               (find-divisor base-val))))
-
-(my-round-n 0.1465 4 10.964739714723287d0)
-
-(my-round-n 0.0010964739714723287d0)
-
-  
-(my-round 10.964739714723287d0 1/100)
-
-
-
 
 
 (defun utime-dtime-signals (trd records signals)
@@ -71,24 +32,15 @@
   (let ((dt (coerce (trd-delta-time trd) 'single-float))
         (first-rec (first records)))
     (mapcar
-     #'(lambda (start end)
+     #'(lambda (start end comment)
 	 (apply #'append (cons
                           (append (mnas-org-mode:utime->date-time (trd-utime-by-record-number trd first-rec))
-                                  (list (* (- end first-rec) dt) (* (- end start) dt)))
+                                  (list (* (- end first-rec) dt) comment (* (- end start) dt)))
 			       (mapcar #'math/stat:aver-dmax-dmin
 				       (analogs-in-records 
 					trd  start end
 					(trd-analog-signal-list trd signals)))))) 
-     records (cdr records))
-    ))
-
-(apply #'append
-	    )
-
-(append
-     (cons (* (trd-delta-time trd) (- (first (last records)) (first records)))
-	   (mnas-org-mode:utime->date-time (trd-utime-by-record-number trd (first records))))
-)
+     records (cdr records) '("Перекладка клапанов" "Замещение топлива" "Подготовка к продувке" "Продувка"))))
 
 (defun foo-Oil2Gas (trd interval)
   "Переход с ДТ на ГТ
@@ -104,15 +56,15 @@
     (push (first interval) rez)
 ;;;;    
     (setf next-find (position-if #'(lambda (el) (and
-                                                 (> (sig "FA010" el trd) 0.5)
-                                                 (> (sig "FA016" el trd) 0.5)
-                                                 (sig-on "FK010" el trd)
-                                                 (sig-on "FK020" el trd)
-                                                 (> (sig "G1" el trd) 150.0)))
+                                                 (> (sig  "FA010" el trd) 0.5)
+                                                 (> (sig  "FA016" el trd) 0.5)
+                                                 (sig-on  "FK010" el trd)
+                                                 (sig-off "FK020" el trd)
+                                                 (> (sig  "G1" el trd) 150.0)))
                                  trd :start (first rez)))
     (if next-find
 	(push next-find rez)
-	(format t "~S ~S ~S~%" (trd-file-name trd) interval "(> (sig \"FA016\" el trd) 0.5)"))
+	(format t "~S ~S ~S~%" (trd-file-name trd) interval "Подготовка к переходу на ГТ не прошла."))
 ;;;;    
     (setf next-find (position-if #'(lambda (el) (and (< (sig "FA026" el trd) 0.5)
                                                      (< (sig "FA020" el trd) 0.5)
@@ -121,17 +73,17 @@
                                  trd :start (first rez)))
     (if next-find
 	(push next-find rez)
-	(format t "~S ~S ~S~%" (trd-file-name trd) interval "(< (sig \"FA026\" el trd) 0.5)"))
+	(format t "~S ~S ~S~%" (trd-file-name trd) interval "Замещение не закончилось."))
 ;;;;    
     (setf next-find (position-if #'(lambda (el) (sig-on "FK301" el trd))      trd :start (first rez)))
     (if next-find
 	(push next-find rez)
-	(format t "~S ~S ~S~%" (trd-file-name trd) interval "(sig-on \"FK301\" el trd)"))
+	(format t "~S ~S ~S~%" (trd-file-name trd) interval "Подготовка к продувке не прошла"))
 ;;;;    
     (setf next-find (position-if #'(lambda (el) (and (sig-on "FK301" el trd) (sig-on "FK280" el trd) (sig-on "FK290" el trd) (sig-on "FK310" el trd))) trd :start (first rez)))
     (if next-find
 	(push next-find rez)
-	(format t "~S ~S ~S~%" (trd-file-name trd) interval "(and (sig-on \"FK301\" el trd) (sig-on \"FK280\" el trd) (sig-on \"FK290\" el trd) (sig-on \"FK310\" el trd))"))
+	(format t "~S ~S ~S~%" (trd-file-name trd) interval "Продувка не прошла"))
 ;;;;
     (setf rez (nreverse rez))
     (utime-dtime-signals trd rez '("GQ010" "EN2"))))
@@ -227,17 +179,22 @@
 
 (defparameter *per-foo-Oil2Gas*
   (apply #'append
-	 (mapcar
-	  #'(lambda (t-i)
-	      (let ((trd-seq (make-instance 'recoder:<trd-seq> :trd-file-name (first t-i) :s-sig *sig*)))
-		(trd-open trd-seq)
-		(mapcar #'(lambda (int) (foo-Oil2Gas trd-seq int)) (second t-i))))
-	  *i-t-Oil2Gas*)))
+	 (apply #'append
+		(mapcar
+		 #'(lambda (t-i)
+		     (let ((trd-seq (make-instance 'recoder:<trd-seq> :trd-file-name (first t-i) :s-sig *sig*)))
+		       (trd-open trd-seq)
+		       (mapcar #'(lambda (int) (foo-Oil2Gas trd-seq int)) (second t-i))))
+		 *i-t-Oil2Gas*))))
 
-(require :mnas-format)
-(mnas-format:round-2d-list *per-foo-Oil2Gas*)
+*per-foo-Oil2Gas*
 
 ;;;;;;;;;;;
+
+(defmethod elt-named ((trd-seq <trd-seq>) index)
+  (format t "~{~{~A~10T~6,1F~}~%~}"
+  (mapcar #'list
+          (recoder:<trd-seq>-s-sig trd-seq) (coerce (elt trd-seq index) 'list))))
 
 (defparameter *trd*
   (make-instance '<trd-seq>
@@ -245,33 +202,20 @@
                  :s-sig *sig*))
 
 (elt-named *trd* (+ 33479 (* 5 21)))
-
-(defmethod elt-named ((trd-seq <trd-seq>) index)
-  (format t "~{~{~A~10T~6,1F~}~%~}"
-  (mapcar #'list
-          (recoder:<trd-seq>-s-sig trd-seq) (coerce (elt trd-seq index) 'list))))
-                 
-
 ;;;;;;;;;;;
 
+(defparameter *i-t-Gas2Oil* (split-on-intervals-when-flag-is-on *trd-CPIPES-dir* "Gas2Oil"))
 
-'(("d:/PRG/msys32/home/namatv/quicklisp/local-projects/ZM/PM/pm-237/trd-CPiPES/2020-per/20200806_100354.trd" (13355 14081) "(sig-on \"FK301\" el trd)")
-  ("d:/PRG/msys32/home/namatv/quicklisp/local-projects/ZM/PM/pm-237/trd-CPiPES/2020-per/20200806_100354.trd" (13355 14081) "(and (sig-on \"FK301\" el trd) (sig-on \"FK280\" el trd) (sig-on \"FK290\" el trd) (sig-on \"FK310\" el trd))"))
+(defparameter *per-foo-Gas2Oil* (apply #'append
+				       (apply #'append
+					      (mapcar
+					       #'(lambda (t-i)
+						   (let ((trd-seq (make-instance 'recoder:<trd-seq> :trd-file-name (first t-i) :s-sig *sig*)))
+						     (trd-open trd-seq)
+						     (mapcar #'(lambda (int) (foo-Gas2Oil trd-seq int)) (second t-i))))
+					       *i-t-Gas2Oil*))))
 
-*PER-FOO-OIL2GAS*
+*per-foo-Gas2Oil*
 
-(defparameter *i-t-Gas2Oil* 
-  (split-on-intervals-when-flag-is-on *trd-CPIPES-dir* "Gas2Oil"))
-
-(defparameter *per-foo-Gas2Oil*
-  (apply #'append
-	 (mapcar
-	  #'(lambda (t-i)
-	      (let ((trd-seq (make-instance 'recoder:<trd-seq> :trd-file-name (first t-i) :s-sig *sig*)))
-		(trd-open trd-seq)
-		(mapcar #'(lambda (int) (foo-Gas2Oil trd-seq int)) (second t-i))))
-	  *i-t-Gas2Oil*)))
-
-(mnas-format:round-2d-list *per-foo-Gas2Oil*)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
