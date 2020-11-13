@@ -74,3 +74,10 @@
 (defmethod sig-off (key data (trd-seq <trd-seq>))
   (= 0 (sig key data trd-seq)))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod <trd-seq>-units ((trd-seq <trd-seq>))
+  (append
+   (mapcar #'recoder/a-signal:a-signal-units (<trd-seq>-a-sig trd-seq))
+   (loop :for i :in (<trd-seq>-d-sig trd-seq)
+	 :collect "0/1")))

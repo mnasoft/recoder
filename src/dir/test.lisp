@@ -1,8 +1,18 @@
 ;; ./src/dir/test.lisp
 
-;;;; (in-package :recoder/dir)
-
 (in-package :recoder)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;               +------FH27--> в свечу    ;;;;
+;;;;               |                         ;;;;
+;;;;      +--FH25--+------FH26--> в КГТ3     ;;;;
+;;;; З1---+                                  ;;;;
+;;;;      +--FH28--+--+---FH29--> в КДТ1     ;;;;
+;;;;               |   \                     ;;;;
+;;;;               |    --FH31--> в КДТ2     ;;;;
+;;;;               |                         ;;;;
+;;;;               +------FH30--> в дренаж   ;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -26,68 +36,7 @@
 				          (trd-analog-signal-list trd signals)))))) 
             records (cdr records) comments)))
 
-;;;; '("Перекладка клапанов" "Замещение топлива" "Подготовка к продувке" "Продувка")
-
-(defun foo-Oil2Gas (trd interval)
-  "Переход с ДТ на ГТ
-
- @b(Пример использования:)
-@begin[lang=lisp](code)
- (elt-named *trd* (+ 33479 (* 5 21)))
-@end(code)
-
-"
-  (let ((rez nil)
-        (comments nil)
-        (next-find nil))
-    (push (first interval) rez)
-    (block перекладка-клапанов
-      (setf next-find (position-if #'(lambda (el)
-                                       (and
-                                        (> (sig  "FA010" el trd) 0.5)
-                                        (> (sig  "FA016" el trd) 0.5)
-                                        (sig-on  "FK010" el trd)
-                                        (sig-off "FK020" el trd)
-                                        (> (sig  "G1"    el trd) 150.0)))
-                                   trd :start (first rez)))
-      (when next-find (push next-find rez) (push "Перекладка клапанов" comments)))
-    (block замещение-топлива
-      (setf next-find (position-if #'(lambda (el)
-                                       (and (< (sig "FA026" el trd) 0.5)
-                                            (< (sig "FA020" el trd) 0.5)
-                                            (sig-off "FK200" el trd)
-                                            (sig-on  "FK201" el trd)))
-                                   trd :start (first rez)))
-      (when next-find (push next-find rez) (push "Замещение топлива" comments)))
-    (block подготовка-к-продувке
-      (setf next-find (position-if #'(lambda (el)
-                                       (sig-on "FK301" el trd))
-                                   trd :start (first rez)))
-      (when next-find (push next-find rez) (push "Подготовка к продувке" comments)))
-    (block продувка
-      (setf next-find (position-if #'(lambda (el)
-                                       (and
-                                        (sig-on "FK301" el trd)
-                                        (sig-on "FK280" el trd)
-                                        (sig-on "FK290" el trd)
-                                        (sig-on "FK310" el trd)))
-                                   trd :start (first rez)))
-      (when next-find (push next-find rez) (push "Продувка" comments)))
-;;;;
-    (setf rez (nreverse rez))
-    (utime-dtime-signals trd rez '("GQ010" "EN2") comments)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;               +------FH27--> в свечу    ;;;;
-;;;;               |                         ;;;;
-;;;;      +--FH25--+------FH26--> в КГТ3     ;;;;
-;;;; З1---+                                  ;;;;
-;;;;      +--FH28--+--+---FH29--> в КДТ1     ;;;;
-;;;;               |   \                     ;;;;
-;;;;               |    --FH31--> в КДТ2     ;;;;
-;;;;               |                         ;;;;
-;;;;               +------FH30--> в дренаж   ;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun foo-Gas2Oil (trd interval)
   (let ((rez nil)
@@ -127,48 +76,58 @@
                        trd :start (first rez)))
       (when next-find (push next-find rez) (push "Продувка" comments)))
 
-    (setf rez (nreverse rez))
-    (utime-dtime-signals trd rez '("GQ010" "EN2"))))
+    (setf rez (nreverse rez) comments (nreverse comments))
+    (utime-dtime-signals trd rez '("GQ010" "EN2") comments)))
 
-(defun foo-Gas2Oil-bak (trd interval)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun foo-Oil2Gas (trd interval)
+  "Переход с ДТ на ГТ
+
+ @b(Пример использования:)
+@begin[lang=lisp](code)
+ (elt-named *trd* (+ 33479 (* 5 21)))
+@end(code)"
   (let ((rez nil)
-	(next-find nil))
+        (comments nil)
+        (next-find nil))
     (push (first interval) rez)
-;;;;    
-    (setf next-find (position-if #'(lambda (el) (and (sig-on "FK281" el trd)
-						     (sig-on "FK291" el trd)
-						     (sig-on "FK311" el trd))) trd :start (first rez)))
-    (if next-find
-	(push next-find rez)
-	(format t "~S ~S ~S~%" (trd-file-name trd) interval "(and (sig-on \"FK251\" el trd) (sig-on \"FK261\" el trd))"))
-;;;;    
-    (setf next-find (position-if #'(lambda (el) (and (> (sig "FA026" el trd) 0.5))) trd :start (first rez)))
-    (if next-find
-	(push next-find rez)
-	(format t "~S ~S ~S~%" (trd-file-name trd) interval "(and (> (sig \"FA026\" el trd) 0.5))"))
-;;;;    
-    (setf next-find (position-if #'(lambda (el) (and (< (sig "FA016" el trd) 0.5))) trd :start (first rez)))
-    (if next-find
-	(push next-find rez)
-	(format t "~S ~S ~S~%" (trd-file-name trd) interval "(and (< (sig \"FA016\" el trd) 0.5))"))
-;;;;    
-    (setf next-find (position-if #'(lambda (el) (and (sig-on "FK271" el trd))) trd :start (first rez)))
-    (if next-find
-	(push next-find rez)
-	(format t "~S ~S ~S~%" (trd-file-name trd) interval "(and (sig-on \"FK271\" el trd))"))
-;;;;    
-    (setf next-find (position-if
-		     #'(lambda (el)
-			 (and (sig-on "FK271" el trd)
-			      (sig-on "FK250" el trd)
-			      (sig-on "FK260" el trd))) trd :start (first rez)))
-    (if next-find
-	(push next-find rez)
-	(format t "~S ~S ~S~%" (trd-file-name trd) interval "(and (sig-on \"FK271\" el trd) (sig-on \"FK250\" el trd) (sig-on \"FK260\" el trd))"))
-    (setf rez (nreverse rez))
-    (utime-dtime-signals trd rez '("GQ010" "EN2"))))
+    (block перекладка-клапанов
+      (setf next-find (position-if #'(lambda (el)
+                                       (and
+                                        (> (sig  "FA010" el trd) 0.5)
+                                        (> (sig  "FA016" el trd) 0.5)
+                                        (sig-on  "FK010" el trd)
+                                        (sig-off "FK020" el trd)
+                                        (> (sig  "G1"    el trd) 150.0)))
+                                   trd :start (first rez)))
+      (when next-find (push next-find rez) (push "Перекладка клапанов" comments)))
+    (block замещение-топлива
+      (setf next-find (position-if #'(lambda (el)
+                                       (and (< (sig "FA026" el trd) 0.5)
+                                            (< (sig "FA020" el trd) 0.5)
+                                            (sig-off "FK200" el trd)
+                                            (sig-on  "FK201" el trd)))
+                                   trd :start (first rez)))
+      (when next-find (push next-find rez) (push "Замещение топлива" comments)))
+    (block подготовка-к-продувке
+      (setf next-find (position-if #'(lambda (el)
+                                       (sig-on "FK301" el trd))
+                                   trd :start (first rez)))
+      (when next-find (push next-find rez) (push "Подготовка к продувке" comments)))
+    (block продувка
+      (setf next-find (position-if #'(lambda (el)
+                                       (and
+                                        (sig-on "FK301" el trd)
+                                        (sig-on "FK280" el trd)
+                                        (sig-on "FK290" el trd)
+                                        (sig-on "FK310" el trd)))
+                                   trd :start (first rez)))
+      (when next-find (push next-find rez) (push "Продувка" comments)))
+    (setf rez (nreverse rez) comments (nreverse comments))
+    (utime-dtime-signals trd rez '("GQ010" "EN2") comments)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defparameter *sig* '("GQ010" ;; Мощность активная
 		      "FA016" ;; ГТ задание   РК
@@ -221,7 +180,11 @@
 
 ;;;;;;;;;;;
 
-
+(defparameter *trd-sig* (make-instance 'recoder:<trd-seq>
+	       :trd-file-name "D:/PRG/msys32/home/namatv/quicklisp/local-projects/ZM/PM/pm-237/trd-CPiPES/2020-per/20200806_151019.trd"
+	       :s-sig *sig*))
+(trd-open *trd-sig*)
+(foo-Gas2Oil *trd-sig* '(57176 57699))
 ;;;;;;;;;;;
 
 (defparameter *i-t-Gas2Oil* (split-on-intervals-when-flag-is-on *trd-CPIPES-dir* "Gas2Oil"))
@@ -251,3 +214,29 @@
                  :s-sig *sig*))
 
 (elt-named *trd* (+ 33479 (* 5 21)))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun extract-signals (fname signals)
+  (let ((trd-seq (make-instance '<trd-seq> :trd-file-name fname :s-sig signals)))
+    (trd-open trd-seq)
+    (with-open-file (os (concatenate 'string (trd-file-name trd-seq) ".csv")
+			:direction :output :if-exists :supersede
+			:external-format :cp1251)
+      (format os "Time;NUM;~{~,4F~^;~}~%" (<trd-seq>-s-sig trd-seq))
+      (format os "~{~,S~^;~}~%" (append '("hh:mm:ss" "NUM") (<trd-seq>-units trd-seq)))
+      (loop :for i :from 0 :below (trd-total-records trd-seq) :by 5
+	    :do (format os "~S;~A;~{~,4F~^;~}~%"
+			(mnas-org-mode:utime->time (trd-utime-by-record-number trd-seq i))
+			i
+			(coerce (elt trd-seq i) 'list))))))
+
+
+(defparameter *pulsation-template* '("EN1" "EN2" "EN3"  "EB060" "EB120" "EB130" "EB090" "T04" "Na"))
+  
+(extract-signals "~/org/troynich/20200907_090415.trd" *pulsation-template*)
+
+(extract-signals "~/org/troynich/20200907_133300.trd" *pulsation-template*)
+
+		 
