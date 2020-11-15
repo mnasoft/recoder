@@ -129,6 +129,55 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;;;; (require :recoder/dir)
+
+(defparameter *trd-CPIPES-dir*
+  (make-instance 'recoder/dir:<trd-dir> :directory "~/quicklisp/local-projects/ZM/PM/pm-237/trd-CPiPES/2020-per"))
+;;;; d:/PRG/msys32/home/namatv
+
+(defparameter *i-t-Oil2Gas* 
+  (split-on-intervals-when-flag-is-on *trd-CPIPES-dir* "Oil2Gas"))
+
+(defparameter *per-foo-Oil2Gas*
+  (apply #'append
+	 (apply #'append
+		(mapcar
+		 #'(lambda (t-i)
+		     (let ((trd-seq (make-instance 'recoder:<trd-seq> :trd-file-name (first t-i) :s-sig *sig*)))
+		       (trd-open trd-seq)
+		       (mapcar #'(lambda (int) (foo-Oil2Gas trd-seq int)) (second t-i))))
+		 *i-t-Oil2Gas*))))
+
+*per-foo-Oil2Gas*
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defparameter *i-t-Gas2Oil* (split-on-intervals-when-flag-is-on *trd-CPIPES-dir* "Gas2Oil"))
+
+(defparameter *per-foo-Gas2Oil* (apply #'append
+				       (apply #'append
+					      (mapcar
+					       #'(lambda (t-i)
+						   (let ((trd-seq (make-instance 'recoder:<trd-seq> :trd-file-name (first t-i) :s-sig *sig*)))
+						     (trd-open trd-seq)
+						     (mapcar #'(lambda (int) (foo-Gas2Oil trd-seq int)) (second t-i))))
+					       *i-t-Gas2Oil*))))
+
+*per-foo-Gas2Oil*
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod elt-named ((trd-seq <trd-seq>) index)
+  (format t "~{~{~A~10T~6,1F~}~%~}"
+  (mapcar #'list
+          (recoder:<trd-seq>-s-sig trd-seq) (coerce (elt trd-seq index) 'list))))
+
+(elt-named *trd* (+ 33479 (* 5 21)))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defparameter *sig* '("GQ010" ;; Мощность активная
 		      "FA016" ;; ГТ задание   РК
                       "FA010" ;; ГТ положение РК
@@ -154,89 +203,3 @@
                       "FK401" ;; ДТ СК FH40 закрыт
 		      "FK250" "FK251" "FK260" "FK261" "FK270" "FK271"
 		      "FK280" "FK281" "FK290" "FK291" "FK300" "FK301" "FK310" "FK311"))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;;;; (require :recoder/dir)
-
-(defparameter *trd-CPIPES-dir*
-  (make-instance 'recoder/dir:<trd-dir> :directory "~/quicklisp/local-projects/ZM/PM/pm-237/trd-CPiPES/2020-per"))
-;;;; d:/PRG/msys32/home/namatv
-
-(defparameter *i-t-Oil2Gas* 
-  (split-on-intervals-when-flag-is-on *trd-CPIPES-dir* "Oil2Gas"))
-
-(defparameter *per-foo-Oil2Gas*
-  (apply #'append
-	 (apply #'append
-		(mapcar
-		 #'(lambda (t-i)
-		     (let ((trd-seq (make-instance 'recoder:<trd-seq> :trd-file-name (first t-i) :s-sig *sig*)))
-		       (trd-open trd-seq)
-		       (mapcar #'(lambda (int) (foo-Oil2Gas trd-seq int)) (second t-i))))
-		 *i-t-Oil2Gas*))))
-
-*per-foo-Oil2Gas*
-
-;;;;;;;;;;;
-
-(defparameter *trd-sig* (make-instance 'recoder:<trd-seq>
-	       :trd-file-name "D:/PRG/msys32/home/namatv/quicklisp/local-projects/ZM/PM/pm-237/trd-CPiPES/2020-per/20200806_151019.trd"
-	       :s-sig *sig*))
-(trd-open *trd-sig*)
-(foo-Gas2Oil *trd-sig* '(57176 57699))
-;;;;;;;;;;;
-
-(defparameter *i-t-Gas2Oil* (split-on-intervals-when-flag-is-on *trd-CPIPES-dir* "Gas2Oil"))
-
-(defparameter *per-foo-Gas2Oil* (apply #'append
-				       (apply #'append
-					      (mapcar
-					       #'(lambda (t-i)
-						   (let ((trd-seq (make-instance 'recoder:<trd-seq> :trd-file-name (first t-i) :s-sig *sig*)))
-						     (trd-open trd-seq)
-						     (mapcar #'(lambda (int) (foo-Gas2Oil trd-seq int)) (second t-i))))
-					       *i-t-Gas2Oil*))))
-
-*per-foo-Gas2Oil*
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defmethod elt-named ((trd-seq <trd-seq>) index)
-  (format t "~{~{~A~10T~6,1F~}~%~}"
-  (mapcar #'list
-          (recoder:<trd-seq>-s-sig trd-seq) (coerce (elt trd-seq index) 'list))))
-
-(defparameter *trd*
-  (make-instance '<trd-seq>
-                 :trd-file-name "~/quicklisp/local-projects/ZM/PM/pm-237/trd-CPiPES/2020-per/20200814_132922.trd"
-                 :s-sig *sig*))
-
-(elt-named *trd* (+ 33479 (* 5 21)))
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defun extract-signals (fname signals)
-  (let ((trd-seq (make-instance '<trd-seq> :trd-file-name fname :s-sig signals)))
-    (trd-open trd-seq)
-    (with-open-file (os (concatenate 'string (trd-file-name trd-seq) ".csv")
-			:direction :output :if-exists :supersede
-			:external-format :cp1251)
-      (format os "Time;NUM;~{~,4F~^;~}~%" (<trd-seq>-s-sig trd-seq))
-      (format os "~{~,S~^;~}~%" (append '("hh:mm:ss" "NUM") (<trd-seq>-units trd-seq)))
-      (loop :for i :from 0 :below (trd-total-records trd-seq) :by 5
-	    :do (format os "~S;~A;~{~,4F~^;~}~%"
-			(mnas-org-mode:utime->time (trd-utime-by-record-number trd-seq i))
-			i
-			(coerce (elt trd-seq i) 'list))))))
-
-
-(defparameter *pulsation-template* '("EN1" "EN2" "EN3"  "EB060" "EB120" "EB130" "EB090" "T04" "Na"))
-  
-(extract-signals "~/org/troynich/20200907_090415.trd" *pulsation-template*)
-
-(extract-signals "~/org/troynich/20200907_133300.trd" *pulsation-template*)
-
-		 

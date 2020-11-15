@@ -439,36 +439,6 @@
   (second (trd-separate-signals trd singnal-str-list)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;; CVS export ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(export 'trd-export-csv )
-
-(defmethod trd-export-csv ((trd <trd>) a-sig-lst d-sig-lst &key (os t) (n-start 0) (n-end (trd-total-records trd)))
-"Производит вывод аналоговых сигналов тренда, 
-заданных параметром a-sig-lst (список сигналов),
-и дискретных сигналов, заданных параметром d-sig-lst (список сигналов),
-в поток os имеющий форматирование csv, начиная с номера записи n-start до номера записи n-end включительно.
-Перед выводом сигналов выводятся их обозначения."
-  (format os "~{~S~^,~}~%" (append (list "U") (mapcar #'(lambda (el) (a-signal-units el)) a-sig-lst) (mapcar #'(lambda (el) "0|1") d-sig-lst)))
-  (format os "~{~S~^,~}~%" (append (list "N") (mapcar #'(lambda (el) (a-signal-id el)) a-sig-lst) (mapcar #'(lambda (el) (d-signal-id el)) d-sig-lst)))
-  (do ((i (max 0 n-start) (1+ i))
-       (e (min (+ 1 n-end) (trd-total-records trd))))
-      ((>= i e) 'done)
-
-    (format os "~{~F~^,~}~%" (append (list (* i (trd-delta-time trd)))
-				     (trd-analog-by-rec-number trd i a-sig-lst)
-				     (trd-discret-by-rec-number trd i d-sig-lst)))))
-
-(export 'trd-export-csv-singal-string )
-
-(defmethod trd-export-csv-singal-string ((trd <trd>) signal-str-list &key (os t) (n-start 0) (n-end (trd-total-records trd)))
-"trd-export-csv-singal-string"
-  (let ((a-d-e (trd-separate-signals trd  signal-str-list )))
-    (trd-export-csv trd (first a-d-e) (second a-d-e) :os os :n-start n-start :n-end n-end)
-    a-d-e))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Splitting ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

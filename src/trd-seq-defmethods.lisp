@@ -81,3 +81,80 @@
    (mapcar #'recoder/a-signal:a-signal-units (<trd-seq>-a-sig trd-seq))
    (loop :for i :in (<trd-seq>-d-sig trd-seq)
 	 :collect "0/1")))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; Export-to ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defgeneric export-to (object stream &key start end by)
+  (:documentation "Выводит содержимое объекта b(object) в поток @b(stream)."))
+
+(defclass <format-stream> ()
+  ((external-format :accessor <format-stream>-external-format :initform :cp1251 :initarg :external-format))
+  (:documentation "@b(Описание:)  класс @b(<format-stream>) для вывода в csv формате."))
+
+;;;;;;;;;;
+
+(defclass <csv-stream> (<format-stream>)
+  ()
+  (:documentation "@b(Описание:)  класс @b(<csv-stream>) для вывода в csv формате."))
+
+;;;;;;;;;;
+
+(export '(*csv-stream*))
+
+(defparameter *csv-stream* (make-instance '<csv-stream> :external-format :cp1251)
+  "@b(Описание:) переменная @b(*csv-stream*)
+")
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; CVS export ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod export-to ((trd-seq <trd-seq>) (csv-stream <csv-stream>)
+                      &key
+                        (start 0)
+                        (end (trd-total-records trd-seq))
+                        (by 1))
+  "@b(Описание:) метод @b(export-to) выполняет вывод объекта @b(trd-seq) в
+поток @b(csv-stream).
+
+ @b(Пример использования:)
+@begin[lang=lisp](code)
+ (trd-open *trd-sig*)
+ (export-to *trd-sig* *csv-stream*)
+@end(code)
+"
+  (with-open-file (os (concatenate 'string (trd-file-name trd-seq) ".csv")
+		      :direction :output :if-exists :supersede
+		      :external-format (<format-stream>-external-format csv-stream))
+    (format os "Time;NUM;~{~,4F~^;~}~%" (<trd-seq>-s-sig trd-seq))
+    (format os "~{~,S~^;~}~%" (append '("hh:mm:ss" "NUM") (<trd-seq>-units trd-seq)))
+    (loop :for i :from start :below end :by by
+	  :do (format os "~S;~A;~{~,4F~^;~}~%"
+		      (mnas-org-mode:utime->time (trd-utime-by-record-number trd-seq i))
+		      i
+		      (coerce (elt trd-seq i) 'list)))))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defparameter *pulsation-template* '("EN1" "EN2" "EN3"  "EB060" "EB120" "EB130" "EB090" "T04" "Na"))
+
+(defun extract-signals (fname signals &key (by 5))
+  (let ((trd-seq (make-instance '<trd-seq> :trd-file-name fname :s-sig signals)))
+    (trd-open trd-seq)
+    (export-to trd-seq *csv-stream* :by by)))
+
+#|
+(extract-signals "~/org/troynich/20200907_090415.trd" *pulsation-template*)
+(extract-signals "~/org/troynich/20200907_133300.trd" *pulsation-template*)
+
+(extract-signals "~/quicklisp/local-projects/ZM/PM/pm-237/trd-CPiPES/2020-per/20200806_151019.trd" *pulsation-template*)
+(extract-signals "~/quicklisp/local-projects/ZM/PM/pm-237/trd-CPiPES/2020-per/20200814_132922.trd" *pulsation-template*)
+
+(defparameter *trd-sig* (make-instance '<trd-seq>
+                                       :trd-file-name "~/quicklisp/local-projects/ZM/PM/pm-237/trd-CPiPES/2020-per/20200806_151019.trd"
+                                       ;; "~/quicklisp/local-projects/ZM/PM/pm-237/trd-CPiPES/2020-per/20200814_132922.trd"
+	                               :s-sig *pulsation-template*))
+|#

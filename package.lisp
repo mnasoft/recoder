@@ -37,7 +37,7 @@
   (:export <trd>
 	   trd-total-records
 	   trd-delta-time
-	   trd-export-csv
+	   
 	   trd-header->org
 	   trd-interval-to-minutes
 	   trd-record-number-to-udate
@@ -60,7 +60,7 @@
 	   trd-close 
 	   trd-utime-start
 	   trd-record-number-by-utime
-	   trd-export-csv-singal-string
+
 	   )
   (:export split-on-intervals-of-time-when-flag-is-on
 	   split-on-intervals-when-flag-is-on
@@ -92,7 +92,11 @@
 	   <trd-seq>-d-sig
 	   <trd-seq>-signal-strings
 	   update
-	   ))
+	   )
+  (:export export-to
+   
+           trd-export-csv-singal-string
+           ))
 
 ;;;;(declaim (optimize (space 0) (compilation-speed 0)  (speed 0) (safety 3) (debug 3)))
 ;;;; (declaim (optimize (compilation-speed 0) (debug 3) (safety 0) (space 0) (speed 0)))
