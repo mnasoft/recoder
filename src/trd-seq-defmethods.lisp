@@ -62,6 +62,21 @@
   "@b(Описание:) метод @b(trd-open :after)
 "
   (update trd-seq))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod elt-seq ((trd-seq <trd-seq>) start end)
+  (math/list-matr:average-col-value
+   (loop :for i :from start :below end
+	 :collect (coerce (elt trd-seq i) 'list))))
+
+;;;;;;;;;;
+
+(defparameter *trd-seq*
+  (make-instance '<trd-seq> :trd-file-name "~/quicklisp/local-projects/ZM/PM/pm-237/trd-CPiPES/2020-per/20200806_100354.trd"
+			    :s-sig *s-001*))
+
+(elt-seq  *trd-seq* (- 13355 35) (- 13355 15))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

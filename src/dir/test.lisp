@@ -148,6 +148,39 @@
 		       (mapcar #'(lambda (int) (foo-Oil2Gas trd-seq int)) (second t-i))))
 		 *i-t-Oil2Gas*))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; 
+
+(defparameter *s-001*
+  '("GQ010" "P02" "G1" "FP230"
+    "G2" "FP210" "FP220"
+    "T04" "T04max" "T04min" "Gas2Oil"))
+
+(defparameter *d-t* nil)
+(setf *d-t* (nreverse *d-t*))
+
+(defparameter *fooo*
+  (cons *s-001*
+	(apply #'append
+	       (mapcar #'(lambda (el)
+			   (let* ((fname     (first el))
+				  (intervals (second el))
+				  (trd-seq (make-instance
+					    '<trd-seq>
+					    :trd-file-name fname
+					    :s-sig *s-001*)))
+			     (mapcar
+			      #'(lambda (el-1)
+				  ;; (break "001:~A" (first el-1))
+				  (elt-seq trd-seq (- (first el-1) (+ 50 15)) (- (first el-1) 15))
+				  (push (mnas-org-mode:utime->date-time (trd-utime-by-record-number trd-seq (- (first el-1) (+ 50 15)))) *d-t*))
+			      intervals)))
+		       *i-t-Oil2Gas*))))
+
+(apply #'append (apply #'append ))
+
+(second (first *i-t-Oil2Gas*))
+
 *per-foo-Oil2Gas*
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -185,7 +218,7 @@
                       "FQ010" ;; ГТ расход по Расходомеру
 		      "FA026" ;; ДТ задание   РК
                       "FA020" ;; ДТ положение РК
-                      "G2"    ;; ДТ расход по Расходомеру
+                      "G2"    ;; ДТ расход по РК
                       "FQ110" ;; ДТ расход по Расходомеру
    		      "EN1"   ;;  
                       "EN2"   ;;
