@@ -1,7 +1,6 @@
 ;;;; test.lisp
 
-(defpackage #:recoder/dir
-  (:use #:cl #:recoder)
+(defpackage #:recoder/dir (:use #:cl #:recoder/trd)
   (:export analog-table)
   (:export <trd-dir>
 	   <trd-tc-dir>)
@@ -33,11 +32,11 @@
 "
   (mapcar
    #'(lambda (ut)
-       (let* ((trd   (recoder:find-trd-by-utime-dirname ut (<dir>-directory td)))
-	      (a-sig (when trd (recoder:trd-analog-signal-list trd signal-ids)))
+       (let* ((trd   (recoder/trd:find-trd-by-utime-dirname ut (<dir>-directory td)))
+	      (a-sig (when trd (recoder/trd:trd-analog-signal-list trd signal-ids)))
               (nils  (loop :for i :in signal-ids :collect nil)))
          (if trd
-             (recoder:trd-analog-mid-by-utime trd ut a-sig)
+             (recoder/trd:trd-analog-mid-by-utime trd ut a-sig)
              nils)))
    u-times))
 
@@ -45,8 +44,8 @@
   "@b(Описание:) метод @b(analog-signals) возвращает список размерностей
 для первого найденного тренда из каталога td.
 "
-  (let* ((trd   (recoder:find-trd-by-utime-dirname (first u-times) (<dir>-directory td)))
-         (a-sig (when trd (recoder:trd-analog-signal-list trd signal-ids)))
+  (let* ((trd   (recoder/trd:find-trd-by-utime-dirname (first u-times) (<dir>-directory td)))
+         (a-sig (when trd (recoder/trd:trd-analog-signal-list trd signal-ids)))
          (nils  (loop :for i :in signal-ids :collect nil)))
     (if trd
         (mapcar #'(lambda (a-s) (recoder/a-signal:a-signal-units a-s)) a-sig)
@@ -128,16 +127,16 @@
  Path= \"d:/PRG/msys32/home/namatv/quicklisp/local-projects/ZM/PM/pm-237/trd-CPiPES/2020-per/20200814_132922.trd\")
 @end(code)
 "
-  (let* ((trd (make-instance 'recoder:<trd>))
+  (let* ((trd (make-instance 'recoder/trd:<trd>))
 	 (lst (apply #'append
 		     (mapcar
 		      #'(lambda (el)
 			  (let ((rez nil))
-			    (recoder:trd-close trd)
-			    (setf (recoder:trd-file-name trd) el)
-			    (recoder:trd-open trd)
+			    (recoder/trd:trd-close trd)
+			    (setf (recoder/trd:trd-file-name trd) el)
+			    (recoder/trd:trd-open trd)
 			    (setf rez (split-on-intervals-when-flag-is-on trd d-signal-str))
-			    (recoder:trd-close trd)
+			    (recoder/trd:trd-close trd)
 			    (when rez (list el rez))))
 		      (mnas-path:find-filename (<dir>-directory trd-dir) "trd")))))
     (do ((f (first  lst) (first  lst))
@@ -167,14 +166,14 @@
      (3806396457 3806396513) (3806397270 3806397324) (3806398182 3806398235))
 @end(code)
 "
-  (let ((trd (make-instance 'recoder:<trd>)))
+  (let ((trd (make-instance 'recoder/trd:<trd>)))
     (apply #'append
 	   (mapcar
 	    #'(lambda (el)
 		(let ((rez nil))
-		  (recoder:trd-close trd)
-		  (setf (recoder:trd-file-name trd) el)
-		  (recoder:trd-open trd)
+		  (recoder/trd:trd-close trd)
+		  (setf (recoder/trd:trd-file-name trd) el)
+		  (recoder/trd:trd-open trd)
 		  (setf rez
 			(split-on-utimes-when-flag-is-on trd d-signal-str))
 		  rez))

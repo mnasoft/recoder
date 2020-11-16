@@ -1,14 +1,10 @@
 ;;;; test.lisp
 
-(in-package #:recoder)
+(in-package #:recoder/seq)
 
 (defparameter *trd-fname* (concatenate 'string
 				       (namestring (asdf:system-source-directory :recoder)) "trd" "/" "2018-11-06_092329.trd")
   "Для примеров.")
-
-(defparameter *trd* (make-instance 'recoder:<trd> :trd-file-name *trd-fname*))
-
-(recoder:trd-open *trd*)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -21,6 +17,7 @@
 
 (<trd-seq>-a-sig *t-seq*)
 (<trd-seq>-d-sig *t-seq*)
+(<trd-seq>-s-sig *t-seq*)
 
 (length *t-seq*)  ; => 15706 (14 bits, #x3D5A)
 
@@ -41,3 +38,19 @@
 	     :start 5000)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+(defparameter *pulsation-template* '("EN1" "EN2" "EN3"  "EB060" "EB120" "EB130" "EB090" "T04" "Na"))
+
+(extract-signals "~/org/troynich/20200907_090415.trd" *pulsation-template*)
+(extract-signals "~/org/troynich/20200907_133300.trd" *pulsation-template*)
+
+(extract-signals
+ "~/quicklisp/local-projects/ZM/PM/pm-237/trd-CPiPES/2020-per/20200806_151019.trd"
+ *pulsation-template*)
+
+(extract-signals
+ "~/quicklisp/local-projects/ZM/PM/pm-237/trd-CPiPES/2020-per/20200814_132922.trd"
+ *pulsation-template*)
+
+

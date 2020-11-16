@@ -1,6 +1,6 @@
 ;;;; recoder.lisp
 
-(in-package #:recoder)
+(in-package #:recoder/trd)
 
 (export 'apply-and )
 

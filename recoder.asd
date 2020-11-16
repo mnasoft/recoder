@@ -4,10 +4,16 @@
   :description "Преднзначен для работы с трендами."
   :author "Nick Matvyeyev <mnasoft@gmail.com>"
   :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"  
-  ;;  :depends-on (#:ie3fp #:mnas-string #:html-table #:math #:mnas-path #:mnas-file-dialog)
-  :depends-on (
-               ;; "ieee-floats"
-               "mnas-string"
+  :depends-on ("recoder/trd" "recoder/seq" "recoder/dir") 
+  :serial nil
+  :in-order-to ((test-op (test-op "recoder/tests")))
+  :components  ((:file "package")))
+
+(defsystem "recoder/trd"
+  :description "Преднзначен для работы с трендами."
+  :author "Nick Matvyeyev <mnasoft@gmail.com>"
+  :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"  
+  :depends-on ("mnas-string"
                "html-table"
                "math"
                "mnas-path"
@@ -18,14 +24,12 @@
                ) 
   :serial nil
   :in-order-to ((test-op (test-op "recoder/tests")))
-  :components ((:file "package")
-	       (:module "src"
+  :components ((:module "src/trd"
 		:serial t
-		:depends-on ("package")
                 :components
-		((:file "defparameters")
+		((:file "package")
+                 (:file "defparameters")
 		 (:file "trd-defmethods")
-		 (:file "trd-seq-defmethods")
 		 (:file "recoder")
 		 (:file "example") 
 		 ;; (:file "test") 
@@ -72,6 +76,20 @@
      (:file "a-signal-defmethods")
      ))))
 
+(defsystem "recoder/seq"
+  :description "Преднзначен для работы с трендами.
+Определяет классы и методы для представления тренда в виде последовательности (sequience)."
+  :author "Nick Matvyeyev <mnasoft@gmail.com>"
+  :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"
+  :depends-on ("recoder/trd" "mnas-org-mode")
+  :serial nil
+  :components
+  ((:module "src/seq"
+    :serial nil
+    :components
+    ((:file "package")
+     (:file "trd-seq" :depends-on ("package"))))))
+
 (defsystem "recoder/d-signal"
   :description "Преднзначен для работы с трендами.
 Аналоговый сигнал"
@@ -90,7 +108,7 @@
   :description "Преднзначен для работы группами трендов, помещенными в отдельные каталоги."
   :author "Nick Matvyeyev <mnasoft@gmail.com>"
   :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"
-  :depends-on ("recoder" "termo-container" "mnas-org-mode" "math" "mnas-format")
+  :depends-on ("recoder/trd" "termo-container" "mnas-org-mode" "math" "mnas-format")
   :serial nil
   :components
   ((:module "src/dir"

@@ -4,6 +4,7 @@
 	      :authors ("Nick Matvyeyev")
 	      :output-format (:type :multi-html :template :minima)
 	      :sources ("recoder.scr"
+                        "recoder-trd.scr"
                         "recoder-trd-analog.scr"
                         "recoder-trd-discret.scr"
                         "recoder-trd-export.scr"

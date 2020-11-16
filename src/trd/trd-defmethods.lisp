@@ -1,6 +1,6 @@
 ;;;; defmethods.lisp
 
-(in-package #:recoder)
+(in-package #:recoder/trd)
 
 (export '(<trd> trd-file-name trd-file-descr trd-id-string trd-version
           trd-utime-start trd-reserv trd-total-records trd-delta-time

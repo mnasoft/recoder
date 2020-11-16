@@ -1,6 +1,6 @@
 ;;;; defparameters.lisp
 
-(in-package #:recoder)
+(in-package #:recoder/trd)
 
 (defparameter *head-id-wid*              5 "Строка идентификации файла тренда, char[5]")
 

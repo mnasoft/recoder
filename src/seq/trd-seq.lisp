@@ -1,10 +1,10 @@
-;;; ./src/trd-seq-defmethods.lisp
+;;; ./src/trd-seq.lisp
 
-(in-package #:recoder)
+(in-package #:recoder/seq)
 
-(export '(<trd-seq> <trd-seq>-a-sig <trd-seq>-d-sig update <trd-seq>-s-sig))
+(export '(<trd-seq> <trd-seq>-a-sig <trd-seq>-d-sig <trd-seq>-s-sig))
 
-(defclass <trd-seq> (<trd> sequence)
+(defclass <trd-seq> (recoder/trd:<trd> sequence)
   ((s-sig :reader <trd-seq>-s-sig :initform nil :initarg :s-sig
           :documentation "Список с именами сигналов.")
    (a-sig :accessor <trd-seq>-a-sig :initform nil
@@ -22,17 +22,11 @@
 доступа к элементам последовательности.
 "))
 
-(defmethod (setf <trd-seq>-s-sig) (new-value (trd-seq <trd-seq>))
-  (unless (trd-file-descr trd-seq) (trd-open trd-seq))
-  (with-slots (s-sig) trd-seq
-    (setf s-sig new-value)
-    (update trd-seq)))
-
 (defmethod update ((trd-seq <trd-seq>))
   "@b(Описание:) метод @b(update) 
 "
-  (unless (trd-file-descr trd-seq) (trd-open trd-seq))
-  (let ((sig (trd-separate-signals trd-seq (<trd-seq>-s-sig trd-seq))))
+  (unless (trd-file-descr trd-seq) (recoder/trd:trd-open trd-seq))
+  (let ((sig (recoder/trd:trd-separate-signals trd-seq (<trd-seq>-s-sig trd-seq))))
     (setf (<trd-seq>-a-sig trd-seq) (first  sig))
     (setf (<trd-seq>-d-sig trd-seq) (second sig))
     (with-slots (s-sig) trd-seq
@@ -45,17 +39,31 @@
 	  :do  (setf (gethash s (<trd-seq>-h-tbl trd-seq)) i ))
     trd-seq))
 
+(export '(trd-open))
+
+(defmethod trd-open ((trd-seq <trd-seq>))
+  (recoder/trd:trd-open trd-seq))
+
+(defmethod trd-open :after ((trd-seq <trd-seq>))
+  (update trd-seq))
+
+(defmethod (setf <trd-seq>-s-sig) (new-value (trd-seq <trd-seq>))
+  (unless (recoder/trd:trd-file-descr trd-seq) (recoder/trd:trd-open trd-seq))
+  (with-slots (s-sig) trd-seq
+    (setf s-sig new-value)
+    (update trd-seq)))
+
 (defmethod sequence:length ((trd-seq <trd-seq>))
-  (unless (trd-file-descr trd-seq) (trd-open trd-seq))
-  (trd-total-records trd-seq))
+  (unless (trd-file-descr trd-seq) (recoder/trd:trd-open trd-seq))
+  (recoder/trd:trd-total-records trd-seq))
 
 (defmethod sequence:elt ((trd-seq <trd-seq>) index)
-  (unless (trd-file-descr trd-seq) (trd-open trd-seq))
+  (unless (trd-file-descr trd-seq) (recoder/trd:trd-open trd-seq))
   (let ((a-sig (<trd-seq>-a-sig trd-seq))
         (d-sig (<trd-seq>-d-sig trd-seq)))
     (coerce
-     (append (when a-sig (trd-analog-by-rec-number  trd-seq index a-sig))
-             (when d-sig (trd-discret-by-rec-number trd-seq index d-sig)))
+     (append (when a-sig (recoder/trd:trd-analog-by-rec-number  trd-seq index a-sig))
+             (when d-sig (recoder/trd:trd-discret-by-rec-number trd-seq index d-sig)))
      'vector)))
 
 (defmethod trd-open :after ((trd-seq <trd-seq>))
@@ -127,7 +135,7 @@
 (defmethod export-to ((trd-seq <trd-seq>) (csv-stream <csv-stream>)
                       &key
                         (start 0)
-                        (end (trd-total-records trd-seq))
+                        (end (recoder/trd:trd-total-records trd-seq))
                         (by 1))
   "@b(Описание:) метод @b(export-to) выполняет вывод объекта @b(trd-seq) в
 поток @b(csv-stream).
@@ -138,36 +146,21 @@
  (export-to *trd-sig* *csv-stream*)
 @end(code)
 "
-  (with-open-file (os (concatenate 'string (trd-file-name trd-seq) ".csv")
+  (with-open-file (os (concatenate 'string (recoder/trd:trd-file-name trd-seq) ".csv")
 		      :direction :output :if-exists :supersede
 		      :external-format (<format-stream>-external-format csv-stream))
     (format os "Time;NUM;~{~,4F~^;~}~%" (<trd-seq>-s-sig trd-seq))
     (format os "~{~,S~^;~}~%" (append '("hh:mm:ss" "NUM") (<trd-seq>-units trd-seq)))
     (loop :for i :from start :below end :by by
 	  :do (format os "~S;~A;~{~,4F~^;~}~%"
-		      (mnas-org-mode:utime->time (trd-utime-by-record-number trd-seq i))
+		      (mnas-org-mode:utime->time (recoder/trd:trd-utime-by-record-number trd-seq i))
 		      i
 		      (coerce (elt trd-seq i) 'list)))))
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defparameter *pulsation-template* '("EN1" "EN2" "EN3"  "EB060" "EB120" "EB130" "EB090" "T04" "Na"))
 
 (defun extract-signals (fname signals &key (by 5))
   (let ((trd-seq (make-instance '<trd-seq> :trd-file-name fname :s-sig signals)))
     (trd-open trd-seq)
     (export-to trd-seq *csv-stream* :by by)))
 
-#|
-(extract-signals "~/org/troynich/20200907_090415.trd" *pulsation-template*)
-(extract-signals "~/org/troynich/20200907_133300.trd" *pulsation-template*)
-
-(extract-signals "~/quicklisp/local-projects/ZM/PM/pm-237/trd-CPiPES/2020-per/20200806_151019.trd" *pulsation-template*)
-(extract-signals "~/quicklisp/local-projects/ZM/PM/pm-237/trd-CPiPES/2020-per/20200814_132922.trd" *pulsation-template*)
-
-(defparameter *trd-sig* (make-instance '<trd-seq>
-                                       :trd-file-name "~/quicklisp/local-projects/ZM/PM/pm-237/trd-CPiPES/2020-per/20200806_151019.trd"
-                                       ;; "~/quicklisp/local-projects/ZM/PM/pm-237/trd-CPiPES/2020-per/20200814_132922.trd"
-	                               :s-sig *pulsation-template*))
-|#

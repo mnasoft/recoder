@@ -1,5 +1,5 @@
 @begin(section) @title(trd-discret)
- @cl:with-package[name="recoder"](
+ @cl:with-package[name="recoder/trd"](
   @cl:doc(method trd-discret-by-rec-number-t-nil (trd <trd>) rec-number d-signal-list)
   @cl:doc(method trd-discret-by-utime (trd <trd>) utime d-signal-list)
   @cl:doc(method trd-discret-by-utime-t-nil (trd <trd>) utime d-signal-list)
