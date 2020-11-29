@@ -1,0 +1,28 @@
+@begin(section) @title(recoder/seq)
+
+@begin(section) @title(method)
+  @cl:with-package[name="sequence"](
+   @cl:doc(method length (trd-seq <trd-seq>))
+   @cl:doc(method elt (trd-seq <trd-seq>) index)
+   )
+  @cl:with-package[name="recoder/seq"](
+   @cl:doc(method update (trd-seq <trd-seq>))
+   @cl:doc(method trd-open (trd-seq <trd-seq>))
+   @cl:doc(method elt-seq (trd-seq <trd-seq>) start end)
+   @cl:doc(method sig     key data (trd-seq <trd-seq>))
+   @cl:doc(method sig-on  key data (trd-seq <trd-seq>))
+   @cl:doc(method sig-off key data (trd-seq <trd-seq>))
+   @cl:doc(method <trd-seq>-units (trd-seq <trd-seq>))
+   @cl:doc(method export-to (trd-seq <trd-seq>) (csv-stream <csv-stream>)
+                  &key
+                  (start 0)
+                  (end (recoder/trd:trd-total-records trd-seq))
+                  (by 1))
+   @cl:doc(function extract-signals (fname signals &key (by 5)))
+   @cl:doc(setf-method <trd-seq>-s-sig new-value (trd-seq <trd-seq>))
+   )
+ @end(section)
+ 
+(method  (setf <trd-seq>-s-sig) new-value (trd-seq <trd-seq>))
+@end(section)
+

@@ -54,3 +54,37 @@
  *pulsation-template*)
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defparameter *trd-seq*
+  (make-instance '<trd-seq>
+                 :trd-file-name
+                 "~/quicklisp/local-projects/clisp/recoder/trd/2018-11-06_092329.trd"
+                 ))
+
+(trd-open *trd-seq*)
+
+(elt *trd-seq* 0)
+
+(setf (<trd-seq>-s-sig  *trd-seq*)
+      '("V2" "T2" "ET300"
+        "ET001" "ET002" "ET003" "ET004" "ET005"
+        "ET006" "ET007" "ET008" "ET009" "ET010"
+        "ET011" "ET012" "ET013" "ET014" "ET015"
+        "ET016" "ET017" "ET018" "ET019" "ET020"
+        "ET021" "ET022" "ET023" "ET024" "ET025"
+         ))
+
+(<trd-seq>-a-sig *trd-seq*)
+
+(elt *trd-seq* 0)
+
+
+(position-if
+ #'(lambda (el) (> (sig "ET300" el *trd-seq*) 800.0 ))
+ *trd-seq*)
+
+(elt *trd-seq* 5102)
+
+
+     (> (sig "ET300" el *t-seq*) 800.0 ))

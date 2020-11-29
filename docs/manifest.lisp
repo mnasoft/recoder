@@ -13,4 +13,6 @@
 			"recoder-graph.scr"
                         "recoder-a-signal-graph.scr"
                         "recoder-d-signal-graph.scr"
+                        "recoder-seq.scr"
+                        "recoder-seq-graph.scr"
 			))))

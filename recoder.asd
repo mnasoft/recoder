@@ -87,8 +87,7 @@
   ((:module "src/seq"
     :serial nil
     :components
-    ((:file "package")
-     (:file "trd-seq" :depends-on ("package"))))))
+    ((:file "trd-seq")))))
 
 (defsystem "recoder/d-signal"
   :description "Преднзначен для работы с трендами.

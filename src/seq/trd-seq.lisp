@@ -1,5 +1,19 @@
 ;;; ./src/trd-seq.lisp
 
+(defpackage #:recoder/seq
+  (:use #:cl
+        #:mnas-string
+        #:recoder/binary
+        #:recoder/d-signal
+        #:recoder/a-signal)
+  (:export <trd-seq>
+           <trd-seq>-a-sig
+           <trd-seq>-d-sig
+           <trd-seq>-s-sig
+           trd-open
+           *csv-stream*
+           ))
+
 (in-package #:recoder/seq)
 
 (export '(<trd-seq> <trd-seq>-a-sig <trd-seq>-d-sig <trd-seq>-s-sig))
@@ -42,22 +56,28 @@
 (export '(trd-open))
 
 (defmethod trd-open ((trd-seq <trd-seq>))
+  "@b(Описание:) метод @b(trd-open) выполняет отркытие файла тренда,
+ассоциированного с объектом @b(trd-seq).
+"
   (recoder/trd:trd-open trd-seq))
 
-(defmethod trd-open :after ((trd-seq <trd-seq>))
-  (update trd-seq))
-
 (defmethod (setf <trd-seq>-s-sig) (new-value (trd-seq <trd-seq>))
+  "@b(Описание:) метод @b(setf <trd-seq>-s-sig)
+"
   (unless (recoder/trd:trd-file-descr trd-seq) (recoder/trd:trd-open trd-seq))
   (with-slots (s-sig) trd-seq
     (setf s-sig new-value)
     (update trd-seq)))
 
 (defmethod sequence:length ((trd-seq <trd-seq>))
+  "@b(Описание:) метод @b(sequence:length)
+"
   (unless (trd-file-descr trd-seq) (recoder/trd:trd-open trd-seq))
   (recoder/trd:trd-total-records trd-seq))
 
 (defmethod sequence:elt ((trd-seq <trd-seq>) index)
+  "@b(Описание:) метод @b(sequence:elt)
+"
   (unless (trd-file-descr trd-seq) (recoder/trd:trd-open trd-seq))
   (let ((a-sig (<trd-seq>-a-sig trd-seq))
         (d-sig (<trd-seq>-d-sig trd-seq)))
@@ -73,6 +93,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmethod elt-seq ((trd-seq <trd-seq>) start end)
+  "@b(Описание:) метод @b(elt-seq) возвращает средние значения из тренда
+@b(trd-seq) в диапазоне записей от @b(start) включительно до @b(end) 
+исключительно.
+"
   (math/list-matr:average-col-value
    (loop :for i :from start :below end
 	 :collect (coerce (elt trd-seq i) 'list))))
@@ -87,17 +111,25 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmethod sig     (key data (trd-seq <trd-seq>))
+  "@b(Описание:) метод @b(sig)
+"
   (svref data (gethash key (<trd-seq>-h-tbl trd-seq))))
 
 (defmethod sig-on  (key data (trd-seq <trd-seq>))
+  "@b(Описание:) метод @b(sig-on)
+"
   (= 1 (sig key data trd-seq)))
 
 (defmethod sig-off (key data (trd-seq <trd-seq>))
+    "@b(Описание:) метод @b(sig-off)
+"
   (= 0 (sig key data trd-seq)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmethod <trd-seq>-units ((trd-seq <trd-seq>))
+  "@b(Описание:) метод @b(<trd-seq>-units)
+"
   (append
    (mapcar #'recoder/a-signal:a-signal-units (<trd-seq>-a-sig trd-seq))
    (loop :for i :in (<trd-seq>-d-sig trd-seq)
@@ -160,6 +192,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun extract-signals (fname signals &key (by 5))
+  "@b(Описание:) функция @b(extract-signals)
+"
   (let ((trd-seq (make-instance '<trd-seq> :trd-file-name fname :s-sig signals)))
     (trd-open trd-seq)
     (export-to trd-seq *csv-stream* :by by)))
