@@ -657,14 +657,14 @@ todo: доработать, чтоб возвращался последний �
     (push (list "Файл" (trd-file-name trd )) rez)
     (when (trd-file-descr trd)
       (progn
-	(push (list "Версия тренда" 	                     ( trd-version trd) ) rez)
-	(push (list "Дата создания тренда"  (mnas-string:print-universal-date (trd-utime-start trd) :stream nil)) rez)
-	(push (list "Время создания тренда" (mnas-string:print-universal-time (trd-utime-start trd) :stream nil)) rez)
-	(push (list "К-во аналоговых+дискретных сигналов"    ( trd-reserv         trd) ) rez)
-	(push (list "Общее число записей в тренде"           ( trd-total-records  trd) ) rez)
-	(push (list "Интервал между записями тренда"         ( trd-delta-time     trd) ) rez)
-	(push (list "Количество аналоговых сигналов"         ( trd-analog-number  trd) ) rez)
-	(push (list "Количество дискретных сигналов"         ( trd-discret-number trd) ) rez)))
+	(push (list "Версия тренда" 	                  (trd-version trd) ) rez)
+	(push (list "Дата создания тренда"                (mnas-string/print:date (trd-utime-start trd) :stream nil)) rez)
+	(push (list "Время создания тренда"               (mnas-string/print:day-time (trd-utime-start trd) :stream nil)) rez)
+	(push (list "К-во аналоговых+дискретных сигналов" (trd-reserv         trd) ) rez)
+	(push (list "Общее число записей в тренде"        (trd-total-records  trd) ) rez)
+	(push (list "Интервал между записями тренда"      (trd-delta-time     trd) ) rez)
+	(push (list "Количество аналоговых сигналов"      (trd-analog-number  trd) ) rez)
+	(push (list "Количество дискретных сигналов"      (trd-discret-number trd) ) rez)))
     (nreverse rez)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
