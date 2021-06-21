@@ -64,9 +64,9 @@
   (when (trd-file-descr trd)
     (format stream "id=~S version=~A " (trd-id-string trd) (trd-version trd))
     (format stream "[ ")
-    (mnas-string:print-universal-time (trd-utime-start trd) :stream stream)
+    (mnas-string/print:date-time (trd-utime-start trd) :stream stream)
     (format stream " ; ")
-    (mnas-string:print-universal-time (trd-utime-end trd) :stream stream)
+    (mnas-string/print:date-time (trd-utime-end trd) :stream stream)
     (format stream " ]")
     (format stream "~%Reserv         = ~A~%Total-records  = ~A~%Delta-time     = ~A~%Analog-number  = ~A~%Discret-number = ~A"
 	    (trd-reserv trd) (trd-total-records trd) (trd-delta-time trd) (trd-analog-number trd) (trd-discret-number trd))
