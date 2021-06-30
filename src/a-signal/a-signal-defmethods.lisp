@@ -1,11 +1,25 @@
 ;;;; a-signal-defmethods.lisp
 
+(defpackage #:recoder/a-signal
+  (:use #:cl )
+  (:export <a-signal>
+	   a-signal-units
+	   a-signal-num
+	   a-signal-min
+	   a-signal-id
+	   a-signal-value
+	   a-signal-description
+	   a-signal-max
+	   )
+  (:intern *ushort-max*))
+
+;;;;(declaim (optimize (space 0) (compilation-speed 0)  (speed 0) (safety 3) (debug 3)))
+;;;; (declaim (optimize (compilation-speed 0) (debug 3) (safety 0) (space 0) (speed 0)))
+
 (in-package #:recoder/a-signal)
 
-(defparameter *ushort-max* (- (expt 2 16) 0)
+(defparameter *ushort-max* (- (expt 2 16) 1)
   "Количество градаций аналогового сигнала от 0 до *ushort-max* при записи тренда")
-
-(export '(<a-signal> a-signal-num a-signal-id a-signal-description a-signal-units a-signal-min a-signal-max))
 
 (defclass <a-signal> ()
   ((a-signal-num         :accessor a-signal-num         :initarg :a-signal-num         :initform nil :documentation "Номер сигнала в списке сигналов. Первый сигнал имеет номер 0")

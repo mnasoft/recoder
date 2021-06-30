@@ -131,7 +131,7 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
 
 		(push (trd-analog-mid-by-utime trd time s-list)    data)
 		(push (trd-analog-stddev-by-utime trd time s-list) dev)
-		(push (list (mnas-string/print:date time :stream nil) (print-universal-time time :stream nil)) d-time-str)))
+		(push (list (mnas-string/print:date time :stream nil) (mnas-string/print:day-time time :stream nil)) d-time-str)))
 	  trd-lst time-lst)
     (setf data (reverse data)
 	  dev  (reverse dev)
