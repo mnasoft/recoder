@@ -45,8 +45,8 @@
     (setf (<trd-seq>-d-sig trd-seq) (second sig))
     (with-slots (s-sig) trd-seq
       (setf s-sig
-            (append (mapcar #'recoder/a-signal:a-signal-id (<trd-seq>-a-sig trd-seq))
-                    (mapcar #'recoder/d-signal:d-signal-id (<trd-seq>-d-sig trd-seq)))))
+            (append (mapcar #'recoder/a-signal:<a-signal>-id (<trd-seq>-a-sig trd-seq))
+                    (mapcar #'recoder/d-signal:<d-signal>-id (<trd-seq>-d-sig trd-seq)))))
     (clrhash (<trd-seq>-h-tbl trd-seq))
     (loop :for s :in (<trd-seq>-s-sig trd-seq)
 	  :for i :from 0 :below (length (<trd-seq>-s-sig trd-seq))
@@ -131,7 +131,7 @@
   "@b(Описание:) метод @b(<trd-seq>-units)
 "
   (append
-   (mapcar #'recoder/a-signal:a-signal-units (<trd-seq>-a-sig trd-seq))
+   (mapcar #'recoder/a-signal:<a-signal>-units (<trd-seq>-a-sig trd-seq))
    (loop :for i :in (<trd-seq>-d-sig trd-seq)
 	 :collect "0/1")))
 

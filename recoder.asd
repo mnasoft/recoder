@@ -39,7 +39,11 @@
   :description "Зависимости для сборки документации."
   :author "Nick Matvyeyev <mnasoft@gmail.com>"
   :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"  
-  :depends-on ("recoder" "mnas-package"))
+  :depends-on ("recoder" "codex" "mnas-package")
+  :components ((:module "src/docs"
+		:serial nil
+                :components ((:file "docs"))))
+  )
 
 
 (defsystem "recoder/binary"
@@ -72,8 +76,7 @@
   ((:module "src/a-signal"
     :serial t
     :components
-    ((:file "package")
-     (:file "a-signal-defmethods")
+    ((:file "a-signal")
      ))))
 
 (defsystem "recoder/seq"
@@ -99,8 +102,7 @@
   ((:module "src/d-signal"
     :serial t
     :components
-    ((:file "package")
-     (:file "d-signal-defmethods")
+    ((:file "d-signal")
      ))))
 
 (defsystem "recoder/dir"

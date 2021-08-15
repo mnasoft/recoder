@@ -1,4 +1,4 @@
- @begin(section) @title(Графы recoder-seq)
+  @begin(section) @title(Графы recoder-seq)
   @begin(list)
    @item(system-graph @image[src=./system-graph-recoder-seq.gv.png]())
    @item(call-graph   @image[src=./call-graph-recoder-seq.gv.png]())

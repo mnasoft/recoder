@@ -1,7 +1,0 @@
-
-@begin(section) @title(export-to)
-
-@cl:with-package[name="recoder/trd"](
- @cl:doc(method export-to (trd-seq <trd-seq>) (csv-stream <csv-stream>) &key (start 0) (end (trd-total-records trd-seq)) (by 1))
-)
-@end(section)

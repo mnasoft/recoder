@@ -4,9 +4,10 @@
   (:use #:cl)
   ;; #:mnas-string #:recoder/binary
   (:export <d-signal>
-	   d-signal-description
-	   d-signal-id
-           d-signal-num))
+           <d-signal>-num
+           <d-signal>-id
+	   <d-signal>-description
+           ))
 
 ;;;;(declaim (optimize (space 0) (compilation-speed 0)  (speed 0) (safety 3) (debug 3)))
 ;;;; (declaim (optimize (compilation-speed 0) (debug 3) (safety 0) (space 0) (speed 0)))
@@ -14,9 +15,9 @@
 (in-package #:recoder/d-signal)
       
 (defclass <d-signal> ()
-  ((d-signal-num         :accessor d-signal-num         :initarg :d-signal-num         :initform nil :documentation "Номер сигнала в списке сигналов. Первый сигнал имеет номер 0")
-   (d-signal-id          :accessor d-signal-id          :initarg :d-signal-id          :initform nil :documentation "Обозначение сигнала, char[10]")
-   (d-signal-description :accessor d-signal-description :initarg :d-signal-description :initform nil :documentation "Описание сигнала, char[40]"))
+  ((num         :accessor <d-signal>-num         :initarg :num         :initform nil :documentation "Номер сигнала в списке сигналов. Первый сигнал имеет номер 0")
+   (id          :accessor <d-signal>-id          :initarg :id          :initform nil :documentation "Обозначение сигнала, char[10]")
+   (description :accessor <d-signal>-description :initarg :description :initform nil :documentation "Описание сигнала, char[40]"))
   (:documentation "Дескриптор (описание) дискретного сигнала.
 
  Запись дескриптора аналогового сигнала во внутреннем представлении
@@ -29,4 +30,4 @@
 @end(table)"))
 
 (defmethod print-object ((x <d-signal>) stream)
-  (format stream "~S ~S ~S" (d-signal-num x) (d-signal-id x) (d-signal-description x)))
+  (format stream "~S ~S ~S" (<d-signal>-num x) (<d-signal>-id x) (<d-signal>-description x)))

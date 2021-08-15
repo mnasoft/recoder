@@ -48,7 +48,7 @@
          (a-sig (when trd (recoder/trd:trd-analog-signal-list trd signal-ids)))
          (nils  (loop :for i :in signal-ids :collect nil)))
     (if trd
-        (mapcar #'(lambda (a-s) (recoder/a-signal:a-signal-units a-s)) a-sig)
+        (mapcar #'(lambda (a-s) (recoder/a-signal:<a-signal>-units a-s)) a-sig)
         nils)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

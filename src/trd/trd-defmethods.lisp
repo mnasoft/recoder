@@ -133,12 +133,12 @@
 	      analog-min         (read-trd-file-double in)
 	      analog-max         (read-trd-file-double in)
 	      (gethash analog-id (trd-analog-ht trd)) (make-instance '<a-signal>
-								   :a-signal-num i
-								   :a-signal-id  analog-id
-								   :a-signal-description analog-description
-								   :a-signal-units analog-units
-								   :a-signal-min analog-min
-								   :a-signal-max analog-max))))))
+								   :num i
+								   :id  analog-id
+								   :description analog-description
+								   :units analog-units
+								   :min analog-min
+								   :max analog-max))))))
 
 (defmethod trd-read-discret-ht((trd <trd>))
   "Выполняет разбор дискретных сигналов"
@@ -150,9 +150,9 @@
 	(setf discret-id          (recode-string (read-trd-file in *signal-id-wid*))
 	      discret-description (recode-string (read-trd-file in *signal-description-wid*))
 	      (gethash discret-id (trd-discret-ht trd)) (make-instance '<d-signal>
-								     :d-signal-num i
-								     :d-signal-id discret-id
-								     :d-signal-description discret-description))))))
+								     :num i
+								     :id discret-id
+								     :description discret-description))))))
 
 (export 'trd-close )
 
@@ -245,7 +245,7 @@
       (dotimes (i (trd-analog-number trd) 'done)
 	(setf (svref v-sh i)
 	      (read-trd-file-short (trd-file-descr trd))))
-      (mapcar #'(lambda(el) (a-signal-value el (svref v-sh (a-signal-num el))))
+      (mapcar #'(lambda(el) (<a-signal>-value el (svref v-sh (a-signal-num el))))
 	      signal-list))))
 
 (export '(trd-record-number-by-utime))
@@ -275,7 +275,7 @@
 		      (trd-discret-offset trd) ))
     (let ((s-int (list-to-int (read-trd-file (trd-file-descr trd) (trd-discret-length-byte trd)))))
       (mapcar #'(lambda (el)
-		  (if (logbitp (d-signal-num  el ) s-int) 1 0))
+		  (if (logbitp (<d-signal>-num  el ) s-int) 1 0))
 	      d-signal-list))))
 
 (export 'trd-discret-by-rec-number-t-nil )
@@ -291,7 +291,7 @@
 		      (trd-discret-offset trd) ))
     (let ((s-int (list-to-int (read-trd-file (trd-file-descr trd) (trd-discret-length-byte trd)))))
       (mapcar #'(lambda (el)
-		  (logbitp (d-signal-num  el ) s-int))
+		  (logbitp (<d-signal>-num  el ) s-int))
 	      d-signal-list))))
 
 (export 'trd-discret-by-utime)
@@ -623,7 +623,7 @@ todo: доработать, чтоб возвращался последний �
 
 "
   (loop :for k :being :the hash-key :using (hash-value v) :of (trd-analog-ht trd)
-	:collect  (list (a-signal-num v) (a-signal-id v) (a-signal-min v) (a-signal-max v) (a-signal-units v) (a-signal-description v))))
+	:collect  (list (a-signal-num v) (<a-signal>-id v) (<a-signal>-min v) (<a-signal>-max v) (<a-signal>-units v) (<a-signal>-description v))))
 
 (export 'trd-discret-ht->org )
 
@@ -647,7 +647,7 @@ todo: доработать, чтоб возвращался последний �
 @end(code)
 "
   (loop :for k :being :the hash-key :using (hash-value v) :of (trd-discret-ht trd)
-	:collect  (list (d-signal-num v) (d-signal-id v)  (d-signal-description v))))
+	:collect  (list (<d-signal>-num v) (<d-signal>-id v)  (<d-signal>-description v))))
 
 (export 'trd-header->org )
 
@@ -680,7 +680,7 @@ todo: доработать, чтоб возвращался последний �
 		      (trd-discret-offset trd) ))
     (let ((s-int (list-to-int (read-trd-file (trd-file-descr trd) (trd-discret-length-byte trd)))))
       (mapcar #'(lambda (el)
-		  (if (logbitp (d-signal-num  el ) s-int) 1 0))
+		  (if (logbitp (<d-signal>-num  el ) s-int) 1 0))
 	      d-signal-list))))
 
 (export '(trd-analog-discret-by-rec-number))

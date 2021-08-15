@@ -1,18 +1,11 @@
-(:docstring-markup-format :scriba
- :systems (:recoder)
- :documents ((:title "Recoder"
-	      :authors ("Nick Matvyeyev")
-	      :output-format (:type :multi-html :template :minima)
-	      :sources ("recoder.scr"
-                        "recoder-trd.scr"
-                        "recoder-trd-analog.scr"
-                        "recoder-trd-discret.scr"
-                        "recoder-trd-export.scr"
-                        "recoder-trd-separate.scr"
-                        "recoder-trd-split.scr"
-			"recoder-graph.scr"
-                        "recoder-a-signal-graph.scr"
-                        "recoder-d-signal-graph.scr"
-                        "recoder-seq.scr"
-                        "recoder-seq-graph.scr"
-			))))
+(:docstring-markup-format
+   :scriba
+   :systems (:RECODER :RECODER/DOCS)
+   :documents ((:title "Recoder"
+	        :authors ("Nick Matvyeyev")
+	        :output-format (:TYPE :MULTI-HTML :TEMPLATE :MINIMA) 
+                :sources ("recoder.scr" "recoder-seq.scr"
+                          "recoder-d-signal.scr" "recoder-a-signal.scr"
+                          "recoder-a-signal-graph.scr" "recoder-graph.scr"
+                          "recoder-d-signal-graph.scr" "recoder-seq-graph.scr")
+                )))

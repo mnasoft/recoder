@@ -65,10 +65,10 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
       (setf data  (mapcar #'(lambda (tm da) (append tm da)) d-time-str data)
 	    dev   (mapcar #'(lambda (tm dv) (append tm dv)) d-time-str dev))
       (setf rez (append  data dev ))
-      (push (append '("YYYY-MM-DD" "hh:mm:ss") (mapcar #'(lambda (el) (a-signal-units el)) s-list) ) rez)
-      (push (append '("-" "-") (mapcar #'(lambda (el) (a-signal-id el))    s-list) ) rez)
-      (push (append '("Date" "Time") (mapcar #'(lambda (el) (gethash (a-signal-id el) ht-sname-oboznach)) s-list)) rez)
-      (push (append '("Дата" "Время") (mapcar #'(lambda (el) (a-signal-description el)) s-list)) rez)
+      (push (append '("YYYY-MM-DD" "hh:mm:ss") (mapcar #'(lambda (el) (<a-signal>-units el)) s-list) ) rez)
+      (push (append '("-" "-") (mapcar #'(lambda (el) (<a-signal>-id el))    s-list) ) rez)
+      (push (append '("Date" "Time") (mapcar #'(lambda (el) (gethash (<a-signal>-id el) ht-sname-oboznach)) s-list)) rez)
+      (push (append '("Дата" "Время") (mapcar #'(lambda (el) (<a-signal>-description el)) s-list)) rez)
       (when transpose (setf rez (transpose rez)))
       (html-table:list-list-html-table rez html-fname))))
 
@@ -114,18 +114,18 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
 	(dev                  nil)
 	(d-time-str           nil)
 	
-	(a-signal-units       nil)
-	(a-signal-id          nil)
+	(<a-signal>-units       nil)
+	(<a-signal>-id          nil)
 	(ht-sname             nil)
-	(a-signal-description nil)	
+	(<a-signal>-description nil)	
 	)
     (mapc #'(lambda (trd time)
 	      (trd-open trd)
 	      (let ((s-list (trd-analog-signal-list trd str-signal-list)))
-		(setf a-signal-units (mapcar #'(lambda (el) (a-signal-units el)) s-list)
-		      a-signal-id (mapcar #'(lambda (el) (a-signal-id el))       s-list)
-		      ht-sname (mapcar #'(lambda (el) (gethash (a-signal-id el) ht-sname-oboznach)) s-list)
-		      a-signal-description (mapcar #'(lambda (el) (a-signal-description el)) s-list)
+		(setf <a-signal>-units (mapcar #'(lambda (el) (<a-signal>-units el)) s-list)
+		      <a-signal>-id (mapcar #'(lambda (el) (<a-signal>-id el))       s-list)
+		      ht-sname (mapcar #'(lambda (el) (gethash (<a-signal>-id el) ht-sname-oboznach)) s-list)
+		      <a-signal>-description (mapcar #'(lambda (el) (<a-signal>-description el)) s-list)
 		      
 		      )
 
@@ -140,10 +140,10 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
     (setf data  (mapcar #'(lambda (tm da) (append tm da)) d-time-str data)
 	  dev   (mapcar #'(lambda (tm dv) (append tm dv)) d-time-str dev))
     (setf rez (append  data dev ))
-    (push (append '("YYYY-MM-DD" "hh:mm:ss") a-signal-units ) rez)
-    (push (append '("-" "-") a-signal-id )                    rez)
+    (push (append '("YYYY-MM-DD" "hh:mm:ss") <a-signal>-units ) rez)
+    (push (append '("-" "-") <a-signal>-id )                    rez)
     (push (append '("Date" "Time") ht-sname  ) rez)
-    (push (append '("Дата" "Время") a-signal-description) rez)
+    (push (append '("Дата" "Время") <a-signal>-description) rez)
     (when transpose (setf rez (transpose rez)))
     (html-table:list-list-html-table rez html-fname)))
 
@@ -175,7 +175,7 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
 "
   (mapcar
    #'(lambda (el)
-       (a-signal-id
+       (<a-signal>-id
 	(gethash el (trd-analog-ht trd))))
    a-sig-names))
 
@@ -191,6 +191,6 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
 "
   (mapcar
    #'(lambda (el)
-       (a-signal-units
+       (<a-signal>-units
 	(gethash el (trd-analog-ht trd))))
    a-sig-names))

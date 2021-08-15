@@ -1,8 +1,0 @@
-@begin(section) @title(trd-separate)
- @cl:with-package[name="recoder/trd"](
-  @cl:doc(method trd-separate-signals     (trd <trd>) singnal-str-list)
-  @cl:doc(method trd-separate-a-signals   (trd <trd>) singnal-str-list)
-  @cl:doc(method trd-separate-d-signals   (trd <trd>) singnal-str-list)
-  @cl:doc(method trd-separate-not-signals (trd <trd>) singnal-str-list)
- )
-@end(section)
