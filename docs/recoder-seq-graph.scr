@@ -1,8 +1,0 @@
-  @begin(section) @title(Графы recoder-seq)
-  @begin(list)
-   @item(system-graph @image[src=./system-graph-recoder-seq.gv.png]())
-   @item(call-graph   @image[src=./call-graph-recoder-seq.gv.png]())
-   @item(symbol-graph @image[src=./symbol-graph-recoder-seq.gv.png]())
-   @item(class-graph  @image[src=./class-graph-recoder-seq.gv.png]())
-  @end(list)
- @end(section)

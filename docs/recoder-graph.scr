@@ -1,5 +1,0 @@
-  @begin(section) @title(Графы recoder)
-  @begin(list)
-   @item(system-graph @image[src=./system-graph-recoder.gv.png]())
-  @end(list)
- @end(section)

@@ -1,6 +1,0 @@
-  @begin(section) @title(Графы recoder-a-signal)
-  @begin(list)
-   @item(symbol-graph @image[src=./symbol-graph-recoder-a-signal.gv.png]())
-   @item(class-graph  @image[src=./class-graph-recoder-a-signal.gv.png]())
-  @end(list)
- @end(section)
