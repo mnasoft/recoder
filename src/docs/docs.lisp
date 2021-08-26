@@ -10,10 +10,13 @@
 (defun make-document ()
   (loop
     :for i :in
-    '((:recoder :recoder)
+    '((:recoder          :recoder)
+      (:recoder/dir      :recoder/dir)
+      (:recoder/trd      :recoder/trd)
       (:recoder/a-signal :recoder/a-signal)
       (:recoder/d-signal :recoder/d-signal)
-      (:recoder/seq :recoder/seq)
+      (:recoder/seq      :recoder/seq)
+      (:recoder/binary   :recoder/binary)
       )
     :do (apply #'mnas-package:document i)))
 
@@ -21,9 +24,12 @@
   (loop
     :for i :in
     '(:recoder
+      :recoder/dir
+      :recoder/trd
       :recoder/a-signal
       :recoder/d-signal
       :recoder/seq
+      :recoder/binary
       )
     :do (mnas-package:make-codex-graphs i i)))
 

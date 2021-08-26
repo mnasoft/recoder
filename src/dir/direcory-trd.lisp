@@ -1,9 +1,14 @@
 ;;;; test.lisp
 
-(defpackage #:recoder/dir (:use #:cl #:recoder/trd)
+(defpackage #:recoder/dir
+  (:use #:cl #:recoder/trd)
   (:export analog-table)
   (:export <trd-dir>
 	   <trd-tc-dir>)
+  (:intern analog-ids     
+           analog-signals 
+           analog-units   
+           ) 
   )
 
 (in-package :recoder/dir)
@@ -11,11 +16,7 @@
 (defclass <dir> ()
   ((directory :accessor <dir>-directory :initarg :directory :initform #P"~" :documentation "Каталог, из которого считываются тренды.")))
 
-(export '(<trd-dir>))
-
 (defclass <trd-dir> (<dir>) ())
-
-(export '(<trd-tc-dir>))
 
 (defclass <trd-tc-dir> (<dir>) ())
 
@@ -87,9 +88,19 @@
        (analog-units (first td-signals) u-times (second td-signals)))
    rest))
 
-(export '(analog-table))
-
 (defun analog-table (u-times &rest rest)
+  "@b(Описание:) функция @b(analog-table) возвращает таблицу в виде
+  двумерного списка.
+
+ @b(Переменые:)
+@begin(list)
+ @item(u-times - список целых чисел, значения представляющих
+       универсального времени;)
+ @item(rest - последующие элементы, являющиеся списками. Первыми
+       элементами этих списков должны быть объекты классов: <trd-dir>
+       или <trd-tc-dir>. Вторыми элементами этих списков должны быть
+       списки содержащие имена сигналов (строки).)
+@end(list)"
   (let ((rez (apply #'mapcar #'append (mapcar #'(lambda (td-signals) (analog-signals (first td-signals) u-times (second td-signals))) rest))))
     (setf rez (mapcar #'(lambda (ut data) (append (mnas-org-mode:utime->date-time ut) data )) u-times rez))
     (setf rez (math/list-matr:prepend-rows
@@ -105,16 +116,18 @@
 
 (defgeneric split-on-intervals-when-flag-is-on (trd d-signal-str)
   (:documentation
-   "@b(Описание:) обобщенная_функция @b(split-on-intervals-when-flag-is-on)
-разделяет тренд на интервалы (выраженные в номерах записей), для которых 
-флаг @b(d-signal-str) имеет значение 1.
+   "@b(Описание:) обобщенная_функция
+@b(split-on-intervals-when-flag-is-on) разделяет тренд на
+интервалы (выраженные в номерах записей), для которых флаг
+@b(d-signal-str) имеет значение 1.
 "))
 
 (defmethod split-on-intervals-when-flag-is-on ((trd-dir <trd-dir>) d-signal-str)
-  "@b(Описание:) метод @b(split-on-intervals-when-flag-is-on) возвращает список, 
- каждый элемент которого содержит два элемента. Первый - список интервалов, при 
- которых значение дискретного флага @b(d-signal-str) равно 1.
- Второй - объект тренда, для которого найден список интервалов.
+  "@b(Описание:) метод @b(split-on-intervals-when-flag-is-on)
+ возвращает список, каждый элемент которого содержит два
+ элемента. Первый - список интервалов, при которых значение
+ дискретного флага @b(d-signal-str) равно 1.  Второй - объект тренда,
+ для которого найден список интервалов.
  
  @b(Пример использования:)
 @begin[lang=lisp](code)
