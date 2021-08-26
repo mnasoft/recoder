@@ -27,11 +27,7 @@
   :components ((:module "src/trd"
 		:serial t
                 :components
-		((:file "package")
-                 (:file "defparameters")
-		 (:file "trd-defmethods")
-		 (:file "recoder")
-		 (:file "example") 
+		((:file "trd")
 		 ;; (:file "test") 
 		 ))))
 
