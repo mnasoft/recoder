@@ -1,6 +1,7 @@
-;;;; package.lisp
+;;;; ./src/trd/trd.lisp
+
 (defpackage #:recoder/trd
-  (:use #:cl #:mnas-string #:recoder/binary #:recoder/d-signal #:recoder/a-signal)
+  (:use #:cl #:mnas-string/print #:recoder/binary #:recoder/d-signal #:recoder/a-signal)
   (:export trd-analog-ht->org
            trd-analog-mid-by-snames
            trd-analog-by-utime
@@ -89,8 +90,10 @@
   (:export trd-analog-discret-by-rec-number
            ))
 
-;;;;(declaim (optimize (space 0) (compilation-speed 0)  (speed 0) (safety 3) (debug 3)))
+;;;; (declaim (optimize (space 0) (compilation-speed 0)  (speed 0) (safety 3) (debug 3)))
 ;;;; (declaim (optimize (compilation-speed 0) (debug 3) (safety 0) (space 0) (speed 0)))
+
+(in-package #:recoder/trd)
 
 (defparameter *head-id-wid*              5 "Строка идентификации файла тренда, char[5]")
 
@@ -118,26 +121,18 @@
 
 (defparameter *analog-wid* (+ *signal-id-wid* *signal-description-wid* *signal-units-wid* *signal-LowLimit-wid* *signal-HighLimit-wid*)
   "Длина заголовка одной записи аналогового сигнала")
- 
+
 (defparameter *discret-wid* (+ *signal-id-wid* *signal-description-wid* )
   "Длина заголовка одной записи дискретного сигнала")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(export '*mid-value-number-offset*)
 (defparameter *mid-value-number-offset*  10 "Количество записей тренда отсчитываемое влево и вправо от текущей записи для определения среднего значения и стандартнорго отклонения" )
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
-(export '(<trd> trd-file-name trd-file-descr trd-id-string trd-version
-          trd-utime-start trd-reserv trd-total-records trd-delta-time
-          trd-analog-number trd-discret-number trd-analog-ht trd-discret-ht))
 
 (defclass <trd> ()
   ((trd-file-name         :accessor trd-file-name      :initarg :trd-file-name      :initform nil :documentation "Имя файла в файловой системе")
@@ -191,15 +186,14 @@
 
 Сигналы упаковываются побайтно слева-направо."))
 
-
 (defmethod print-object ((trd <trd>) stream)
   (format stream "Path= ~S~%" (trd-file-name trd) )
   (when (trd-file-descr trd)
     (format stream "id=~S version=~A " (trd-id-string trd) (trd-version trd))
     (format stream "[ ")
-    (mnas-string/print:day-time (trd-utime-start trd) :stream stream)
+    (day-time (trd-utime-start trd) :stream stream)
     (format stream " ; ")
-    (mnas-string/print:day-time (trd-utime-end trd) :stream stream)
+    (day-time (trd-utime-end trd) :stream stream)
     (format stream " ]")
     (format stream "~%Reserv         = ~A~%Total-records  = ~A~%Delta-time     = ~A~%Analog-number  = ~A~%Discret-number = ~A"
 	    (trd-reserv trd) (trd-total-records trd) (trd-delta-time trd) (trd-analog-number trd) (trd-discret-number trd))
@@ -212,10 +206,8 @@
 ==================================================~%")
     (maphash #'(lambda (k v) (format stream "~S ~S~%" k v)) (trd-discret-ht trd) )))
 
-(export 'trd-open )
-
 (defmethod trd-open ((trd <trd>))
-"@b(Описание:) trd-open выполняет открытие файла тренда включая:
+  "@b(Описание:) trd-open выполняет открытие файла тренда включая:
 @begin(list)
  @item(чтение заголовка;)
  @item(разбор аналоговых сигналов;)
@@ -266,12 +258,12 @@
 	      analog-min         (read-trd-file-double in)
 	      analog-max         (read-trd-file-double in)
 	      (gethash analog-id (trd-analog-ht trd)) (make-instance '<a-signal>
-								   :num i
-								   :id  analog-id
-								   :description analog-description
-								   :units analog-units
-								   :min analog-min
-								   :max analog-max))))))
+								     :num i
+								     :id  analog-id
+								     :description analog-description
+								     :units analog-units
+								     :min analog-min
+								     :max analog-max))))))
 
 (defmethod trd-read-discret-ht((trd <trd>))
   "Выполняет разбор дискретных сигналов"
@@ -283,20 +275,15 @@
 	(setf discret-id          (recode-string (read-trd-file in *signal-id-wid*))
 	      discret-description (recode-string (read-trd-file in *signal-description-wid*))
 	      (gethash discret-id (trd-discret-ht trd)) (make-instance '<d-signal>
-								     :num i
-								     :id discret-id
-								     :description discret-description))))))
-
-(export 'trd-close )
+								       :num i
+								       :id discret-id
+								       :description discret-description))))))
 
 (defmethod trd-close ((trd <trd>))
-"@b(Описание:) метод @b(trd-close) выполняет закрытие файла тренда"
-
+  "@b(Описание:) метод @b(trd-close) выполняет закрытие файла тренда"
   (when (trd-file-descr trd)
     (close (trd-file-descr trd))
     (setf (trd-file-descr trd) nil)))
-
-(export 'trd-start-offset )
 
 (defmethod trd-start-offset ((trd <trd>))
   "@b(Описание:) метод @b(trd-start-offset) возвращает смещение, 
@@ -305,15 +292,11 @@
      (* (trd-analog-number trd) *analog-wid*)
      (* (trd-discret-number trd) *discret-wid*)))
 
-(export 'trd-analog-length-byte )
-
 (defmethod trd-analog-length-byte ((trd <trd>))
   "@b(Описание:) метод @b(trd-analog-length-byte) возвращает 
 длину занимаемую аналоговыми сигналами одной записи тренда.
 "
   (* (trd-analog-number trd) 2))
-
-(export 'trd-discret-length-byte )
 
 (defmethod trd-discret-length-byte ((trd <trd>))
   "@b(Описание:) метод @b(trd-discret-length-byte) возвращает
@@ -322,29 +305,21 @@
 "
   (ceiling (/ (trd-discret-number trd) 8)))
 
-(export 'trd-record-length )
-
 (defmethod trd-record-length ((trd <trd>))
   "@b(Описание:) метод @b(trd-record-length) возвращает
 длину одной записи тренда."
   (+  (trd-analog-length-byte trd)  (trd-discret-length-byte trd)))
-
-(export 'trd-discret-offset )
 
 (defmethod trd-discret-offset ((trd <trd>))
   "@b(Описание:) метод @b(trd-discret-offset) возвращает 
 смещение в байтах от начала записи до начала записи дискретных сигналов."
   (+ (* (trd-analog-number trd) 2)))
 
-(export 'trd-utime-end )
-
 (defmethod trd-utime-end ((trd <trd>))
-"@b(Описание:) метод @b(trd-utime-end) возвращает время окончания тренда.
+  "@b(Описание:) метод @b(trd-utime-end) возвращает время окончания тренда.
 Время возвращается в универсальном формате (universal-time)"
   (+ (trd-utime-start trd)
      (floor (* (trd-total-records trd) (trd-delta-time trd)))))
-
-(export 'trd-analog-signal-list )
 
 (defmethod trd-analog-signal-list ((trd <trd>) signal-string-list)
   "@b(Описание:) метод @b(trd-analog-signal-list) возвращает список
@@ -355,17 +330,13 @@
 		(gethash el (trd-analog-ht trd)))
 	    signal-string-list)))
 
-(export 'trd-discret-signal-list )
-
 (defmethod trd-discret-signal-list ((trd <trd>) signal-string-list)
-"Возвращает список дискретных сигналов тренда trd, 
+  "Возвращает список дискретных сигналов тренда trd, 
 которые соответствуют списку обозначений сигналов из списка signal-string-list"
   (when  (trd-file-descr trd)
     (mapcar #'(lambda(el)
 		(gethash el (trd-discret-ht trd)))
 	    signal-string-list)))
-
-(export 'trd-analog-by-rec-number )
 
 (defmethod trd-analog-by-rec-number ((trd <trd>) rec-number signal-list)
   "@b(Описание:) метод @b(trd-analog-by-rec-number) возвращает список
@@ -381,21 +352,15 @@
       (mapcar #'(lambda(el) (<a-signal>-value el (svref v-sh (<a-signal>-num el))))
 	      signal-list))))
 
-(export '(trd-record-number-by-utime))
-
 (defmethod trd-record-number-by-utime ( (trd <trd>) utime)
   "@b(Описание:) метод @b(trd-record-number-by-utime)
  Возвращает номер записи по универсальному времени"
   (floor (- utime (trd-utime-start trd)) (trd-delta-time trd)))
 
-(export '(trd-utime-by-record-number))
-
 (defmethod trd-utime-by-record-number ((trd <trd>) record-number)
   "@b(Описание:) метод @b(trd-record-number-by-utime)
  Возвращает номер записи по универсальному времени"
-   (+ (trd-utime-start trd) (floor record-number (/ 1 (trd-delta-time trd)))))
-
-(export 'trd-discret-by-rec-number )
+  (+ (trd-utime-start trd) (floor record-number (/ 1 (trd-delta-time trd)))))
 
 (defmethod trd-discret-by-rec-number ( (trd <trd>) rec-number d-signal-list)
   "@b(Описание:) метод @b(trd-discret-by-rec-number)
@@ -411,10 +376,8 @@
 		  (if (logbitp (<d-signal>-num  el ) s-int) 1 0))
 	      d-signal-list))))
 
-(export 'trd-discret-by-rec-number-t-nil )
-
 (defmethod trd-discret-by-rec-number-t-nil ( (trd <trd>) rec-number d-signal-list)
-"@b(Описание:) метод @b(trd-discret-by-rec-number-t-nil) возвращает 
+  "@b(Описание:) метод @b(trd-discret-by-rec-number-t-nil) возвращает 
 список значений тренда trd для записи под номером rec-number,
 соответствующий сигналам d-signal-list."
   (when (and (trd-file-descr trd) (< -1 rec-number (trd-total-records trd)))
@@ -427,32 +390,24 @@
 		  (logbitp (<d-signal>-num  el ) s-int))
 	      d-signal-list))))
 
-(export 'trd-discret-by-utime)
-
 (defmethod trd-discret-by-utime ( (trd <trd>) utime d-signal-list)
   "trd-discret-by-utime"
   (trd-discret-by-rec-number trd (trd-record-number-by-utime trd utime) d-signal-list))
-
-(export 'trd-discret-by-utime-t-nil)
 
 (defmethod trd-discret-by-utime-t-nil ( (trd <trd>) utime d-signal-list)
   "trd-discret-by-utime-t-nil"
   (trd-discret-by-rec-number-t-nil trd (trd-record-number-by-utime trd utime) d-signal-list))
 
-(export 'trd-analog-by-utime )
-
 (defmethod trd-analog-by-utime ( (trd <trd>) utime signal-list)
-"@b(Описание:) метод @b(trd-analog-by-utime) возвращает список
+  "@b(Описание:) метод @b(trd-analog-by-utime) возвращает список
 значений аналоговых сигналов, содержащися в списке @b(signal-list),
 тренда @b(trd), соответствующих моменту времени @b(utime)."
   (trd-analog-by-rec-number trd
 			    (trd-record-number-by-utime trd utime)
 			    signal-list))
 
-(export 'trd-analog-mid-by-utime )
-
 (defmethod trd-analog-mid-by-utime ((trd <trd>) utime signal-list &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
-"@b(Описание:) метод @b(trd-analog-mid-by-utime)  возвращает список
+  "@b(Описание:) метод @b(trd-analog-mid-by-utime)  возвращает список
 осредненных значений аналоговых сигналов, содержащися в списке @b(signal-list),
 тренда @b(trd), соответствующих моменту времени @b(utime)."
   (when  (trd-file-descr trd)
@@ -464,8 +419,6 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(export '(analogs-in-records))
-
 (defmethod analogs-in-records ((trd <trd>) start-record end-record signal-list)
   "@b(Описание:) метод @b(analogs-in-records) возвращает список
 значений аналоговых сигналов, содержащися в списке @b(signal-list),
@@ -473,10 +426,8 @@
 до записи @b(end-record) исключительно."
   (when  (trd-file-descr trd)
     (math/core:transpose
-	     (loop :for i :from start-record :below end-record
-		   :collect (trd-analog-by-rec-number trd i signal-list)))))
-
-(export '(analogs-in-utimes))
+     (loop :for i :from start-record :below end-record
+	   :collect (trd-analog-by-rec-number trd i signal-list)))))
 
 (defmethod analogs-in-utimes ((trd <trd>) start-utime end-utime signal-list)
   "@b(Описание:) метод @b(trd-analog-mid-by-utime)  возвращает список
@@ -490,20 +441,16 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(export 'trd-analog-mid-by-snames )
-
 (defmethod trd-analog-mid-by-snames ( (trd <trd>) utime snames &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
-"Возвращает список средних значений параметров, записанных в тренде
+  "Возвращает список средних значений параметров, записанных в тренде
 trd в момент времени utime для списка сигналов, определяемых их
 именами snames; Осреднение происходит в интервале записей от n-before
 до n-after"
   (when  (trd-file-descr trd)
     (trd-analog-mid-by-utime trd utime (trd-analog-signal-list trd snames) :n-before n-before :n-after n-after)))
 
-(export 'trd-analog-stddev-by-utime )
-
 (defmethod trd-analog-stddev-by-utime ( (trd <trd>) utime signal-list &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
-"Возвращает список стандартных отклонений для параметров,
+  "Возвращает список стандартных отклонений для параметров,
 записанных в тренде trd в момент времени utime для списка сигналов signal-list;
 Осреднение происходит в интервале записей от  n-before до n-after"
   (when  (trd-file-descr trd)
@@ -513,10 +460,8 @@ trd в момент времени utime для списка сигналов, �
 		     (push (trd-analog-by-rec-number trd (+ n-start i) signal-list) rez))))
       (mapcar #'math/stat:standard-deviation rezult))))
 
-(export 'trd-analog-stddev-by-snames )
-
 (defmethod trd-analog-stddev-by-snames ( (trd <trd>) utime snames &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
-"Возвращает список стандартных отклонений для параметров,
+  "Возвращает список стандартных отклонений для параметров,
 записанных в тренде trd в момент времени utime для списка сигналов, определяемых их именами snames;
 Осреднение происходит в интервале записей от  n-before до n-after"
   (when  (trd-file-descr trd)
@@ -526,10 +471,8 @@ trd в момент времени utime для списка сигналов, �
 ;;;; Singal separation to analog|discret|unexpected ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(export 'trd-separate-signals )
-
 (defmethod trd-separate-signals ((trd <trd>) singnal-str-list)
-"Выполняет проверку того, что имена сигналов, заданные в переменной singnal-str-list,
+  "Выполняет проверку того, что имена сигналов, заданные в переменной singnal-str-list,
 присутствуют для данного тренда в перечне аналоговых сигналов или дискретных сигналов
 или отсутствуют в обоих перечнях.
    Возвращает список элементами которого являются:
@@ -554,32 +497,24 @@ trd в момент времени utime для списка сигналов, �
 	    singnal-str-list)
     (list (nreverse a-rez) (nreverse d-rez) (nreverse error-rez))))
 
-(export 'trd-separate-a-signals )
-
 (defmethod trd-separate-a-signals ((trd <trd>) singnal-str-list)
-"Выделяет из переменной singnal-str-list аналоговые сигналы"
+  "Выделяет из переменной singnal-str-list аналоговые сигналы"
   (first (trd-separate-signals trd singnal-str-list)))
 
-(export 'trd-separate-d-signals )
-
 (defmethod trd-separate-d-signals ((trd <trd>) singnal-str-list)
-"Выделяет из переменной singnal-str-list дискретные сигналы"
+  "Выделяет из переменной singnal-str-list дискретные сигналы"
   (second (trd-separate-signals trd singnal-str-list)))
 
-(export 'trd-separate-not-signals )
-
 (defmethod trd-separate-not-signals ((trd <trd>) singnal-str-list)
-"Выделяет из переменной singnal-str-list неожиданные сигналы."
+  "Выделяет из переменной singnal-str-list неожиданные сигналы."
   (second (trd-separate-signals trd singnal-str-list)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Splitting ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(export '(split-on-intervals-when-flag-is-on))
-
 (defmethod split-on-intervals-when-flag-is-on ((trd <trd>) d-signal-str )
-"@b(Описание:) метод @b(split-on-intervals-when-flag-is-on) для 
+  "@b(Описание:) метод @b(split-on-intervals-when-flag-is-on) для 
 тренда @b(trd) выполняет поиск диапазонов, для которых значение 
 дискретного сигнала с именем d-signal-str имеет значение 1.
 
@@ -603,9 +538,8 @@ todo: доработать, чтоб возвращался последний �
 	    (push (list n-start n-end) rez-lst)
 	    (setf n-start total-rec
 		  n-end -1))))))
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(export '(split-on-utimes-when-flag-is-on))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmethod split-on-utimes-when-flag-is-on ((trd <trd>) d-signal-str )
   "@b(Описание:) метод @b(split-on-intervals-when-flag-is-on) для 
@@ -622,10 +556,8 @@ todo: доработать, чтоб возвращался последний �
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(export '(split-on-intervals-of-time-when-flag-is-on))
-
 (defmethod split-on-intervals-of-time-when-flag-is-on ((trd <trd>) d-signal-str)
-"Для тренда trd выполняет поиск диапазонов, для которых
+  "Для тренда trd выполняет поиск диапазонов, для которых
 значение сигнала d-signal-str принимало значение 1. 
 И возвращает длительность этих диапазонов"
   (let ((intervals (trd-flag-on-intervals trd d-signal-str)))
@@ -633,10 +565,8 @@ todo: доработать, чтоб возвращался последний �
      (mapcar #'(lambda (el) (* -1 (trd-delta-time trd) (apply #'- el))) intervals)
      intervals)))
 
-(export 'split-on-intervals-by-condition )
-
 (defmethod split-on-intervals-by-condition ((trd <trd>) start-signal-str-lst end-signal-str-lst)
-"Выполняет деление тренда на диапазоны.
+  "Выполняет деление тренда на диапазоны.
 
 Возвращает список.
 
@@ -696,22 +626,16 @@ todo: доработать, чтоб возвращался последний �
 ;;; Interval-to-time ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(export 'trd-interval-to-secods )
-
 (defmethod trd-interval-to-secods ((trd <trd>) interval)
-"Преобразует диапазон времени, заданный в записях, в секунды"
+  "Преобразует диапазон времени, заданный в записях, в секунды"
   (* (trd-delta-time trd) (apply #'- (reverse interval))))
 
-(export 'trd-interval-to-minutes )
-
 (defmethod trd-interval-to-minutes ((trd <trd>) interval)
-"Преобразует диапазон времени, заданный в записях, в минуты"
+  "Преобразует диапазон времени, заданный в записях, в минуты"
   (* 1/60 (trd-interval-to-secods trd interval)))
 
-(export 'trd-interval-to-hours )
-
 (defmethod trd-interval-to-hours ((trd <trd>) interval)
-"Преобразует диапазон времени, заданный в записях, часы"
+  "Преобразует диапазон времени, заданный в записях, часы"
   (* 1/60 1/60 (trd-interval-to-secods trd interval)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -720,8 +644,6 @@ todo: доработать, чтоб возвращался последний �
   "trd-record-number-to-udate"
   (+ (trd-utime-start trd) (round (* rec-number (trd-delta-time  trd)))))
 
-(export 'trd-record-number-to-udate)
-
 (defmethod trd-record-number-by-udate ((trd <trd>) udate)
   "trd-record-number-by-udate"
   (round
@@ -729,14 +651,10 @@ todo: доработать, чтоб возвращался последний �
     (- udate (trd-utime-start trd))
     (trd-delta-time trd))))
 
-(export 'trd-record-number-by-udate)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(export 'trd-analog-ht->org )
-
 (defmethod trd-analog-ht->org ((trd <trd>) )
-"@b(Описание:) метод @b(trd-analog-ht->org) возврвщает 2d-list список,
+  "@b(Описание:) метод @b(trd-analog-ht->org) возврвщает 2d-list список,
 отображающий все аналоговые сигналы в удобном виде для представления в org режиме.
 
  @b(Пример использования:)
@@ -759,10 +677,8 @@ todo: доработать, чтоб возвращался последний �
   (loop :for k :being :the hash-key :using (hash-value v) :of (trd-analog-ht trd)
 	:collect  (list (a-signal-num v) (<a-signal>-id v) (<a-signal>-min v) (<a-signal>-max v) (<a-signal>-units v) (<a-signal>-description v))))
 
-(export 'trd-discret-ht->org )
-
 (defmethod trd-discret-ht->org ((trd <trd>) )
-"@b(Описание:) метод @b(trd-discret-ht->org) возврвщает 2d-list список,
+  "@b(Описание:) метод @b(trd-discret-ht->org) возврвщает 2d-list список,
 отображающий все дискретные сигналы в удобном виде для представления в org режиме.
 
  @b(Пример использования:)
@@ -783,17 +699,15 @@ todo: доработать, чтоб возвращался последний �
   (loop :for k :being :the hash-key :using (hash-value v) :of (trd-discret-ht trd)
 	:collect  (list (<d-signal>-num v) (<d-signal>-id v)  (<d-signal>-description v))))
 
-(export 'trd-header->org )
-
 (defmethod trd-header->org ((trd <trd>))
-"trd-header->org"
+  "trd-header->org"
   (let ((rez nil))
     (push (list "Файл" (trd-file-name trd )) rez)
     (when (trd-file-descr trd)
       (progn
 	(push (list "Версия тренда" 	                  (trd-version trd) ) rez)
-	(push (list "Дата создания тренда"                (mnas-string/print:date (trd-utime-start trd) :stream nil)) rez)
-	(push (list "Время создания тренда"               (mnas-string/print:day-time (trd-utime-start trd) :stream nil)) rez)
+	(push (list "Дата создания тренда"                (date (trd-utime-start trd) :stream nil)) rez)
+	(push (list "Время создания тренда"               (day-time (trd-utime-start trd) :stream nil)) rez)
 	(push (list "К-во аналоговых+дискретных сигналов" (trd-reserv         trd) ) rez)
 	(push (list "Общее число записей в тренде"        (trd-total-records  trd) ) rez)
 	(push (list "Интервал между записями тренда"      (trd-delta-time     trd) ) rez)
@@ -817,8 +731,6 @@ todo: доработать, чтоб возвращался последний �
 		  (if (logbitp (<d-signal>-num  el ) s-int) 1 0))
 	      d-signal-list))))
 
-(export '(trd-analog-discret-by-rec-number))
-
 (defmethod trd-analog-discret-by-rec-number ((trd <trd>) rec-number a-signal-list d-signal-list)
   "@b(Описание:) метод @b(trd-discret-by-rec-number)
 возвращает список значений тренда <trd> для записи под номером rec-number,
@@ -830,20 +742,13 @@ todo: доработать, чтоб возвращался последний �
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-
-(export 'apply-and )
-
 (defun apply-and (lst)
   (mapc #'(lambda (el) (unless el (return-from  apply-and nil))) lst)
   t)
 
-(export 'apply-or )
-
 (defun apply-or (lst)
   (mapc #'(lambda (el) (when el (return-from apply-or t))) lst)
   nil)
-
-(export 'time-universal-encode )
 
 (defun time-universal-encode (year month day hour min sec)
   "Функция кодирования в универсальный формат времени"
@@ -851,9 +756,7 @@ todo: доработать, чтоб возвращался последний �
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(export 'recode-string )
-
-(defun recode-string (bufer &key (start 0) (len (length bufer))  (break-nul T) (code-page *cp1251*))
+(defun recode-string (bufer &key (start 0) (len (length bufer))  (break-nul T) (code-page recoder/binary:*cp1251*))
   "@b(Описание:) recode-string выполняет преобразование символов, 
 передаваемых в параметре bufer, имеющих кодировку code-page (*cp1251*|*cp866*), 
 в кодировку utf8."
@@ -867,8 +770,6 @@ todo: доработать, чтоб возвращался последний �
     (setf str-rez (concatenate 'string str-rez ch))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(export 'make-html-trd )
 
 (defun make-html-trd (trd-fname html-fname str-signal-list time-lst ht-sname-oboznach &key (transpose nil))
   "Вывод в данных из тренда в файл trd-fname в файл html-fname;
@@ -888,8 +789,8 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
 	   (rez nil)
 	   (data (mapcar #'(lambda (el) (trd-analog-mid-by-udate trd el    s-list)) time-lst))
 	   (dev  (mapcar #'(lambda (el) (trd-analog-stddev-by-udate trd el s-list)) time-lst))
-	   (d-time-str (mapcar #'(lambda (tm ) (list (mnas-string/print:date tm :stream nil)
-						     (mnas-string/print:day-time tm :stream nil)))
+	   (d-time-str (mapcar #'(lambda (tm ) (list (date tm :stream nil)
+						     (day-time tm :stream nil)))
 			       time-lst)))
       (setf data  (mapcar #'(lambda (tm da) (append tm da)) d-time-str data)
 	    dev   (mapcar #'(lambda (tm dv) (append tm dv)) d-time-str dev))
@@ -902,8 +803,6 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
       (html-table:list-list-html-table rez html-fname))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(export 'find-trd-by-utime-dirname )
 
 (defun find-trd-by-utime-dirname (utime dir-name &key (extension "trd"))
   "Возвращает объект тренда, для которого существуют данные на момент 
@@ -921,8 +820,6 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
     rezult))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(export 'make-html-trd-foo )
 
 (defun make-html-trd-foo (trd-dname html-fname str-signal-list time-lst ht-sname-oboznach &key (transpose nil))
   "Вывод в данных из тренда в файл trd-dname в файл html-fname;
@@ -960,7 +857,7 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
 
 		(push (trd-analog-mid-by-utime trd time s-list)    data)
 		(push (trd-analog-stddev-by-utime trd time s-list) dev)
-		(push (list (mnas-string/print:date time :stream nil) (mnas-string/print:day-time time :stream nil)) d-time-str)))
+		(push (list (date time :stream nil) (day-time time :stream nil)) d-time-str)))
 	  trd-lst time-lst)
     (setf data (reverse data)
 	  dev  (reverse dev)
@@ -978,21 +875,13 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(export 'get-open-ternd )
-
 (defun get-open-ternd ()
   (mnas-file-dialog:get-open-file :filetypes '(("Файлы трендов" "*.trd")) :title "Выберите файл тренда"))
-
-(export 'get-open-ternds )
 
 (defun get-open-ternds ()
   (mnas-file-dialog:get-open-file :filetypes '(("Файлы трендов" "*.trd")) :title "Выберите файлы трендов" :multiple t))
 
-(export 'change-directory-default )
-
 (defun change-directory-default () (mnas-file-dialog:change-directory-default))
-
-(export 'trd-a-ids )
 
 (defmethod trd-a-ids (a-sig-names (trd <trd>))
   "@b(Описание:) метод @b(trd-a-ids) возвращает имена 
@@ -1007,8 +896,6 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
        (<a-signal>-id
 	(gethash el (trd-analog-ht trd))))
    a-sig-names))
-
-(export 'trd-a-units )
 
 (defmethod trd-a-units (a-sig-names (trd <trd>))
   "@b(Описание:) метод @b(trd-a-units) возвращает размерности 
@@ -1038,4 +925,3 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
 (defparameter *trd* (make-instance '<trd> :trd-file-name *trd-fname*))
 
 (trd-open *trd*)
-

@@ -47,20 +47,14 @@
 Содержит низкоуровневые функции ввода-вывода."
   :author "Nick Matvyeyev <mnasoft@gmail.com>"
   :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"  
-  :depends-on ("ieee-floats" )
+  :depends-on ("ieee-floats")
   ;; "mnas-string" "html-table" "math" "mnas-path" "mnas-file-dialog"
   :serial nil
   :components
   ((:module "src/binary"
     :serial t
     :components
-    ((:file "package")
-     (:file "ascii")
-     (:file "cp866")
-     (:file "cp1251")
-     (:file "binary-read")
-     (:file "binary-write")
-     ))))
+    ((:file "binary")))))
 
 (defsystem "recoder/a-signal"
   :description "Преднзначен для работы с трендами.
