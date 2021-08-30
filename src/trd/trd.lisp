@@ -2,8 +2,26 @@
 
 (defpackage #:recoder/trd
   (:use #:cl #:mnas-string/print #:recoder/binary #:recoder/d-signal #:recoder/a-signal)
+  (:export trd-open
+           trd-close)
+  (:export <trd>
+	   <trd>-total-records
+	   <trd>-delta-time
+           <trd>-analog-ht 
+           <trd>-analog-number
+           <trd>-file-descr
+           <trd>-discret-number
+           <trd>-id-string
+           <trd>-version
+	   <trd>-file-name
+           <trd>-reserv
+           <trd>-utime-start
+           <trd>-discret-ht
+           )
   (:export trd-analog-ht->org
-           trd-analog-mid-by-snames
+           trd-discret-ht->org
+           trd-header->org)
+  (:export trd-analog-mid-by-snames
            trd-analog-by-utime
            trd-analog-signal-list
            trd-analog-stddev-by-snames
@@ -19,8 +37,6 @@
            trd-discret-by-rec-number-t-nil
            trd-discret-signal-list
            trd-discret-by-rec-number
-           trd-discret-ht->org
-           <trd>-discret-ht
            )
   (:export trd-separate-a-signals
            trd-separate-not-signals
@@ -30,32 +46,18 @@
   (:export trd-a-units
            trd-a-ids
            )
-  (:export <trd>
-	   <trd>-total-records
-	   <trd>-delta-time
-           <trd>-analog-ht 
-           <trd>-analog-number
-           <trd>-file-descr
-           <trd>-discret-number
-           <trd>-id-string
-           <trd>-version
-	   <trd>-file-name
-           <trd>-reserv
-           <trd>-utime-start)
-  (:export trd-header->org
-	   trd-interval-to-minutes
-	   trd-record-number-to-udate
-	   trd-record-length
-	   trd-utime-end
-	   trd-open
-	   trd-interval-to-hours
-	   trd-record-number-by-udate
-	   trd-start-offset 
-	   recode-string
-	   trd-interval-to-secods
-	   trd-close 
-	   trd-record-number-by-utime
-	   )
+
+  (:export trd-interval-to-minutes
+           trd-record-number-to-udate
+           trd-record-length
+           trd-utime-end
+
+           trd-interval-to-hours
+           trd-record-number-by-udate
+           trd-start-offset recode-string
+           trd-interval-to-secods
+           
+           trd-record-number-by-utime )
   (:export split-on-intervals-of-time-when-flag-is-on
 	   split-on-intervals-when-flag-is-on
    	   split-on-intervals-by-condition
@@ -568,20 +570,20 @@ todo: доработать, чтоб возвращался последний �
 
 Параметры:
 @begin(list)
- @item(@cl:param(trd)                      - объект типа <trd> [тренд];)
- @item(@cl:param(start-signal-str-lst)   - список имен [строк] дискретных сингалов тренда;)
- @item(@cl:param(end-signal-str-lst)     - список имен [строк] дискретных сингалов тренда.)
+ @item(@cl:param(trd)                  - объект типа <trd> [тренд];)
+ @item(@cl:param(start-signal-str-lst) - список имен [строк] дискретных сингалов тренда;)
+ @item(@cl:param(end-signal-str-lst)   - список имен [строк] дискретных сингалов тренда.)
 @end(list)
 
-Логика деления на диапазоны следующая зависит от того, имеются-ли элементы в end-signal-str-lst.
+ Логика деления на диапазоны следующая зависит от того, имеются-ли элементы в end-signal-str-lst.
 
-Если элементов в end-signal-str-lst нет:
+ Если элементов в end-signal-str-lst нет:
 @begin(list)
  @item(возвращаются диапазоны для, которых все сигналы, соответствующие 
        списку start-signal-str-lst установлены [равны единице].)
 @end(list)
 
-Если элементы в end-signal-str-lst есть:
+ Если элементы в end-signal-str-lst есть:
 возвращаются диапазоны:
 @begin(list)
  @item(в первой записи которых все сигналы, 
@@ -712,9 +714,9 @@ todo: доработать, чтоб возвращался последний �
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmethod trd-discret-by-rec-number ((trd <trd>) rec-number d-signal-list)
-  "@b(Описание:) метод @b(trd-discret-by-rec-number)
-возвращает список значений тренда <trd> для записи под номером rec-number,
-соответствующий сигналам d-signal-list."
+  "@b(Описание:) метод @b(trd-discret-by-rec-number) возвращает список
+ значений тренда <trd> для записи под номером rec-number,
+ соответствующий сигналам d-signal-list."
   (when (and (<trd>-file-descr trd) (< -1 rec-number (<trd>-total-records trd)))
     (file-position (<trd>-file-descr trd) 
 		   (+ (trd-start-offset trd)
@@ -726,9 +728,9 @@ todo: доработать, чтоб возвращался последний �
 	      d-signal-list))))
 
 (defmethod trd-analog-discret-by-rec-number ((trd <trd>) rec-number a-signal-list d-signal-list)
-  "@b(Описание:) метод @b(trd-discret-by-rec-number)
-возвращает список значений тренда <trd> для записи под номером rec-number,
-соответствующий сигналам d-signal-list."
+  "@b(Описание:) метод @b(trd-discret-by-rec-number) возвращает список
+  значений тренда <trd> для записи под номером rec-number,
+  соответствующий сигналам d-signal-list."
   (append (trd-analog-by-rec-number  trd rec-number a-signal-list)
 	  (trd-discret-by-rec-number trd rec-number d-signal-list)))
 
@@ -745,7 +747,15 @@ todo: доработать, чтоб возвращался последний �
   nil)
 
 (defun time-universal-encode (year month day hour min sec)
-  "Функция кодирования в универсальный формат времени"
+  "@b(Описание:) функция @b(time-universal-encode) возвращает время в
+  универсальном формате. Аналогична вызову функции
+  @b(encode-universal-time) с параметрами следующими в обратнром
+  порядке.
+
+ @b(Пример использования:)
+@begin[lang=lisp](code)
+ (time-universal-encode 2021 08 30 10 00 00 ) => 3839295600
+@end(code)"
   (encode-universal-time sec min hour day month year))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

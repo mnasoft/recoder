@@ -1,45 +1,51 @@
 ;;; ./src/trd-seq.lisp
 
 (defpackage #:recoder/seq
-  (:use #:cl
-        #:mnas-string
-        #:recoder/binary
-        #:recoder/d-signal
-        #:recoder/a-signal)
+  (:use #:cl #:mnas-string
+        #+NIL
+        #:recoder/trd
+        #:recoder/a-signal #:recoder/d-signal #:recoder/binary)
+  (:export trd-open)
   (:export <trd-seq>
            <trd-seq>-a-sig
            <trd-seq>-d-sig
            <trd-seq>-s-sig
-           trd-open
+           )
+  (:export export-to
+           extract-signals
            *csv-stream*
+           )
+  (:intern update 
+           sequence:length
+           sequence:elt 
+           elt-seq 
+           sig 
+           sig-on 
+           sig-off 
+           <trd-seq>-units 
            ))
 
 (in-package #:recoder/seq)
 
-(export '(<trd-seq> <trd-seq>-a-sig <trd-seq>-d-sig <trd-seq>-s-sig))
-
 (defclass <trd-seq> (recoder/trd:<trd> sequence)
-  ((s-sig :reader <trd-seq>-s-sig :initform nil :initarg :s-sig
-          :documentation "Список с именами сигналов.")
-   (a-sig :accessor <trd-seq>-a-sig :initform nil
-          :documentation "Список аналоговых сигналов.")
-   (d-sig :accessor <trd-seq>-d-sig :initform nil
-          :documentation "Список дискретных сигналов.")
-   (h-tbl :accessor <trd-seq>-h-tbl :initform (make-hash-table :test #'equal)
-          :documentation "Хешированная таблица: 
+  ((s-sig :reader   <trd-seq>-s-sig :initform nil :initarg :s-sig :documentation "Список с именами сигналов.")
+   (a-sig :accessor <trd-seq>-a-sig :initform nil :documentation "Список аналоговых сигналов.")
+   (d-sig :accessor <trd-seq>-d-sig :initform nil :documentation "Список дискретных сигналов.")
+   (h-tbl :accessor <trd-seq>-h-tbl :initform (make-hash-table :test #'equal) :documentation
+          "Хешированная таблица: 
 @begin(list)
  @item(ключ - имя сигнала;)
  @item(значение - номер сигнала в записи  Список дискретных сигналов.)
 @end(list) "))
-  (:documentation "@b(Описание:) класс @b(<trd-seq>) реализует 
-протоколы доступа к записям тренда через протоколы
-доступа к элементам последовательности.
+  (:documentation "@b(Описание:) класс @b(<trd-seq>) реализует
+ протоколы доступа к записям тренда через протоколы доступа к
+ элементам последовательности.
 "))
 
 (defmethod update ((trd-seq <trd-seq>))
   "@b(Описание:) метод @b(update) 
 "
-  (unless (<trd>-file-descr trd-seq) (recoder/trd:trd-open trd-seq))
+  (unless (recoder/trd:<trd>-file-descr trd-seq) (recoder/trd:trd-open trd-seq))
   (let ((sig (recoder/trd:trd-separate-signals trd-seq (<trd-seq>-s-sig trd-seq))))
     (setf (<trd-seq>-a-sig trd-seq) (first  sig))
     (setf (<trd-seq>-d-sig trd-seq) (second sig))
@@ -52,8 +58,6 @@
 	  :for i :from 0 :below (length (<trd-seq>-s-sig trd-seq))
 	  :do  (setf (gethash s (<trd-seq>-h-tbl trd-seq)) i ))
     trd-seq))
-
-(export '(trd-open))
 
 (defmethod trd-open ((trd-seq <trd-seq>))
   "@b(Описание:) метод @b(trd-open) выполняет отркытие файла тренда,
@@ -72,17 +76,18 @@
 (defmethod sequence:length ((trd-seq <trd-seq>))
   "@b(Описание:) метод @b(sequence:length)
 "
-  (unless (<trd>-file-descr trd-seq) (recoder/trd:trd-open trd-seq))
+  (unless (recoder/trd:<trd>-file-descr trd-seq) (recoder/trd:trd-open trd-seq))
   (recoder/trd:<trd>-total-records trd-seq))
 
 (defmethod sequence:elt ((trd-seq <trd-seq>) index)
   "@b(Описание:) метод @b(sequence:elt)
 "
-  (unless (<trd>-file-descr trd-seq) (recoder/trd:trd-open trd-seq))
+  (unless (recoder/trd:<trd>-file-descr trd-seq) (recoder/trd:trd-open trd-seq))
   (let ((a-sig (<trd-seq>-a-sig trd-seq))
         (d-sig (<trd-seq>-d-sig trd-seq)))
     (coerce
-     (append (when a-sig (recoder/trd:trd-analog-by-rec-number  trd-seq index a-sig))
+     (append #+nil (list (recoder/trd:trd-utime-by-record-number trd-seq index))
+             (when a-sig (recoder/trd:trd-analog-by-rec-number  trd-seq index a-sig))
              (when d-sig (recoder/trd:trd-discret-by-rec-number trd-seq index d-sig)))
      'vector)))
 
@@ -135,7 +140,6 @@
    (loop :for i :in (<trd-seq>-d-sig trd-seq)
 	 :collect "0/1")))
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Export-to ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -154,8 +158,6 @@
   (:documentation "@b(Описание:)  класс @b(<csv-stream>) для вывода в csv формате."))
 
 ;;;;;;;;;;
-
-(export '(*csv-stream*))
 
 (defparameter *csv-stream* (make-instance '<csv-stream> :external-format :cp1251)
   "@b(Описание:) переменная @b(*csv-stream*)
@@ -192,7 +194,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun extract-signals (fname signals &key (by 5))
-  "@b(Описание:) функция @b(extract-signals)
+  "@b(Описание:) функция @b(extract-signals) выводит данные 
 "
   (let ((trd-seq (make-instance '<trd-seq> :file-name fname :s-sig signals)))
     (trd-open trd-seq)
