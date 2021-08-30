@@ -14,7 +14,6 @@
 	   read-trd-file-long-long
 	   read-trd-file-float
 	   read-trd-file-int
-           trd-file-descr
 	   read-trd-file-double
            ;; read-trd-file-quad
 	   read-trd-file

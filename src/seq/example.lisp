@@ -9,7 +9,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-(defparameter *t-seq* (make-instance '<trd-seq> :trd-file-name *trd-fname*
+(defparameter *t-seq* (make-instance '<trd-seq> :file-name *trd-fname*
                                                 :s-sig '("V2" "ET300"))
   "Для примеров.")
 
@@ -58,7 +58,7 @@
 
 (defparameter *trd-seq*
   (make-instance '<trd-seq>
-                 :trd-file-name
+                 :file-name
                  "~/quicklisp/local-projects/clisp/recoder/trd/2018-11-06_092329.trd"
                  ))
 

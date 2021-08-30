@@ -24,7 +24,7 @@
  (foo-Oil2Gas *trd* '(33479 33755))
 @end(code)
 "
-  (let ((dt (coerce (trd-delta-time trd) 'single-float))
+  (let ((dt (coerce (<trd>-delta-time trd) 'single-float))
         (first-rec (first records)))
     (mapcar #'(lambda (start end comment)
 	        (apply #'append (cons
@@ -143,7 +143,7 @@
 	 (apply #'append
 		(mapcar
 		 #'(lambda (t-i)
-		     (let ((trd-seq (make-instance 'recoder:<trd-seq> :trd-file-name (first t-i) :s-sig *sig*)))
+		     (let ((trd-seq (make-instance 'recoder:<trd-seq> :file-name (first t-i) :s-sig *sig*)))
 		       (trd-open trd-seq)
 		       (mapcar #'(lambda (int) (foo-Oil2Gas trd-seq int)) (second t-i))))
 		 *i-t-Oil2Gas*))))
@@ -167,7 +167,7 @@
 				  (intervals (second el))
 				  (trd-seq (make-instance
 					    '<trd-seq>
-					    :trd-file-name fname
+					    :file-name fname
 					    :s-sig *s-001*)))
 			     (mapcar
 			      #'(lambda (el-1)
@@ -191,7 +191,7 @@
 				       (apply #'append
 					      (mapcar
 					       #'(lambda (t-i)
-						   (let ((trd-seq (make-instance 'recoder:<trd-seq> :trd-file-name (first t-i) :s-sig *sig*)))
+						   (let ((trd-seq (make-instance 'recoder:<trd-seq> :file-name (first t-i) :s-sig *sig*)))
 						     (trd-open trd-seq)
 						     (mapcar #'(lambda (int) (foo-Gas2Oil trd-seq int)) (second t-i))))
 					       *i-t-Gas2Oil*))))

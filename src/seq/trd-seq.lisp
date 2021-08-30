@@ -39,7 +39,7 @@
 (defmethod update ((trd-seq <trd-seq>))
   "@b(Описание:) метод @b(update) 
 "
-  (unless (trd-file-descr trd-seq) (recoder/trd:trd-open trd-seq))
+  (unless (<trd>-file-descr trd-seq) (recoder/trd:trd-open trd-seq))
   (let ((sig (recoder/trd:trd-separate-signals trd-seq (<trd-seq>-s-sig trd-seq))))
     (setf (<trd-seq>-a-sig trd-seq) (first  sig))
     (setf (<trd-seq>-d-sig trd-seq) (second sig))
@@ -64,7 +64,7 @@
 (defmethod (setf <trd-seq>-s-sig) (new-value (trd-seq <trd-seq>))
   "@b(Описание:) метод @b(setf <trd-seq>-s-sig)
 "
-  (unless (recoder/trd:trd-file-descr trd-seq) (recoder/trd:trd-open trd-seq))
+  (unless (recoder/trd:<trd>-file-descr trd-seq) (recoder/trd:trd-open trd-seq))
   (with-slots (s-sig) trd-seq
     (setf s-sig new-value)
     (update trd-seq)))
@@ -72,13 +72,13 @@
 (defmethod sequence:length ((trd-seq <trd-seq>))
   "@b(Описание:) метод @b(sequence:length)
 "
-  (unless (trd-file-descr trd-seq) (recoder/trd:trd-open trd-seq))
-  (recoder/trd:trd-total-records trd-seq))
+  (unless (<trd>-file-descr trd-seq) (recoder/trd:trd-open trd-seq))
+  (recoder/trd:<trd>-total-records trd-seq))
 
 (defmethod sequence:elt ((trd-seq <trd-seq>) index)
   "@b(Описание:) метод @b(sequence:elt)
 "
-  (unless (trd-file-descr trd-seq) (recoder/trd:trd-open trd-seq))
+  (unless (<trd>-file-descr trd-seq) (recoder/trd:trd-open trd-seq))
   (let ((a-sig (<trd-seq>-a-sig trd-seq))
         (d-sig (<trd-seq>-d-sig trd-seq)))
     (coerce
@@ -103,7 +103,7 @@
 
 ;;;;;;;;;;
 
-;; (defparameter *trd-seq* (make-instance '<trd-seq> :trd-file-name "~/quicklisp/local-projects/ZM/PM/pm-237/trd-CPiPES/2020-per/20200806_100354.trd" :s-sig *s-001*))
+;; (defparameter *trd-seq* (make-instance '<trd-seq> :file-name "~/quicklisp/local-projects/ZM/PM/pm-237/trd-CPiPES/2020-per/20200806_100354.trd" :s-sig *s-001*))
 
 ;; (elt-seq  *trd-seq* (- 13355 35) (- 13355 15))
 
@@ -167,7 +167,7 @@
 (defmethod export-to ((trd-seq <trd-seq>) (csv-stream <csv-stream>)
                       &key
                         (start 0)
-                        (end (recoder/trd:trd-total-records trd-seq))
+                        (end (recoder/trd:<trd>-total-records trd-seq))
                         (by 1))
   "@b(Описание:) метод @b(export-to) выполняет вывод объекта @b(trd-seq) в
 поток @b(csv-stream).
@@ -178,7 +178,7 @@
  (export-to *trd-sig* *csv-stream*)
 @end(code)
 "
-  (with-open-file (os (concatenate 'string (recoder/trd:trd-file-name trd-seq) ".csv")
+  (with-open-file (os (concatenate 'string (recoder/trd:<trd>-file-name trd-seq) ".csv")
 		      :direction :output :if-exists :supersede
 		      :external-format (<format-stream>-external-format csv-stream))
     (format os "Time;NUM;~{~,4F~^;~}~%" (<trd-seq>-s-sig trd-seq))
@@ -194,7 +194,7 @@
 (defun extract-signals (fname signals &key (by 5))
   "@b(Описание:) функция @b(extract-signals)
 "
-  (let ((trd-seq (make-instance '<trd-seq> :trd-file-name fname :s-sig signals)))
+  (let ((trd-seq (make-instance '<trd-seq> :file-name fname :s-sig signals)))
     (trd-open trd-seq)
     (export-to trd-seq *csv-stream* :by by)))
 

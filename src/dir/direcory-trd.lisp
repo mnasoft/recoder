@@ -146,7 +146,7 @@
 		      #'(lambda (el)
 			  (let ((rez nil))
 			    (recoder/trd:trd-close trd)
-			    (setf (recoder/trd:trd-file-name trd) el)
+			    (setf (recoder/trd:<trd>-file-name trd) el)
 			    (recoder/trd:trd-open trd)
 			    (setf rez (split-on-intervals-when-flag-is-on trd d-signal-str))
 			    (recoder/trd:trd-close trd)
@@ -185,7 +185,7 @@
 	    #'(lambda (el)
 		(let ((rez nil))
 		  (recoder/trd:trd-close trd)
-		  (setf (recoder/trd:trd-file-name trd) el)
+		  (setf (recoder/trd:<trd>-file-name trd) el)
 		  (recoder/trd:trd-open trd)
 		  (setf rez
 			(split-on-utimes-when-flag-is-on trd d-signal-str))
