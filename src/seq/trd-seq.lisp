@@ -155,7 +155,7 @@
 
 (defclass <csv-stream> (<format-stream>)
   ()
-  (:documentation "@b(Описание:)  класс @b(<csv-stream>) для вывода в csv формате."))
+  (:documentation "@b(Описание:) класс @b(<csv-stream>) для вывода в csv формате."))
 
 ;;;;;;;;;;
 
@@ -193,10 +193,13 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun extract-signals (fname signals &key (by 5))
-  "@b(Описание:) функция @b(extract-signals) выводит данные 
+(defun extract-signals (fname signals &key (by 5) (start 0))
+  "@b(Описание:) функция @b(extract-signals) выводит значения сигналов
+  @b(signals), записанных в файл тренда с именем @b(fname).
 "
   (let ((trd-seq (make-instance '<trd-seq> :file-name fname :s-sig signals)))
     (trd-open trd-seq)
-    (export-to trd-seq *csv-stream* :by by)))
+    (export-to trd-seq *csv-stream* :by by :start start)))
+
+
 
