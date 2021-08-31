@@ -6,30 +6,30 @@
 	   *cp866*
            *ascii-sym*
 	   )
-  (:export list-to-int
-           open-trd-file-read
+  (:export open-trd-file-read
            open-trd-file-write
            )
-  (:export read-trd-file-long
+  (:export read-trd-file
+           read-trd-file-short
+           read-trd-file-int
+           read-trd-file-long
 	   read-trd-file-long-long
 	   read-trd-file-float
-	   read-trd-file-int
 	   read-trd-file-double
            ;; read-trd-file-quad
-	   read-trd-file
-	   read-trd-file-short
 	   )
-  (:intern int-to-list
-           )
-  (:export write-trd-file-int
-	   write-trd-file-long
+  (:export write-trd-file
+           write-trd-file-short
+           write-trd-file-int
+           write-trd-file-long
+           write-trd-file-long-long
 	   write-trd-file-float
-	   write-trd-file
-	   write-trd-file-long-long
 	   write-trd-file-double
            ;; write-trd-file-quad
-	   write-trd-file-short
-	   ))
+	   )
+  (:export list-to-int
+           int-to-list
+           ))
 
 ;;;; (declaim (optimize (space 0) (compilation-speed 0)  (speed 0) (safety 3) (debug 3)))
 ;;;; (declaim (optimize (compilation-speed 0) (debug 3) (safety 0) (space 0) (speed 0)))
@@ -140,7 +140,7 @@
 	  (push bt lst)))
     (values (nreverse lst) byte-number t)))
 
-(defun read-trd-file-short(in &optional (len 2))
+(defun read-trd-file-short (in &optional (len 2))
   "Выполняет чтение short из потока in"
   (multiple-value-bind (rez n file-stastus)
       (read-trd-file in len)
@@ -148,7 +148,7 @@
 	(values (list-to-int rez) n file-stastus)
 	(values 0 n file-stastus))))
 
-(defun read-trd-file-int(in &optional (len 4))
+(defun read-trd-file-int (in &optional (len 4))
   "Выполняет чтение int из потока in"
   (multiple-value-bind (rez n file-stastus)
       (read-trd-file in len)
@@ -156,7 +156,7 @@
 	(values (list-to-int rez) n file-stastus)
 	(values 0 n file-stastus))))
 
-(defun read-trd-file-long(in &optional (len 4))
+(defun read-trd-file-long (in &optional (len 4))
   "Выполняет чтение long из потока in"
   (multiple-value-bind (rez n file-stastus)
       (read-trd-file in len)
@@ -164,13 +164,13 @@
 	(values (list-to-int rez) n file-stastus)
 	(values 0 n file-stastus))))
 
-(defun read-trd-file-long-long(in &optional (len 8))
+(defun read-trd-file-long-long (in &optional (len 8))
   "Выполняет чтение long-long из потока in"
   (multiple-value-bind (rez n file-stastus)
       (read-trd-file in len)
     (values   (list-to-int rez) n file-stastus)))
 
-(defun read-trd-file-float(in &optional (len 4))
+(defun read-trd-file-float (in &optional (len 4))
   "Выполняет чтение float из потока in"
   (multiple-value-bind (rez n file-stastus)
       (read-trd-file in len)
@@ -179,7 +179,7 @@
 	(values (ieee-floats:decode-float32 (list-to-int rez)) n file-stastus)	
 	(values 0 n file-stastus))))
 
-(defun read-trd-file-double(in &optional (len 8))
+(defun read-trd-file-double (in &optional (len 8))
   "Выполняет чтение doudle из потока in"
   (multiple-value-bind (rez n file-stastus)
       (read-trd-file in len)
@@ -201,31 +201,27 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun int-to-list(int-val len)
+(defun int-to-list (int-val len)
   "Выполняет преобразование целого числа в список целых 
 чисел, находящихся в диапазоне от 0 до 255"
   (let ((bbb nil))
     (dotimes (i len (reverse bbb))
       (push (ldb (byte 8  (* 8 i)) int-val) bbb))))
 
-(export 'open-trd-file-write )
-
 (defun open-trd-file-write (path)
   "Выполняет открытие файла тренда"
-  (open path :element-type 'unsigned-byte :direction :io :if-exists :overwrite))
-
-(export 'write-trd-file )
+  (open path :element-type 'unsigned-byte :direction :output :if-exists :supersede))
 
 (defun write-trd-file (byte-list out &optional (byte-number (length  byte-list)))
   "Выполняет запись  bite-number элементов списка byte-list в поток out"
   (dotimes (i byte-number)
     (write-byte (pop byte-list ) out)))
 
-(defun write-trd-file-short(int-val out &optional (len 2))
+(defun write-trd-file-short (int-val out &optional (len 2))
   "Выполняет запись short в поток out"
   (write-trd-file (int-to-list int-val len) out len))
 
-(defun write-trd-file-int(int-val out &optional (len 4))
+(defun write-trd-file-int (int-val out &optional (len 4))
   "Выполняет запись int в поток out"
   (write-trd-file (int-to-list int-val len) out len))
 
@@ -266,3 +262,6 @@
 ;    len)
 ;   out
 ;   len))
+
+
+
