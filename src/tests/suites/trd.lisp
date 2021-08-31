@@ -16,7 +16,7 @@
 
 (def-suite trd-tests
   :description "Мастер-набор всех тестов проекта trd."
-  :in all-tests)
+  :in all)
 
 (in-suite trd-tests)
 

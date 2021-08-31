@@ -120,3 +120,18 @@
 			:components ((:file "package")
 				     (:file "main")
 				     (:file "trd")))))
+
+(defsystem "recoder/tests"
+  :description "Тестирование систем, входящих  в проект Recoder."
+  :author "Nick Matvyeyev <mnasoft@gmail.com>"
+  :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"  
+  :depends-on ("recoder" "fiveam")
+  :perform (test-op (o s)
+		    (uiop:symbol-call :mnas-string/tests :run-tests))
+  :components ((:module "src/tests"
+		:serial nil
+                :components ((:file "tests")))
+               (:module "src/tests/suites"
+                :depends-on ("src/tests")
+		:serial nil
+                :components ((:file "trd")))))
