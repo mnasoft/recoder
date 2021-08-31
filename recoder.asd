@@ -134,4 +134,8 @@
                (:module "src/tests/suites"
                 :depends-on ("src/tests")
 		:serial nil
-                :components ((:file "trd")))))
+                :components ((:file "trd")))
+                              (:module "src/tests/run"
+                :depends-on ("src/tests/suites")
+		:serial nil
+                :components ((:file "run")))))
