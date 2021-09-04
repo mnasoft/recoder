@@ -149,9 +149,7 @@
   "@b(Описание:) функция @b(open-b-read) выполняет открытие файла для
  бинарного чтения.
 
- Пример использования см. в описании к функции @b(open-b-write).
-@end(code)
-"
+ Пример использования см. в описании к функции @b(open-b-write)."
   (open path :element-type 'unsigned-byte))
 
 (defun b-read (in byte-number)

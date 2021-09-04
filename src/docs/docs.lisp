@@ -11,14 +11,14 @@
   (loop
     :for i :in
     '((:recoder          :recoder)
-      (:recoder/dia      :recoder/dia)
-      (:recoder/split    :recoder/split)
-      (:recoder/dir      :recoder/dir)
-      (:recoder/trd      :recoder/trd)
-      (:recoder/a-signal :recoder/a-signal)
-      (:recoder/d-signal :recoder/d-signal)
-      (:recoder/seq      :recoder/seq)
-      (:recoder/binary   :recoder/binary)
+      (:recoder/dia      nil)
+      (:recoder/split    nil)
+      (:recoder/dir      nil)
+      (:recoder/trd      nil)
+      (:recoder/a-signal nil)
+      (:recoder/d-signal nil)
+      (:recoder/seq      nil)
+      (:recoder/binary   nil)
       )
     :do (apply #'mnas-package:document i)))
 
