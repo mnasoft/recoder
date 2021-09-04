@@ -1,17 +1,37 @@
 ;;;; recoder.asd
 
 (defsystem "recoder"
-  :description "Преднзначен для работы с трендами."
+  :description "@b(Описание:) система @b(Recoder) преднзначена для работы с трендами.
+
+ Система состоит из следующих подсистем:
+@begin(deflist)
+      
+@term(recoder/trd) @def(...)
+
+@term(recoder/seq) @def(Содержит функции, позволяющие работать с
+отдельным трендом как с последовательностью.)
+
+@term(recoder/org) @def(...)
+
+@term(recoder/dir) @def(...)
+@term(recoder/dia) @def(...)
+
+@term(recoder/split) @def(Содержит функции, позволяющие разделить
+тренд на группу диапазонов.)
+
+@end(deflist)
+"
   :author "Nick Matvyeyev <mnasoft@gmail.com>"
   :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"  
   :depends-on ("recoder/trd"
+               "recoder/org"
                "recoder/seq"
                "recoder/dir"
                "recoder/dia"
                "recoder/split") 
   :serial nil
   :in-order-to ((test-op (test-op "recoder/tests")))
-  :components  ((:file "package")))
+  :components  ((:file "recoder")))
 
 (defsystem "recoder/trd"
   :description "Преднзначен для работы с трендами."
@@ -34,6 +54,19 @@
 		((:file "trd")
 		 ;; (:file "test") 
 		 ))))
+
+(defsystem "recoder/org"
+  :description "@b(Описание:) система @b(recoder/org) содержит функции
+  для вывода информации из тренда в ORG-режиме редактора Emacs."
+  :author "Nick Matvyeyev <mnasoft@gmail.com>"
+  :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"  
+  :depends-on ("recoder/trd")
+  :serial nil
+  :components
+  ((:module "src/org"
+    :serial nil
+    :components
+    ((:file "org")))))
 
 (defsystem "recoder/split"
   :description "@b(Описание:) система @b(recoder/split) содержит
@@ -149,7 +182,8 @@
                 :depends-on ("src/tests")
 		:serial nil
                 :components ((:file "trd")
-                             (:file "binary")))
+                             (:file "binary")
+                             (:file "org")))
                (:module "src/tests/run"
                 :depends-on ("src/tests/suites")
 		:serial nil
