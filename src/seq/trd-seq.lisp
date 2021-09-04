@@ -87,8 +87,8 @@
         (d-sig (<trd-seq>-d-sig trd-seq)))
     (coerce
      (append #+nil (list (recoder/trd:trd-utime-by-record-number trd-seq index))
-             (when a-sig (recoder/trd:trd-analog-by-rec-number  trd-seq index a-sig))
-             (when d-sig (recoder/trd:trd-discret-by-rec-number trd-seq index d-sig)))
+             (when a-sig (recoder/get:trd-analog-by-rec-number  trd-seq index a-sig))
+             (when d-sig (recoder/get:trd-discret-by-rec-number trd-seq index d-sig)))
      'vector)))
 
 (defmethod trd-open :after ((trd-seq <trd-seq>))

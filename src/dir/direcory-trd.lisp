@@ -37,7 +37,7 @@
 	      (a-sig (when trd (recoder/trd:trd-analog-signal-list trd signal-ids)))
               (nils  (loop :for i :in signal-ids :collect nil)))
          (if trd
-             (recoder/trd:trd-analog-mid-by-utime trd ut a-sig)
+             (recoder/get:trd-analog-mid-by-utime trd ut a-sig)
              nils)))
    u-times))
 

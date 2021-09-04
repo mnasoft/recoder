@@ -23,7 +23,9 @@
 "
   :author "Nick Matvyeyev <mnasoft@gmail.com>"
   :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"  
-  :depends-on ("recoder/trd"
+  :depends-on ("recoder/get"
+               "recoder/interval"
+               "recoder/trd"
                "recoder/org"
                "recoder/seq"
                "recoder/dir"
@@ -54,6 +56,32 @@
 		((:file "trd")
 		 ;; (:file "test") 
 		 ))))
+
+(defsystem "recoder/get"
+  :description "@b(Описание:) система @b(recoder/get) содержит функции
+  для извлечения информации из тренда."
+  :author "Nick Matvyeyev <mnasoft@gmail.com>"
+  :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"  
+  :depends-on ("recoder/trd")
+  :serial nil
+  :components
+  ((:module "src/get"
+    :serial nil
+    :components
+    ((:file "get")))))
+
+(defsystem "recoder/interval"
+  :description "@b(Описание:) система @b(recoder/get) содержит функции
+  для извлечения информации из тренда."
+  :author "Nick Matvyeyev <mnasoft@gmail.com>"
+  :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"  
+  :depends-on ("recoder/trd")
+  :serial nil
+  :components
+  ((:module "src/interval"
+    :serial nil
+    :components
+    ((:file "interval")))))
 
 (defsystem "recoder/org"
   :description "@b(Описание:) система @b(recoder/org) содержит функции
@@ -108,7 +136,7 @@
 Содержит низкоуровневые функции ввода-вывода."
   :author "Nick Matvyeyev <mnasoft@gmail.com>"
   :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"  
-  :depends-on ("ieee-floats")
+  :depends-on ("ieee-floats" "babel")
   ;; "mnas-string" "html-table" "math" "mnas-path" "mnas-file-dialog"
   :serial nil
   :components
@@ -183,6 +211,8 @@
 		:serial nil
                 :components ((:file "trd")
                              (:file "binary")
+                             (:file "get")
+                             (:file "interval")
                              (:file "org")))
                (:module "src/tests/run"
                 :depends-on ("src/tests/suites")

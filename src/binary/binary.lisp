@@ -27,7 +27,8 @@
 	   b-write-double
            #+nil b-write-quad
 	   )
-  (:export list-to-int
+  (:export decode-string
+           list-to-int
            int-to-list
            ))
 
@@ -114,6 +115,50 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun decode-string (bufer &key (start 0) (len (length bufer))  (break-nul T) (code-page recoder/binary:*cp1251*))
+  "@b(Описание:) функция @b(decode-string) выполняет преобразование
+  символов, передаваемых в параметре bufer, имеющих кодировку
+  code-page (*cp1251*|*cp866*), в кодировку utf8.
+
+ @b(Пример использования:)
+@begin[lang=lisp](code)
+ (decode-string '(32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50)) 
+   => \" !\"#$%&'()*+,-./012\"
+@end(code)
+"
+  #+nil
+  (babel:octets-to-string (coerce bufer '(VECTOR (UNSIGNED-BYTE 8))) :encoding :cp1251)
+  ;;#+nil
+  (do*
+   ( (i start (1+ i))
+     (ch (gethash (nth i bufer) code-page) (gethash (nth i bufer) code-page))
+     (str-rez ""))
+   ( (or (>= i (+ start len))
+	 (and break-nul (= 0 (nth i bufer)))) 
+    str-rez)
+    (setf str-rez (concatenate 'string str-rez ch))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+#+nil
+(progn
+  (defun encode-string (string )
+    (char-code #\А)
+    )
+
+  (ql:quickload :babel)
+  (babel:octets-to-string #'())
+  (babel:octets-to-string 
+   (babel:string-to-octets "Вася Батарейкин!" :encoding :cp1251)
+   :encoding :cp1251)
+
+  (babel:octets-to-string
+   (coerce '(32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50)
+           '(VECTOR (UNSIGNED-BYTE 8)))
+   :encoding :cp1251))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun list-to-int (list-of-int)
