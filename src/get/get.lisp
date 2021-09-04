@@ -5,7 +5,7 @@
         #:recoder/a-signal
         #:recoder/trd
         #:mnas-string/print)
-  (:export *mid-value-number-offset*)
+  (:export *offset*)
   (:export trd-analog-signal-list
            trd-discret-signal-list)
   (:export trd-analog-mid-by-snames
@@ -25,8 +25,8 @@
 
 (in-package #:recoder/get)
 
-(defparameter *mid-value-number-offset*  10
-  "@b(Описание:) переменная @b(*mid-value-number-offset*) количество
+(defparameter *offset*  10
+  "@b(Описание:) переменная @b(*offset*) количество
   записей тренда отсчитываемое влево и вправо от текущей записи для
   определения среднего значения и стандартнорго отклонения.")
 
@@ -52,7 +52,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmethod trd-analog-mid-by-snames ((trd <trd>) utime snames &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
+(defmethod trd-analog-mid-by-snames ((trd <trd>) utime snames &key (n-before *offset*) (n-after *offset*))
   "@b(описание:) метод @b(trd-analog-mid-by-snames) возвращает список
  средних значений параметров, записанных в тренде trd в момент времени
  utime для списка сигналов, определяемых их именами snames.
@@ -61,7 +61,7 @@
   (when  (<trd>-file-descr trd)
     (trd-analog-mid-by-utime trd utime (trd-analog-signal-list trd snames) :n-before n-before :n-after n-after)))
 
-(defmethod trd-analog-stddev-by-utime ( (trd <trd>) utime signal-list &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
+(defmethod trd-analog-stddev-by-utime ( (trd <trd>) utime signal-list &key (n-before *offset*) (n-after *offset*))
   "Возвращает список стандартных отклонений для параметров,
  записанных в тренде trd в момент времени utime для списка сигналов
  signal-list; Осреднение происходит в интервале записей от n-before до
@@ -74,7 +74,7 @@
 		     (push (trd-analog-by-rec-number trd (+ n-start i) signal-list) rez))))
       (mapcar #'math/stat:standard-deviation rezult))))
 
-(defmethod trd-analog-stddev-by-snames ((trd <trd>) utime snames &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
+(defmethod trd-analog-stddev-by-snames ((trd <trd>) utime snames &key (n-before *offset*) (n-after *offset*))
   "Возвращает список стандартных отклонений для параметров,
 записанных в тренде trd в момент времени utime для списка сигналов, определяемых их именами snames;
 Осреднение происходит в интервале записей от  n-before до n-after"
@@ -103,7 +103,7 @@
 			    (trd-record-number-by-utime trd utime)
 			    signal-list))
 
-(defmethod trd-analog-mid-by-utime ((trd <trd>) utime signal-list &key (n-before *mid-value-number-offset*) (n-after *mid-value-number-offset*))
+(defmethod trd-analog-mid-by-utime ((trd <trd>) utime signal-list &key (n-before *offset*) (n-after *offset*))
   "@b(Описание:) метод @b(trd-analog-mid-by-utime)  возвращает список
 осредненных значений аналоговых сигналов, содержащися в списке @b(signal-list),
 тренда @b(trd), соответствующих моменту времени @b(utime)."
