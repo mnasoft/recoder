@@ -6,26 +6,26 @@
 	   *cp866*
            *ascii-sym*
 	   )
-  (:export open-trd-file-read
-           open-trd-file-write
+  (:export open-b-read
+           open-b-write
            )
-  (:export read-trd-file
-           read-trd-file-short
-           read-trd-file-int
-           read-trd-file-long
-	   read-trd-file-long-long
-	   read-trd-file-float
-	   read-trd-file-double
-           ;; read-trd-file-quad
+  (:export b-read
+           b-read-short
+           b-read-int
+           b-read-long
+	   b-read-long-long
+	   b-read-float
+	   b-read-double
+           #+nil b-read-quad
 	   )
-  (:export write-trd-file
-           write-trd-file-short
-           write-trd-file-int
-           write-trd-file-long
-           write-trd-file-long-long
-	   write-trd-file-float
-	   write-trd-file-double
-           ;; write-trd-file-quad
+  (:export b-write
+           b-write-short
+           b-write-int
+           b-write-long
+           b-write-long-long
+	   b-write-float
+	   b-write-double
+           #+nil b-write-quad
 	   )
   (:export list-to-int
            int-to-list
@@ -117,82 +117,117 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun list-to-int (list-of-int)
-  "@b(Описание:) list-to-int выполняет преобразование списка целых чисел 
-находящихся в диапазоне 0 - 255 в целое число"
+  "@b(Описание:) функция @b(list-to-int) выполняет преобразование
+списка целых чисел находящихся в диапазоне 0 - 255 в целое число.
+
+ @b(Пример использования:)
+@begin[lang=lisp](code)
+ (list-to-int '(2 8 0 0)) => 2050
+ (list-to-int '(1 0)) => 1
+ (list-to-int '(0 1)) => 256
+@end(code)"
   (do ((i 0 (+ i 8))
        (lst list-of-int (cdr lst))
        (rez 0))
       ((null lst) rez)
     (setf (ldb (byte 8 i) rez) (car lst))))
 
-(defun open-trd-file-read (path)
-  "@b(Описание:) open-trd-file-read выполняет открытие файла тренда."
+(defun int-to-list (int-val len)
+  "Выполняет преобразование целого числа в список целых 
+чисел, находящихся в диапазоне от 0 до 255.
+
+ @b(Пример использования:)
+@begin[lang=lisp](code)
+ (int-to-list 2050 4) => (2 8 0 0)
+@end(code)
+"
+  (let ((bbb nil))
+    (dotimes (i len (reverse bbb))
+      (push (ldb (byte 8  (* 8 i)) int-val) bbb))))
+
+(defun open-b-read (path)
+  "@b(Описание:) функция @b(open-b-read) выполняет открытие файла для
+ бинарного чтения.
+
+ Пример использования см. в описании к функции @b(open-b-write).
+@end(code)
+"
   (open path :element-type 'unsigned-byte))
 
-(defun read-trd-file (in byte-number)
-  "Выполняет чтение bite-number из потока in"
+(defun b-read (in byte-number)
+  "@b(Описание:) функция @b(b-read) выполняет чтение @b(byte-number)
+ количества байт из бинарного потока in."
   (let ((lst nil)
 	(bt nil))
     (dotimes (i byte-number)
       (setf bt (read-byte in nil 'eof))
       (if (eq bt 'eof)
-	  (return-from read-trd-file  (values (nreverse lst) i nil))
+	  (return-from b-read  (values (nreverse lst) i nil))
 	  (push bt lst)))
     (values (nreverse lst) byte-number t)))
 
-(defun read-trd-file-short (in &optional (len 2))
-  "Выполняет чтение short из потока in"
+(defun b-read-short (in &optional (len 2))
+  "@b(Описание:) функция @b(b-read-short) выполняет чтение
+короткого (2 байта) беззнакового целого из бинарного потока in."
   (multiple-value-bind (rez n file-stastus)
-      (read-trd-file in len)
+      (b-read in len)
     (if file-stastus
 	(values (list-to-int rez) n file-stastus)
 	(values 0 n file-stastus))))
 
-(defun read-trd-file-int (in &optional (len 4))
-  "Выполняет чтение int из потока in"
+(defun b-read-int (in &optional (len 4))
+  "@b(Описание:) функция @b(b-read-int) выполняет чтение беззнакового
+ целого (4 байта) числа из бинарного потока in."
   (multiple-value-bind (rez n file-stastus)
-      (read-trd-file in len)
+      (b-read in len)
     (if file-stastus
 	(values (list-to-int rez) n file-stastus)
 	(values 0 n file-stastus))))
 
-(defun read-trd-file-long (in &optional (len 4))
-  "Выполняет чтение long из потока in"
+(defun b-read-long (in &optional (len 4))
+  "@b(Описание:) функция @b(b-read-long) выполняет чтение длинного (4
+ байта) беззнакового целого числа из бинарного потока in."
   (multiple-value-bind (rez n file-stastus)
-      (read-trd-file in len)
+      (b-read in len)
     (if file-stastus
 	(values (list-to-int rez) n file-stastus)
 	(values 0 n file-stastus))))
 
-(defun read-trd-file-long-long (in &optional (len 8))
-  "Выполняет чтение long-long из потока in"
+(defun b-read-long-long (in &optional (len 8))
+  "@b(Описание:) функция @b(b-read-long-long) выполняет чтение очень
+ длинного (8 байт) беззнакового целого числа из потока in, окрытого в
+ двоичном режиме."
   (multiple-value-bind (rez n file-stastus)
-      (read-trd-file in len)
+      (b-read in len)
     (values   (list-to-int rez) n file-stastus)))
 
-(defun read-trd-file-float (in &optional (len 4))
-  "Выполняет чтение float из потока in"
+(defun b-read-float (in &optional (len 4))
+  "@b(Описание:) функция @b(b-read-float) выполняет чтение
+ короткого (4 байта) числа с плавающей точкой из бинарного потока in."
   (multiple-value-bind (rez n file-stastus)
-      (read-trd-file in len)
+      (b-read in len)
     (if file-stastus
-;;;;	(values (ie3fp:decode-ieee-float (list-to-int rez)) n file-stastus)
+        #+nil
+	(values (ie3fp:decode-ieee-float (list-to-int rez)) n file-stastus)
 	(values (ieee-floats:decode-float32 (list-to-int rez)) n file-stastus)	
 	(values 0 n file-stastus))))
 
-(defun read-trd-file-double (in &optional (len 8))
-  "Выполняет чтение doudle из потока in"
+(defun b-read-double (in &optional (len 8))
+  "@b(Описание:) функция @b(b-read-double) выполняет чтение
+ длинного (8 байт) числа с плавающей точкой из бинарного потока in."
   (multiple-value-bind (rez n file-stastus)
-      (read-trd-file in len)
+      (b-read in len)
     (if file-stastus
         #+nil
 	(values (ie3fp:decode-ieee-double (list-to-int rez)) n file-stastus)
 	(values (ieee-floats:decode-float64 (list-to-int rez)) n file-stastus)
 	(values 0 n file-stastus))))
+
 #+nil
-(defun read-trd-file-quad (in &optional (len 16))
+(defun b-read-quad (in &optional (len 16))
   "Выполняет чтение quad из потока in"
   (multiple-value-bind (rez n file-stastus)
-      (read-trd-file in len)
+      (b-read in len)
     (if file-stastus
 	(values (ie3fp:decode-ieee-quad (list-to-int rez)) n file-stastus)
 	(values 0 n file-stastus))))
@@ -201,67 +236,80 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun int-to-list (int-val len)
-  "Выполняет преобразование целого числа в список целых 
-чисел, находящихся в диапазоне от 0 до 255"
-  (let ((bbb nil))
-    (dotimes (i len (reverse bbb))
-      (push (ldb (byte 8  (* 8 i)) int-val) bbb))))
+(defun open-b-write (path)
+    "@b(Описание:) функция @b(open-b-read) выполняет открытие файла для
+ бинарной записи.
 
-(defun open-trd-file-write (path)
-  "Выполняет открытие файла тренда"
+ @b(Пример использования:)
+@begin[lang=lisp](code)
+ (let ((val 2050)
+       (rez nil)
+       (fname (merge-pathnames
+                #P\"trd/binary.bin1\"
+                (asdf:system-source-directory
+                 (asdf:find-system \"recoder/binary\")))))
+   (let ((out (open-b-write fname)))
+     (b-write-short val out)
+     (close out))
+   (let ((in (open-b-read fname)))
+     (setf rez (b-read-short in))
+     (close in)
+     rez))
+ @end(code)
+"
   (open path :element-type 'unsigned-byte :direction :output :if-exists :supersede))
 
-(defun write-trd-file (byte-list out &optional (byte-number (length  byte-list)))
-  "Выполняет запись  bite-number элементов списка byte-list в поток out"
+(defun b-write (byte-list out &optional (byte-number (length  byte-list)))
+  "Выполняет запись bite-number элементов списка byte-list в бинарный
+ поток вывода out."
   (dotimes (i byte-number)
     (write-byte (pop byte-list ) out)))
 
-(defun write-trd-file-short (int-val out &optional (len 2))
-  "Выполняет запись short в поток out"
-  (write-trd-file (int-to-list int-val len) out len))
+(defun b-write-short (int-val out &optional (len 2))
+  "@b(Описание:) функция @b(b-write-short) выполняет запись
+короткого (2 байта) беззнакового целого в бинарный поток out."
+  (b-write (int-to-list int-val len) out len))
 
-(defun write-trd-file-int (int-val out &optional (len 4))
-  "Выполняет запись int в поток out"
-  (write-trd-file (int-to-list int-val len) out len))
+(defun b-write-int (int-val out &optional (len 4))
+  "@b(Описание:) функция @b(b-write-short) выполняет запись
+короткого (4 байта) беззнакового целого в бинарный поток out."
+  (b-write (int-to-list int-val len) out len))
 
-(defun write-trd-file-long (int-val out &optional (len 4))
-  "Выполняет запись long в поток out"
-  (write-trd-file (int-to-list int-val len) out len))
+(defun b-write-long (int-val out &optional (len 4))
+  "@b(Описание:) функция @b(b-write-long) выполняет запись
+длинного (4 байта) беззнакового целого в бинарный поток out."
+  (b-write (int-to-list int-val len) out len))
 
-(defun write-trd-file-long-long (int-val out &optional (len 8))
-  "Выполняет чтение long-long из потока in"
-  (write-trd-file (int-to-list int-val len) out len))
+(defun b-write-long-long (int-val out &optional (len 8))
+  "@b(Описание:) функция @b(b-write-long-long) выполняет запись очень
+длинного (8 байта) беззнакового целого в бинарный поток out."
+  (b-write (int-to-list int-val len) out len))
 
-(defun write-trd-file-float (val out &optional (len 4))
-  "Выполняет чтение float из потока in"
-  (write-trd-file
-   (int-to-list
-;;;;    (ie3fp:encode-ieee-float (coerce val 'float))
-    (ieee-floats:encode-float32 (coerce val 'float))    
-    len)
+(defun b-write-float (val out &optional (len 4))
+  "@b(Описание:) функция @b(b-write-float) выполняет запись
+короткого (4 байта) числа с плавающей точкой в бинарный поток out."
+  (b-write
+   (int-to-list #+nil (ie3fp:encode-ieee-float (coerce val 'float))
+                (ieee-floats:encode-float32 (coerce val 'float))    
+                len)
    out
    len))
 
-(defun write-trd-file-double (val out &optional (len 8))
-  "Выполняет чтение doudle из потока in"
-  (write-trd-file
-   (int-to-list
-;;;;(ie3fp:encode-ieee-double (coerce val 'double-float))
-    (ieee-floats:encode-float64 (coerce val 'double-float))
-    len)
+(defun b-write-double (val out &optional (len 8))
+  "@b(Описание:) функция @b(b-write-float) выполняет запись
+длиного (8 байт) числа с плавающей точкой в бинарный поток out."
+  (b-write
+   (int-to-list #+nil (ie3fp:encode-ieee-double (coerce val 'double-float))
+                (ieee-floats:encode-float64 (coerce val 'double-float))
+                len)
    out
    len))
 
-;(defun write-trd-file-quad (val out &optional (len 16))
-;  "Выполняет чтение quad из потока in"
-;  (write-trd-file
-;   (int-to-list
-;    (ie3fp:encode-ieee-quad
-;     (coerce val 'long-float))
-;    len)
-;   out
-;   len))
+#+nil
+(defun b-write-quad (val out &optional (len 16))
+  "Выполняет чтение quad из потока in"
+  (b-write
+   (int-to-list (ie3fp:encode-ieee-quad (coerce val 'long-float)) len) out len))
 
 
 

@@ -1,6 +1,6 @@
 (defpackage #:recoder/docs
   (:use #:cl ) 
-  (:nicknames "MSTR/DOCS")
+  (:nicknames "REC/DOCS")
   (:export make-all)
   (:documentation "Пакет @b(recoder/docs) содержит функции
   генерирования и публикации документации."))
@@ -11,6 +11,8 @@
   (loop
     :for i :in
     '((:recoder          :recoder)
+      (:recoder/dia      :recoder/dia)
+      (:recoder/split    :recoder/split)
       (:recoder/dir      :recoder/dir)
       (:recoder/trd      :recoder/trd)
       (:recoder/a-signal :recoder/a-signal)
@@ -24,6 +26,8 @@
   (loop
     :for i :in
     '(:recoder
+      :recoder/dia
+      :recoder/split
       :recoder/dir
       :recoder/trd
       :recoder/a-signal

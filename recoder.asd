@@ -4,7 +4,11 @@
   :description "Преднзначен для работы с трендами."
   :author "Nick Matvyeyev <mnasoft@gmail.com>"
   :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"  
-  :depends-on ("recoder/trd" "recoder/seq" "recoder/dir") 
+  :depends-on ("recoder/trd"
+               "recoder/seq"
+               "recoder/dir"
+               "recoder/dia"
+               "recoder/split") 
   :serial nil
   :in-order-to ((test-op (test-op "recoder/tests")))
   :components  ((:file "package")))
@@ -17,7 +21,7 @@
                "html-table"
                "math"
                "mnas-path"
-               "mnas-file-dialog"
+               ;; "mnas-file-dialog"
                "recoder/binary"
                "recoder/a-signal"
                "recoder/d-signal"
@@ -31,6 +35,32 @@
 		 ;; (:file "test") 
 		 ))))
 
+(defsystem "recoder/split"
+  :description "@b(Описание:) система @b(recoder/split) содержит
+  фукции поиска интервалов по в тренде по определенным критериям."
+  :author "Nick Matvyeyev <mnasoft@gmail.com>"
+  :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"  
+  :depends-on ("recoder/trd")
+  :serial nil
+  :components
+  ((:module "src/split"
+    :serial nil
+    :components
+    ((:file "split")))))
+
+(defsystem "recoder/dia"
+  :description "@b(Описание:) система @b(recoder/dia) содержит
+  диалоговые фукции открытия трендов и каталогов с трендами."
+  :author "Nick Matvyeyev <mnasoft@gmail.com>"
+  :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"  
+  :depends-on ("mnas-file-dialog")
+  :serial nil
+  :components
+  ((:module "src/dia"
+    :serial nil
+    :components
+    ((:file "dia")))))
+
 (defsystem "recoder/docs"
   :description "Зависимости для сборки документации."
   :author "Nick Matvyeyev <mnasoft@gmail.com>"
@@ -38,9 +68,7 @@
   :depends-on ("recoder" "codex" "mnas-package")
   :components ((:module "src/docs"
 		:serial nil
-                :components ((:file "docs"))))
-  )
-
+                :components ((:file "docs")))))
 
 (defsystem "recoder/binary"
   :description "Преднзначен для работы с трендами. 
@@ -66,8 +94,7 @@
   ((:module "src/a-signal"
     :serial t
     :components
-    ((:file "a-signal")
-     ))))
+    ((:file "a-signal")))))
 
 (defsystem "recoder/seq"
   :description "Преднзначен для работы с трендами.
@@ -107,19 +134,6 @@
     :components
     ((:file "direcory-trd")
      ))))
-
-(defsystem "recoder/tests"
-  :description "Тестирование систем, входящих  в проект Recoder"
-  :author "Nick Matvyeyev <mnasoft@gmail.com>"
-  :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"  
-  :depends-on (:recoder :fiveam)
-  :perform (test-op (o s)
-		    (uiop:symbol-call :recoder/tests :test-recoder))
-  :components ((:module "tests"
-			:serial t
-			:components ((:file "package")
-				     (:file "main")
-				     (:file "trd")))))
 
 (defsystem "recoder/tests"
   :description "Тестирование систем, входящих  в проект Recoder."

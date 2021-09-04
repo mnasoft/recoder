@@ -22,21 +22,23 @@
            trd-discret-ht->org
            trd-header->org)
   (:export trd-analog-mid-by-snames
+           trd-analog-by-rec-number
            trd-analog-by-utime
-           trd-analog-signal-list
            trd-analog-stddev-by-snames
            trd-analog-mid-by-utime
-           trd-analog-by-rec-number
            trd-analog-length-byte 
            trd-analog-stddev-by-utime
+
+           trd-analog-signal-list
            )
-  (:export trd-discret-by-utime
-           trd-discret-length-byte
-           trd-discret-by-utime-t-nil
-           trd-discret-offset
+  (:export trd-discret-by-rec-number
            trd-discret-by-rec-number-t-nil
+           trd-discret-by-utime
+           trd-discret-by-utime-t-nil
+           trd-discret-length-byte
+           trd-discret-offset
+
            trd-discret-signal-list
-           trd-discret-by-rec-number
            )
   (:export trd-separate-a-signals
            trd-separate-not-signals
@@ -54,37 +56,28 @@
 
            trd-interval-to-hours
            trd-record-number-by-udate
-           trd-start-offset recode-string
+           trd-start-offset
+           recode-string
            trd-interval-to-secods
            
            trd-record-number-by-utime )
-  (:export split-on-intervals-of-time-when-flag-is-on
-	   split-on-intervals-when-flag-is-on
-   	   split-on-intervals-by-condition
-	   split-on-utimes-when-flag-is-on 
-	   )
+
   (:export *mid-value-number-offset*
 	   )
-  (:export apply-and
-	   apply-or
-	   )
+
   (:export make-html-trd-foo
 	   make-html-trd
 	   )
   (:export find-trd-by-utime-dirname
-	   get-open-ternds
-	   get-open-ternd
-	   change-directory-default
+
+
 	   time-universal-encode
 	   )
-  #+nil
-  (:export open-trd-file-write open-trd-file-read)
-  
-  (:export  trd-utime-by-record-number
-	    analogs-in-records
-	    analogs-in-utimes)
-  (:export trd-analog-discret-by-rec-number
-           ))
+
+  (:export trd-utime-by-record-number
+	   analogs-in-records
+	   analogs-in-utimes)
+  (:export trd-analog-discret-by-rec-number))
 
 ;;;; (declaim (optimize (space 0) (compilation-speed 0)  (speed 0) (safety 3) (debug 3)))
 ;;;; (declaim (optimize (compilation-speed 0) (debug 3) (safety 0) (space 0) (speed 0)))
@@ -218,24 +211,24 @@
 (defmethod trd-read-header((trd <trd>))
   "Выполняет открытие файла тренда и чтение заголовка тренда"
   (when (null (<trd>-file-descr trd))
-    (setf (<trd>-file-descr trd) (open-trd-file-read (<trd>-file-name trd)))
+    (setf (<trd>-file-descr trd) (open-b-read (<trd>-file-name trd)))
     (let ((in (<trd>-file-descr trd)) (bufer nil) (date-day nil) (date-month nil) (date-year nil) (time-hour nil) (time-minute nil) (time-second nil))
-      (setf (<trd>-id-string trd)      (recode-string (read-trd-file in *head-id-wid*))
-	    (<trd>-version trd)        (car (read-trd-file in *head-version-wid*))
-	    bufer                  (read-trd-file in *head-date-wid*)
+      (setf (<trd>-id-string trd)      (recode-string (b-read in *head-id-wid*))
+	    (<trd>-version trd)        (car (b-read in *head-version-wid*))
+	    bufer                  (b-read in *head-date-wid*)
 	    date-day               (first bufer)
 	    date-month             (second bufer)
 	    date-year              (+ 2000 (third bufer))
-	    bufer                  (read-trd-file in *head-time-wid*)
+	    bufer                  (b-read in *head-time-wid*)
 	    time-hour              (first bufer)
 	    time-minute            (second bufer)
 	    time-second            (third bufer)
 	    (<trd>-utime-start trd)      (encode-universal-time time-second time-minute time-hour date-day date-month date-year)
-	    (<trd>-reserv trd)         (read-trd-file-short in)
-	    (<trd>-total-records trd)  (read-trd-file-long in)
-	    (<trd>-delta-time trd)     (read-trd-file-double in)
-	    (<trd>-analog-number trd)  (read-trd-file-short in)
-	    (<trd>-discret-number trd) (read-trd-file-short in))
+	    (<trd>-reserv trd)         (b-read-short in)
+	    (<trd>-total-records trd)  (b-read-long in)
+	    (<trd>-delta-time trd)     (b-read-double in)
+	    (<trd>-analog-number trd)  (b-read-short in)
+	    (<trd>-discret-number trd) (b-read-short in))
       (setf (<trd>-total-records trd)
 	    (/ (- (file-length (<trd>-file-descr trd)) (trd-start-offset trd))
 	       (trd-record-length trd)))))
@@ -248,11 +241,11 @@
     (file-position (<trd>-file-descr trd) *head-wid*)
     (let ((in (<trd>-file-descr trd)) (analog-id nil) (analog-description nil) (analog-units  nil) (analog-min nil) (analog-max nil))
       (dotimes (i (<trd>-analog-number trd) 'done)
-	(setf analog-id          (recode-string (read-trd-file in *signal-id-wid*))
-	      analog-description (recode-string (read-trd-file in *signal-description-wid*))
-	      analog-units       (recode-string (read-trd-file in *signal-units-wid*))
-	      analog-min         (read-trd-file-double in)
-	      analog-max         (read-trd-file-double in)
+	(setf analog-id          (recode-string (b-read in *signal-id-wid*))
+	      analog-description (recode-string (b-read in *signal-description-wid*))
+	      analog-units       (recode-string (b-read in *signal-units-wid*))
+	      analog-min         (b-read-double in)
+	      analog-max         (b-read-double in)
 	      (gethash analog-id (<trd>-analog-ht trd)) (make-instance '<a-signal>
 								     :num i
 								     :id  analog-id
@@ -268,8 +261,8 @@
     (file-position (<trd>-file-descr trd) (+ *head-wid* (* (<trd>-analog-number trd) *analog-wid*)))
     (let ((in (<trd>-file-descr trd)) (discret-id nil) (discret-description nil))
       (dotimes (i (<trd>-discret-number trd) 'done)
-	(setf discret-id          (recode-string (read-trd-file in *signal-id-wid*))
-	      discret-description (recode-string (read-trd-file in *signal-description-wid*))
+	(setf discret-id          (recode-string (b-read in *signal-id-wid*))
+	      discret-description (recode-string (b-read in *signal-description-wid*))
 	      (gethash discret-id (<trd>-discret-ht trd)) (make-instance '<d-signal>
 								       :num i
 								       :id discret-id
@@ -344,7 +337,7 @@
     (let* ((v-sh (make-array (<trd>-analog-number trd) :element-type 'integer)))
       (dotimes (i (<trd>-analog-number trd) 'done)
 	(setf (svref v-sh i)
-	      (read-trd-file-short (<trd>-file-descr trd))))
+	      (b-read-short (<trd>-file-descr trd))))
       (mapcar #'(lambda(el) (<a-signal>-value el (svref v-sh (<a-signal>-num el))))
 	      signal-list))))
 
@@ -367,7 +360,7 @@
 		   (+ (trd-start-offset trd)
 		      (* rec-number (trd-record-length trd))
 		      (trd-discret-offset trd) ))
-    (let ((s-int (list-to-int (read-trd-file (<trd>-file-descr trd) (trd-discret-length-byte trd)))))
+    (let ((s-int (list-to-int (b-read (<trd>-file-descr trd) (trd-discret-length-byte trd)))))
       (mapcar #'(lambda (el)
 		  (if (logbitp (<d-signal>-num  el ) s-int) 1 0))
 	      d-signal-list))))
@@ -381,7 +374,7 @@
 		   (+ (trd-start-offset trd)
 		      (* rec-number (trd-record-length trd))
 		      (trd-discret-offset trd) ))
-    (let ((s-int (list-to-int (read-trd-file (<trd>-file-descr trd) (trd-discret-length-byte trd)))))
+    (let ((s-int (list-to-int (b-read (<trd>-file-descr trd) (trd-discret-length-byte trd)))))
       (mapcar #'(lambda (el)
 		  (logbitp (<d-signal>-num  el ) s-int))
 	      d-signal-list))))
@@ -505,118 +498,6 @@ trd в момент времени utime для списка сигналов, �
   "Выделяет из переменной singnal-str-list неожиданные сигналы."
   (second (trd-separate-signals trd singnal-str-list)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;; Splitting ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defmethod split-on-intervals-when-flag-is-on ((trd <trd>) d-signal-str )
-  "@b(Описание:) метод @b(split-on-intervals-when-flag-is-on) для 
-тренда @b(trd) выполняет поиск диапазонов, для которых значение 
-дискретного сигнала с именем d-signal-str имеет значение 1.
-
- Начало и конец диапазона выражено в порядковы номерах записи с начала тренда.
-todo: доработать, чтоб возвращался последний диапазон при поднятом флаге в конце"
-  (let* (
-	 (flag (gethash d-signal-str (<trd>-discret-ht trd)))
-	 (flag-lst (list flag))
-	 (total-rec (<trd>-total-records trd))
-	 (rez-lst nil)
-	 (n-start total-rec)
-	 (n-end -1)
-	 (rez nil)
-	 )
-    (dotimes (i (<trd>-total-records trd) (nreverse rez-lst))
-      (setf rez (first(trd-discret-by-rec-number-t-nil trd i flag-lst)))
-      (if rez
-	  (setf n-start (min i n-start)
-		n-end   (max i n-end))
-	  (when (< -1 n-end)
-	    (push (list n-start n-end) rez-lst)
-	    (setf n-start total-rec
-		  n-end -1))))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defmethod split-on-utimes-when-flag-is-on ((trd <trd>) d-signal-str )
-  "@b(Описание:) метод @b(split-on-intervals-when-flag-is-on) для 
-тренда @b(trd) выполняет поиск диапазонов, для которых значение 
-дискретного сигнала с именем d-signal-str имеет значение 1.
-
- Начало и конец диапазона выражено в порядковы номерах записи с начала тренда.
-todo: доработать, чтоб возвращался последний диапазон при поднятом флаге в конце"
-  (mapcar
-   #'(lambda (el)
-       (list (trd-utime-by-record-number trd (first el))
-	     (trd-utime-by-record-number trd (second el))))
-   (split-on-intervals-when-flag-is-on trd  d-signal-str)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defmethod split-on-intervals-of-time-when-flag-is-on ((trd <trd>) d-signal-str)
-  "Для тренда trd выполняет поиск диапазонов, для которых
-значение сигнала d-signal-str принимало значение 1. 
-И возвращает длительность этих диапазонов"
-  (let ((intervals (trd-flag-on-intervals trd d-signal-str)))
-    (values
-     (mapcar #'(lambda (el) (* -1 (<trd>-delta-time trd) (apply #'- el))) intervals)
-     intervals)))
-
-(defmethod split-on-intervals-by-condition ((trd <trd>) start-signal-str-lst end-signal-str-lst)
-  "Выполняет деление тренда на диапазоны.
-
-Возвращает список.
-
-Каждый элемент, возвращаемого списка, состоит из двух номеров записей - начальной и конечной.
-
-Параметры:
-@begin(list)
- @item(@cl:param(trd)                  - объект типа <trd> [тренд];)
- @item(@cl:param(start-signal-str-lst) - список имен [строк] дискретных сингалов тренда;)
- @item(@cl:param(end-signal-str-lst)   - список имен [строк] дискретных сингалов тренда.)
-@end(list)
-
- Логика деления на диапазоны следующая зависит от того, имеются-ли элементы в end-signal-str-lst.
-
- Если элементов в end-signal-str-lst нет:
-@begin(list)
- @item(возвращаются диапазоны для, которых все сигналы, соответствующие 
-       списку start-signal-str-lst установлены [равны единице].)
-@end(list)
-
- Если элементы в end-signal-str-lst есть:
-возвращаются диапазоны:
-@begin(list)
- @item(в первой записи которых все сигналы, 
-       соответствующие списку start-signal-str-lst установлены [равны единице];)
- @item(в следующей после последней записи которых все сигналы, 
-       соответствующие списку end-signal-str-lst установлены [равны единице].)
-@end(list)
-"
-  (let* ((start-flag-lst (mapcar #'(lambda(el) (gethash el (<trd>-discret-ht trd))) start-signal-str-lst))
-	 (end-flag-lst   (mapcar #'(lambda(el) (gethash el (<trd>-discret-ht trd))) end-signal-str-lst))
-	 (fl-start nil)
-	 (fl-end   nil)
-	 (total-rec (<trd>-total-records trd))
-	 (rez-lst nil)
-	 (n-start total-rec)
-	 (n-end -1))
-    (dotimes (i (<trd>-total-records trd) (nreverse rez-lst))
-      (setf fl-start (or fl-start (apply-and (trd-discret-by-rec-number-t-nil trd i start-flag-lst))))
-      (if fl-start
-	  (progn
-	    (setf fl-end nil
-		  n-start (min i n-start)
-		  n-end   (max i n-end))))
-      (if end-flag-lst
-	  (setf fl-end   (or fl-end   (apply-and (trd-discret-by-rec-number-t-nil trd i end-flag-lst))))
-	  (setf fl-end   (or fl-end   (not (apply-and (trd-discret-by-rec-number-t-nil trd i start-flag-lst))))))
-      (if (and fl-start fl-end (< -1 n-end))
-	  (progn
-	    (push (list n-start n-end) rez-lst)
-	    (setf 	 fl-start nil
-			 fl-end   nil
-			 n-start total-rec
-			 n-end -1))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Interval-to-time ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -722,7 +603,7 @@ todo: доработать, чтоб возвращался последний �
 		   (+ (trd-start-offset trd)
 		      (* rec-number (trd-record-length trd))
 		      (trd-discret-offset trd) ))
-    (let ((s-int (list-to-int (read-trd-file (<trd>-file-descr trd) (trd-discret-length-byte trd)))))
+    (let ((s-int (list-to-int (b-read (<trd>-file-descr trd) (trd-discret-length-byte trd)))))
       (mapcar #'(lambda (el)
 		  (if (logbitp (<d-signal>-num  el ) s-int) 1 0))
 	      d-signal-list))))
@@ -737,14 +618,6 @@ todo: доработать, чтоб возвращался последний �
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defun apply-and (lst)
-  (mapc #'(lambda (el) (unless el (return-from  apply-and nil))) lst)
-  t)
-
-(defun apply-or (lst)
-  (mapc #'(lambda (el) (when el (return-from apply-or t))) lst)
-  nil)
 
 (defun time-universal-encode (year month day hour min sec)
   "@b(Описание:) функция @b(time-universal-encode) возвращает время в
@@ -879,13 +752,7 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun get-open-ternd ()
-  (mnas-file-dialog:get-open-file :filetypes '(("Файлы трендов" "*.trd")) :title "Выберите файл тренда"))
 
-(defun get-open-ternds ()
-  (mnas-file-dialog:get-open-file :filetypes '(("Файлы трендов" "*.trd")) :title "Выберите файлы трендов" :multiple t))
-
-(defun change-directory-default () (mnas-file-dialog:change-directory-default))
 
 (defmethod trd-a-ids (a-sig-names (trd <trd>))
   "@b(Описание:) метод @b(trd-a-ids) возвращает имена 
