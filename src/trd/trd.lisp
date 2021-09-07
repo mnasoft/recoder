@@ -355,7 +355,7 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
 "
   (let ((trd (make-instance '<trd> :file-name trd-fname)))
     (trd-open trd)
-    (let* ((s-list (trd-analog-signal-list trd str-signal-list))
+    (let* ((s-list (a-signals trd str-signal-list))
 	   (rez nil)
 	   (data (mapcar #'(lambda (el) (trd-analog-mid-by-udate trd el    s-list)) time-lst))
 	   (dev  (mapcar #'(lambda (el) (trd-analog-stddev-by-udate trd el s-list)) time-lst))
@@ -417,7 +417,7 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
 	)
     (mapc #'(lambda (trd time)
 	      (trd-open trd)
-	      (let ((s-list (trd-analog-signal-list trd str-signal-list)))
+	      (let ((s-list (a-signals trd str-signal-list)))
 		(setf <a-signal>-units (mapcar #'(lambda (el) (<a-signal>-units el)) s-list)
 		      <a-signal>-id (mapcar #'(lambda (el) (<a-signal>-id el))       s-list)
 		      ht-sname (mapcar #'(lambda (el) (gethash (<a-signal>-id el) ht-sname-oboznach)) s-list)

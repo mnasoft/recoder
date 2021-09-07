@@ -33,7 +33,7 @@
 			         (mapcar #'math/stat:aver-dmax-dmin
 				         (analogs-in-records 
 				          trd  start end
-				          (trd-analog-signal-list trd signals)))))) 
+				          (a-signals trd signals)))))) 
             records (cdr records) comments)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

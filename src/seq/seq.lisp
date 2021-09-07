@@ -47,9 +47,10 @@
   "@b(Описание:) метод @b(update) 
 "
   (unless (recoder/trd:<trd>-file-descr trd-seq) (recoder/trd:trd-open trd-seq))
-  (let ((sig (recoder/slist:trd-separate-signals trd-seq (<trd-seq>-s-sig trd-seq))))
-    (setf (<trd-seq>-a-sig trd-seq) (first  sig))
-    (setf (<trd-seq>-d-sig trd-seq) (second sig))
+  (let ((a-sig (recoder/slist:a-signals trd-seq (<trd-seq>-s-sig trd-seq)))
+        (d-sig (recoder/slist:d-signals trd-seq (<trd-seq>-s-sig trd-seq))))
+    (setf (<trd-seq>-a-sig trd-seq) a-sig)
+    (setf (<trd-seq>-d-sig trd-seq) d-sig)
     (with-slots (s-sig) trd-seq
       (setf s-sig
             (append (mapcar #'recoder/a-signal:<a-signal>-id (<trd-seq>-a-sig trd-seq))

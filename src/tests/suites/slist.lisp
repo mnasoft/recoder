@@ -6,25 +6,26 @@
 
 (in-suite slist)
 
+(def-fixture fix-sig-names ()
+  (let ((names '("V2" "P02" "T2" "ET300" "FA530" "FK526" "FA526" "FA566" "KAZNA-SCHO")))
+      (&body)))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def-test trd-analog-signal-list ()
+(def-test a-signals ()
   (with-fixture fix-open-trd ()
-    (let* ((a-names '("V2" "P02" "T2" "ET300" "KAZNA-SCHO"))
-           (a-list (recoder/slist:trd-analog-signal-list trd a-names)))
-      (is-true (eq (1- (length a-names)) (length a-list))))))
-#+nil
-(recoder/slist:trd-analog-signal-list *trd* '("V2" "P02" "T2" "ET300" "KAZNA-SCHO"))
+    (with-fixture fix-sig-names ()
+      (let ((a-list (recoder/slist:a-signals trd names)))
+        (is-true (eq 4 (length a-list)))))))
 
-(def-test trd-discret-signal-list ()
+(def-test d-signals ()
   (with-fixture fix-open-trd ()
-    (let* ((d-names  '("FA530" "FK526" "FA526" "FA566" "KAZNA-SHO"))
-           (d-list (recoder/slist:trd-discret-signal-list trd d-names)))
-      (is-true (eq (1- (length d-names)) (length d-list))))))
+    (with-fixture fix-sig-names ()
+      (let* ((d-list (recoder/slist:d-signals trd names)))
+        (is-true (eq 4 (length d-list)))))))
 
-#+nil
-(recoder/slist:trd-discret-signal-list *trd* '("FA530" "FK526" "FA526" "FA566" "KAZNA-SCHO"))
+(def-test d-signals ()
+  (with-fixture fix-open-trd ()
+    (with-fixture fix-sig-names ()
+      (let* ((not-list (recoder/slist:not-signals trd names)))
+        (is-true (equal '("KAZNA-SCHO") not-list))))))
 
-(recoder/slist:trd-separate-not-signals
- *trd*
- '("V2" "P02" "T2" "ET300" "FA530" "FK526" "FA526" "FA566" "KAZNA-SCHO"))

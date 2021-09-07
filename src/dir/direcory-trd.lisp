@@ -34,7 +34,7 @@
   (mapcar
    #'(lambda (ut)
        (let* ((trd   (recoder/trd:find-trd-by-utime-dirname ut (<dir>-directory td)))
-	      (a-sig (when trd (recoder/slist:trd-analog-signal-list trd signal-ids)))
+	      (a-sig (when trd (recoder/slist:a-signals trd signal-ids)))
               (nils  (loop :for i :in signal-ids :collect nil)))
          (if trd
              (recoder/get:trd-analog-mid-by-utime trd ut a-sig)
@@ -46,7 +46,7 @@
 для первого найденного тренда из каталога td.
 "
   (let* ((trd   (recoder/trd:find-trd-by-utime-dirname (first u-times) (<dir>-directory td)))
-         (a-sig (when trd (recoder/slist:trd-analog-signal-list trd signal-ids)))
+         (a-sig (when trd (recoder/slist:a-signals trd signal-ids)))
          (nils  (loop :for i :in signal-ids :collect nil)))
     (if trd
         (mapcar #'(lambda (a-s) (recoder/a-signal:<a-signal>-units a-s)) a-sig)

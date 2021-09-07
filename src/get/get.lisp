@@ -38,7 +38,7 @@
 
  Осреднение происходит в интервале записей от @b(n-before) до @b(n-after)."
   (when  (<trd>-file-descr trd)
-    (trd-analog-mid-by-utime trd utime (trd-analog-signal-list trd snames) :n-before n-before :n-after n-after)))
+    (trd-analog-mid-by-utime trd utime (a-signals trd snames) :n-before n-before :n-after n-after)))
 
 (defmethod trd-analog-stddev-by-utime ( (trd <trd>) utime signal-list &key (n-before *offset*) (n-after *offset*))
   "Возвращает список стандартных отклонений для параметров,
@@ -58,7 +58,7 @@
 записанных в тренде trd в момент времени utime для списка сигналов, определяемых их именами snames;
 Осреднение происходит в интервале записей от  n-before до n-after"
   (when  (<trd>-file-descr trd)
-    (trd-analog-stddev-by-utime trd utime (trd-analog-signal-list trd snames) :n-before n-before :n-after n-after)))
+    (trd-analog-stddev-by-utime trd utime (a-signals trd snames) :n-before n-before :n-after n-after)))
 
 (defmethod trd-analog-by-rec-number ((trd <trd>) rec-number signal-list)
   "@b(Описание:) метод @b(trd-analog-by-rec-number) возвращает список

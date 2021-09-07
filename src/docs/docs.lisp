@@ -12,12 +12,14 @@
     :for i :in
     '((:recoder          :recoder)
       (:recoder/dia      nil)
-      (:recoder/split    nil)
       (:recoder/dir      nil)
+      (:recoder/seq      nil)
+      (:recoder/get      nil)
+      (:recoder/split    nil)
+      (:recoder/slist    nil)
       (:recoder/trd      nil)
       (:recoder/a-signal nil)
       (:recoder/d-signal nil)
-      (:recoder/seq      nil)
       (:recoder/binary   nil)
       )
     :do (apply #'mnas-package:document i)))
@@ -29,10 +31,12 @@
       :recoder/dia
       :recoder/split
       :recoder/dir
+      :recoder/seq
+      :recoder/get
+      :recoder/slist
       :recoder/trd
       :recoder/a-signal
       :recoder/d-signal
-      :recoder/seq
       :recoder/binary
       )
     :do (mnas-package:make-codex-graphs i i)))

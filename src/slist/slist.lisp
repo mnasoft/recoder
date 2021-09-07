@@ -2,16 +2,20 @@
 
 (defpackage #:recoder/slist
   (:use #:cl #:recoder/trd) 
-  (:export trd-analog-signal-list
-           trd-discret-signal-list
-           trd-separate-not-signals))
+  (:export a-signals
+           d-signals
+           not-signals)
+  (:documentation
+   "@b(Описание:) пакет @b(recoder/slist) предназначен для
+ формирования списков сигналов аналоговых и дискретных.
+"))
 
 (in-package #:recoder/slist)
 
-(defmethod trd-separate-not-signals ((trd <trd>) signal-names)
-  "@b(Описание:) метод @b(trd-separate-not-signals) возвращает список
-строк, которые для тренда trd не являются именами аналоговых или
-дискреных сигналов."
+(defmethod not-signals ((trd <trd>) signal-names)
+  "@b(Описание:) метод @b(not-signals) возвращает список строк,
+ которые для тренда trd не являются именами аналоговых или дискреных
+ сигналов."
   (when (<trd>-file-descr trd)
     (loop :for s-n :in signal-names
           :unless (or (gethash s-n (<trd>-analog-ht trd))
@@ -20,17 +24,17 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmethod trd-analog-signal-list ((trd <trd>) signal-names)
-  "@b(Описание:) метод @b(trd-analog-signal-list) возвращает список
-аналоговых сигналов тренда <trd>, которые соответствуют списку
-обозначений сигналов из списка signal-names"
+(defmethod a-signals ((trd <trd>) signal-names)
+  "@b(Описание:) метод @b(a-signals) возвращает список аналоговых
+ сигналов тренда <trd>, которые соответствуют списку обозначений
+ сигналов из списка signal-names"
   (when (<trd>-file-descr trd)
     (loop :for s-n :in signal-names
       :when (gethash s-n (<trd>-analog-ht trd))
         :collect :it)))
 
-(defmethod trd-discret-signal-list ((trd <trd>) signal-names)
-  "@b(Описание:) метод @b(trd-discret-signal-list) возвращает список
+(defmethod d-signals ((trd <trd>) signal-names)
+  "@b(Описание:) метод @b(d-signals) возвращает список
  дискретных сигналов тренда trd, которые соответствуют списку
  обозначений сигналов из списка строк @b(signal-names)."
   (when  (<trd>-file-descr trd)

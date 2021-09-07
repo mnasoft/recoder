@@ -11,7 +11,7 @@
 (
  (:export *offset*)
  (:export 
-  trd-discret-signal-list)
+  d-signals)
  (:export trd-analog-mid-by-snames
           trd-analog-by-rec-number
           trd-analog-by-utime
@@ -38,13 +38,13 @@
     (is-true (equal (recoder/get:trd-analog-by-utime
                      trd
                      (+ 600 (recoder/trd:<trd>-utime-start trd))
-                     (recoder/slist:trd-analog-signal-list
+                     (recoder/slist:a-signals
                       trd '("V2" "P02" "T2" "ET300")))
                     '(0.1274128328374151d0 106446.93675135424d0 15.457389181353474d0 424.24963759823d0)))
     (is-true (equal (recoder/get:trd-analog-by-utime
                      trd
                      (+ (floor 15706 4) (recoder/trd:<trd>-utime-start trd))
-                     (recoder/slist:trd-analog-signal-list trd '("V2" "P02" "T2" "ET300")))
+                     (recoder/slist:a-signals trd '("V2" "P02" "T2" "ET300")))
                     '(0.49477378500038144d0 156145.5710688945d0 34.91111619745175d0 4.736400396734569d0)))))
 
 (def-test trd-discret-test ()
@@ -54,13 +54,13 @@
     (is-true (equal (recoder/get:trd-discret-by-utime 
                      trd
                      (+ 600 (recoder/trd:<trd>-utime-start trd))
-                     (recoder/slist:trd-discret-signal-list
+                     (recoder/slist:d-signals
                       trd '("GAS" "OIL")))
                     '(0 1)))
     (is-true (equal (recoder/get:trd-discret-by-utime 
                      trd
                      (+ (floor 15706 4) (recoder/trd:<trd>-utime-start trd))
-                     (recoder/slist:trd-discret-signal-list
+                     (recoder/slist:d-signals
                       trd '("GAS" "OIL")))
                     '(0 1)))))
 
