@@ -24,10 +24,6 @@
            trd-start-offset
            trd-record-length
            trd-utime-end)  
-  (:export trd-separate-signals
-           trd-separate-a-signals
-           trd-separate-d-signals
-           trd-separate-not-signals)
   (:export trd-a-units
            trd-a-ids)
   (:export trd-record-number-to-udate
@@ -310,51 +306,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;; Singal separation to analog|discret|unexpected ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmethod trd-separate-signals ((trd <trd>) singnal-str-list)
-  "@b(Описание:) метод @b(trd-separate-signals) выполняет проверку
- того, что имена сигналов, заданные в переменной singnal-str-list,
- присутствуют для данного тренда в перечне аналоговых сигналов или
- дискретных сигналов или отсутствуют в обоих перечнях.
-
- Возвращает список элементами которого являются:
-@begin(list)
- @item(список аналоговых сигналов;)
- @item(список дискретных сигналов;) 
- @item(список строк с именами не соответствующими ни аналоговым ни
-       дискретным сигналам.)
-@end(list)"
-  (let ((a-rez nil)
-	(d-rez nil)
-	(error-rez nil)
-	(error-fl t))
-    (mapcar #'(lambda (el)
-		(setf error-fl t)
-		(multiple-value-bind (v r) (gethash  el (<trd>-analog-ht trd ) )
-		  (when r
-		    (push v a-rez)
-		    (setf error-fl nil)))
-		(multiple-value-bind (v r) (gethash  el (<trd>-discret-ht trd ) )
-		  (when r (push v d-rez)
-			(setf error-fl nil)))
-		(when error-fl (push el error-rez)))
-	    singnal-str-list)
-    (list (nreverse a-rez) (nreverse d-rez) (nreverse error-rez))))
-
-(defmethod trd-separate-a-signals ((trd <trd>) singnal-str-list)
-  "Выделяет из переменной singnal-str-list аналоговые сигналы"
-  (first (trd-separate-signals trd singnal-str-list)))
-
-(defmethod trd-separate-d-signals ((trd <trd>) singnal-str-list)
-  "Выделяет из переменной singnal-str-list дискретные сигналы"
-  (second (trd-separate-signals trd singnal-str-list)))
-
-(defmethod trd-separate-not-signals ((trd <trd>) singnal-str-list)
-  "Выделяет из переменной singnal-str-list неожиданные сигналы."
-  (second (trd-separate-signals trd singnal-str-list)))
 
 
 

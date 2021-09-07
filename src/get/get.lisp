@@ -4,10 +4,9 @@
         #:recoder/d-signal
         #:recoder/a-signal
         #:recoder/trd
+        #:recoder/slist
         #:mnas-string/print)
   (:export *offset*)
-  (:export trd-analog-signal-list
-           trd-discret-signal-list)
   (:export trd-analog-mid-by-snames
            trd-analog-by-rec-number
            trd-analog-by-utime
@@ -29,26 +28,6 @@
   "@b(Описание:) переменная @b(*offset*) количество
   записей тренда отсчитываемое влево и вправо от текущей записи для
   определения среднего значения и стандартнорго отклонения.")
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defmethod trd-analog-signal-list ((trd <trd>) signal-string-list)
-  "@b(Описание:) метод @b(trd-analog-signal-list) возвращает список
-аналоговых сигналов тренда <trd>, которые соответствуют списку
-обозначений сигналов из списка signal-string-list"
-  (when (<trd>-file-descr trd)
-    (mapcar #'(lambda(el)
-		(gethash el (<trd>-analog-ht trd)))
-	    signal-string-list)))
-
-(defmethod trd-discret-signal-list ((trd <trd>) signal-string-list)
-  "@b(Описание:) метод @b(trd-discret-signal-list) возвращает список
- дискретных сигналов тренда trd, которые соответствуют списку
- обозначений сигналов из списка строк @b(signal-string-list)."
-  (when  (<trd>-file-descr trd)
-    (mapcar #'(lambda(el)
-		(gethash el (<trd>-discret-ht trd)))
-	    signal-string-list)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

@@ -6,6 +6,31 @@
 
 (in-suite get)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+#+nil
+(
+ (:export *offset*)
+ (:export 
+  trd-discret-signal-list)
+ (:export trd-analog-mid-by-snames
+          trd-analog-by-rec-number
+          trd-analog-by-utime
+          trd-analog-mid-by-utime
+          trd-analog-stddev-by-snames
+          trd-analog-stddev-by-utime)
+ (:export trd-discret-by-rec-number
+          trd-discret-by-rec-number-t-nil
+          trd-discret-by-utime
+          trd-discret-by-utime-t-nil)
+ (:export trd-analog-discret-by-rec-number)
+ (:export analogs-in-records
+          analogs-in-utimes
+          ))
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (def-test trd-analog-test ()
   "Проверка извлечения аналоговых сигналов."
   (with-fixture fix-open-trd ()
@@ -13,13 +38,13 @@
     (is-true (equal (recoder/get:trd-analog-by-utime
                      trd
                      (+ 600 (recoder/trd:<trd>-utime-start trd))
-                     (recoder/trd:trd-analog-signal-list
+                     (recoder/slist:trd-analog-signal-list
                       trd '("V2" "P02" "T2" "ET300")))
                     '(0.1274128328374151d0 106446.93675135424d0 15.457389181353474d0 424.24963759823d0)))
     (is-true (equal (recoder/get:trd-analog-by-utime
                      trd
                      (+ (floor 15706 4) (recoder/trd:<trd>-utime-start trd))
-                     (recoder/trd:trd-analog-signal-list trd '("V2" "P02" "T2" "ET300")))
+                     (recoder/slist:trd-analog-signal-list trd '("V2" "P02" "T2" "ET300")))
                     '(0.49477378500038144d0 156145.5710688945d0 34.91111619745175d0 4.736400396734569d0)))))
 
 (def-test trd-discret-test ()
@@ -29,12 +54,14 @@
     (is-true (equal (recoder/get:trd-discret-by-utime 
                      trd
                      (+ 600 (recoder/trd:<trd>-utime-start trd))
-                     (recoder/trd:trd-discret-signal-list
+                     (recoder/slist:trd-discret-signal-list
                       trd '("GAS" "OIL")))
                     '(0 1)))
     (is-true (equal (recoder/get:trd-discret-by-utime 
                      trd
                      (+ (floor 15706 4) (recoder/trd:<trd>-utime-start trd))
-                     (recoder/trd:trd-discret-signal-list
+                     (recoder/slist:trd-discret-signal-list
                       trd '("GAS" "OIL")))
                     '(0 1)))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

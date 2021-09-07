@@ -62,7 +62,7 @@
   для извлечения информации из тренда."
   :author "Nick Matvyeyev <mnasoft@gmail.com>"
   :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"  
-  :depends-on ("recoder/trd")
+  :depends-on ("recoder/slist") ;; "recoder/trd"
   :serial nil
   :components
   ((:module "src/get"
@@ -162,13 +162,13 @@
 Определяет классы и методы для представления тренда в виде последовательности (sequience)."
   :author "Nick Matvyeyev <mnasoft@gmail.com>"
   :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"
-  :depends-on ("recoder/trd" "mnas-org-mode")
+  :depends-on ("recoder/slist" "recoder/get" "mnas-org-mode") ;;"recoder/trd"
   :serial nil
   :components
   ((:module "src/seq"
     :serial nil
     :components
-    ((:file "trd-seq")))))
+    ((:file "seq")))))
 
 (defsystem "recoder/d-signal"
   :description "Преднзначен для работы с трендами.
@@ -196,6 +196,20 @@
     ((:file "direcory-trd")
      ))))
 
+(defsystem "recoder/slist"
+  :description "@b(Описание:) система @b(recoder/slist) служит для получения списка синалов."
+  :author "Nick Matvyeyev <mnasoft@gmail.com>"
+  :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"
+  :depends-on ("recoder/trd")
+  :serial nil
+  :components
+  ((:module "src/slist"
+    :serial nil
+    :components
+    ((:file "slist")
+     ))))
+
+
 (defsystem "recoder/tests"
   :description "Тестирование систем, входящих  в проект Recoder."
   :author "Nick Matvyeyev <mnasoft@gmail.com>"
@@ -209,8 +223,9 @@
                (:module "src/tests/suites"
                 :depends-on ("src/tests")
 		:serial nil
-                :components ((:file "trd")
-                             (:file "binary")
+                :components ((:file "binary")
+                             (:file "trd")
+                             (:file "slist")
                              (:file "get")
                              (:file "interval")
                              (:file "org")))

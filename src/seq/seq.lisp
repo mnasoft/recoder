@@ -4,6 +4,7 @@
   (:use #:cl #:mnas-string
         #+NIL
         #:recoder/trd
+        #:recoder/slist
         #:recoder/a-signal #:recoder/d-signal #:recoder/binary)
   (:export trd-open)
   (:export <trd-seq>
@@ -46,7 +47,7 @@
   "@b(Описание:) метод @b(update) 
 "
   (unless (recoder/trd:<trd>-file-descr trd-seq) (recoder/trd:trd-open trd-seq))
-  (let ((sig (recoder/trd:trd-separate-signals trd-seq (<trd-seq>-s-sig trd-seq))))
+  (let ((sig (recoder/slist:trd-separate-signals trd-seq (<trd-seq>-s-sig trd-seq))))
     (setf (<trd-seq>-a-sig trd-seq) (first  sig))
     (setf (<trd-seq>-d-sig trd-seq) (second sig))
     (with-slots (s-sig) trd-seq
