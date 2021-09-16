@@ -23,9 +23,11 @@
 "
   :author "Nick Matvyeyev <mnasoft@gmail.com>"
   :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"  
-  :depends-on ("recoder/get"
+  :depends-on ("recoder/trd"
+               "recoder/get"
+               "recoder/html"
                "recoder/interval"
-               "recoder/trd"
+               
                "recoder/org"
                "recoder/seq"
                "recoder/dir"
@@ -69,6 +71,19 @@
     :serial nil
     :components
     ((:file "get")))))
+
+(defsystem "recoder/html"
+  :description "@b(Описание:) система @b(recoder/html) содержит функции
+  для извлечения информации из тренда."
+  :author "Nick Matvyeyev <mnasoft@gmail.com>"
+  :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"  
+  :depends-on ("recoder/get" "recoder/slist") ;; "recoder/trd"
+  :serial nil
+  :components
+  ((:module "src/html"
+    :serial nil
+    :components
+    ((:file "html")))))
 
 (defsystem "recoder/interval"
   :description "@b(Описание:) система @b(recoder/get) содержит функции
@@ -214,7 +229,7 @@
   :description "Тестирование систем, входящих  в проект Recoder."
   :author "Nick Matvyeyev <mnasoft@gmail.com>"
   :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"  
-  :depends-on ("recoder" "fiveam")
+  :depends-on ("recoder" "fiveam" "math/arr-matr")
   :perform (test-op (o s)
 		    (uiop:symbol-call :mnas-string/tests :run-tests))
   :components ((:module "src/tests"
@@ -227,6 +242,7 @@
                              (:file "trd")
                              (:file "slist")
                              (:file "get")
+                             (:file "split")
                              (:file "interval")
                              (:file "org")))
                (:module "src/tests/run"

@@ -72,4 +72,15 @@
 
 (def-test trd-utime-end ()
   (with-fixture fix-open-trd ()
-    (is-true (= (recoder/trd:trd-utime-end *trd*) 3750481735))))
+    (is-true (= (recoder/trd:trd-utime-end trd) 3750481735))))
+
+(def-test trd-record->utime()
+  (with-fixture fix-open-trd ()
+    (is-true (= (recoder/trd:trd-record->utime trd 1000) 3750478059))))
+
+(def-test trd-utime->record()
+  (with-fixture fix-open-trd ()
+    (is-true (= (recoder/trd:trd-utime->record trd 3750478059) 1000))))
+
+(def-test time-universal-encode()
+    (is-true (= (recoder/trd:time-universal-encode 2021 09 16 12 27 25)  3840773245)))

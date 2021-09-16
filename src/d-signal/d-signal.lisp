@@ -30,4 +30,7 @@
 @end(table)"))
 
 (defmethod print-object ((x <d-signal>) stream)
-  (format stream "~S ~S ~S" (<d-signal>-num x) (<d-signal>-id x) (<d-signal>-description x)))
+  (format stream "#d-s(~S ~S ~S)"
+          (<d-signal>-num x)
+          (<d-signal>-id x)
+          (<d-signal>-description x)))

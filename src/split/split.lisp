@@ -8,7 +8,7 @@
   (:export split-on-intervals-of-time-when-flag-is-on
 	   split-on-intervals-when-flag-is-on
    	   split-on-intervals-by-condition
-	   split-on-utimes-when-flag-is-on ))
+	   split-on-utimes-when-flag-is-on))
 
 (in-package #:recoder/split)
 
@@ -36,7 +36,7 @@ todo: доработать, чтоб возвращался последний �
 	 (rez nil)
 	 )
     (dotimes (i (<trd>-total-records trd) (nreverse rez-lst))
-      (setf rez (first(trd-discret-by-rec-number-t-nil trd i flag-lst)))
+      (setf rez (first(trd-discret-by-record-t-nil trd i flag-lst)))
       (if rez
 	  (setf n-start (min i n-start)
 		n-end   (max i n-end))
@@ -56,8 +56,8 @@ todo: доработать, чтоб возвращался последний �
 todo: доработать, чтоб возвращался последний диапазон при поднятом флаге в конце"
   (mapcar
    #'(lambda (el)
-       (list (trd-utime-by-record-number trd (first el))
-	     (trd-utime-by-record-number trd (second el))))
+       (list (trd-record->utime trd (first el))
+	     (trd-record->utime trd (second el))))
    (split-on-intervals-when-flag-is-on trd  d-signal-str)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -111,15 +111,15 @@ todo: доработать, чтоб возвращался последний �
 	 (n-start total-rec)
 	 (n-end -1))
     (dotimes (i (<trd>-total-records trd) (nreverse rez-lst))
-      (setf fl-start (or fl-start (apply-and (trd-discret-by-rec-number-t-nil trd i start-flag-lst))))
+      (setf fl-start (or fl-start (apply-and (trd-discret-by-record-t-nil trd i start-flag-lst))))
       (if fl-start
 	  (progn
 	    (setf fl-end nil
 		  n-start (min i n-start)
 		  n-end   (max i n-end))))
       (if end-flag-lst
-	  (setf fl-end   (or fl-end   (apply-and (trd-discret-by-rec-number-t-nil trd i end-flag-lst))))
-	  (setf fl-end   (or fl-end   (not (apply-and (trd-discret-by-rec-number-t-nil trd i start-flag-lst))))))
+	  (setf fl-end   (or fl-end   (apply-and (trd-discret-by-record-t-nil trd i end-flag-lst))))
+	  (setf fl-end   (or fl-end   (not (apply-and (trd-discret-by-record-t-nil trd i start-flag-lst))))))
       (if (and fl-start fl-end (< -1 n-end))
 	  (progn
 	    (push (list n-start n-end) rez-lst)

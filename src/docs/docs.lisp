@@ -14,8 +14,11 @@
       (:recoder/dia      nil)
       (:recoder/dir      nil)
       (:recoder/seq      nil)
-      (:recoder/get      nil)
+      (:recoder/html     nil)
+      (:recoder/org      nil)
+      (:recoder/interval nil)
       (:recoder/split    nil)
+      (:recoder/get      nil)
       (:recoder/slist    nil)
       (:recoder/trd      nil)
       (:recoder/a-signal nil)
@@ -32,6 +35,9 @@
       :recoder/split
       :recoder/dir
       :recoder/seq
+      :recoder/html
+      :recoder/org
+      :recoder/interval
       :recoder/get
       :recoder/slist
       :recoder/trd

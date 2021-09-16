@@ -4,7 +4,8 @@
   (:use #:cl #:mnas-string/print #:recoder/binary #:recoder/d-signal #:recoder/a-signal)
   (:export trd-open
            trd-close)
-  (:export *trd*)
+  (:export *trd*
+           *trd-fname*)
   (:export <trd>
 	   <trd>-total-records
 	   <trd>-delta-time
@@ -24,15 +25,10 @@
            trd-start-offset
            trd-record-length
            trd-utime-end)  
-  (:export trd-a-units
-           trd-a-ids)
-  (:export trd-record-number-to-udate
-           trd-record-number-by-utime
+  (:export trd-record->utime
+           trd-utime->record
            trd-record-number-by-udate)
-  (:export make-html-trd-foo
-	   make-html-trd)
-  (:export find-trd-by-utime-dirname
-	   time-universal-encode)
+  (:export time-universal-encode)
   (:export trd-utime-by-record-number))
 
 ;;;; (declaim (optimize (space 0) (compilation-speed 0)  (speed 0) (safety 3) (debug 3)))
@@ -262,66 +258,30 @@
 смещение в байтах от начала записи до начала записи дискретных сигналов."
   (trd-analog-length-byte trd))
 
+
+(defmethod trd-utime->record ((trd <trd>) utime)
+  "@b(Описание:) метод @b(trd-utime->record) возвращает номер
+ записи по универсальному времени."
+  (floor
+   (- utime (<trd>-utime-start trd))
+   (<trd>-delta-time trd)))
+
+(defmethod trd-record->utime ((trd <trd>) record)
+  "@b(Описание:) метод @b(trd-record->utime) возвращает время в
+универсальном формате по номеру записи."
+  (+ (<trd>-utime-start trd)
+     (floor record
+            (/ (<trd>-delta-time trd)))))
+
 (defmethod trd-utime-end ((trd <trd>))
   "@b(Описание:) метод @b(trd-utime-end) возвращает время окончания тренда.
 Время возвращается в универсальном формате (universal-time)"
+  (trd-record->utime trd (<trd>-total-records trd))
+  #+nil
   (+ (<trd>-utime-start trd)
-     (floor (* (<trd>-total-records trd) (<trd>-delta-time trd)))))
-
-
-
-(defmethod trd-record-number-by-utime ((trd <trd>) utime)
-  "@b(Описание:) метод @b(trd-record-number-by-utime) возвращает номер
- записи по универсальному времени."
-  (floor (- utime (<trd>-utime-start trd)) (<trd>-delta-time trd)))
-
-(defmethod trd-utime-by-record-number ((trd <trd>) record-number)
-  "@b(Описание:) метод @b(trd-record-number-by-utime)
- Возвращает номер записи по универсальному времени"
-  (+ (<trd>-utime-start trd) (floor record-number (/ 1 (<trd>-delta-time trd)))))
-
-(defmethod trd-discret-by-rec-number ( (trd <trd>) rec-number d-signal-list)
-  "@b(Описание:) метод @b(trd-discret-by-rec-number)
-возвращает список значений тренда <trd> для записи под номером rec-number,
-соответствующий сигналам d-signal-list."
-  (when (and (<trd>-file-descr trd) (< -1 rec-number (<trd>-total-records trd)))
-    (file-position (<trd>-file-descr trd) 
-		   (+ (trd-start-offset trd)
-		      (* rec-number (trd-record-length trd))
-		      (trd-discret-offset trd) ))
-    (let ((s-int (list-to-int (b-read (<trd>-file-descr trd) (trd-discret-length-byte trd)))))
-      (mapcar #'(lambda (el)
-		  (if (logbitp (<d-signal>-num  el ) s-int) 1 0))
-	      d-signal-list))))
-
-
-
-
-
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
-
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defmethod trd-record-number-to-udate ((trd <trd>) rec-number)
-  "trd-record-number-to-udate"
-  (+ (<trd>-utime-start trd) (round (* rec-number (<trd>-delta-time  trd)))))
-
-(defmethod trd-record-number-by-udate ((trd <trd>) udate)
-  "trd-record-number-by-udate"
-  (round
-   (/
-    (- udate (<trd>-utime-start trd))
-    (<trd>-delta-time trd))))
+     (floor
+      (* (<trd>-total-records trd)
+         (<trd>-delta-time trd)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -330,7 +290,7 @@
 (defun time-universal-encode (year month day hour min sec)
   "@b(Описание:) функция @b(time-universal-encode) возвращает время в
   универсальном формате. Аналогична вызову функции
-  @b(encode-universal-time) с параметрами следующими в обратнром
+  @b(encode-universal-time) с параметрами следующими в обратном
   порядке.
 
  @b(Пример использования:)
@@ -339,144 +299,6 @@
 @end(code)"
   (encode-universal-time sec min hour day month year))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defun make-html-trd (trd-fname html-fname str-signal-list time-lst ht-sname-oboznach &key (transpose nil))
-  "Вывод в данных из тренда в файл trd-fname в файл html-fname;
-Данные выводятся по столбцам;
-trd-fname         - имя файла тренда;
-html-fname        - имя html-файла;
-str-signal-list   - список выводимых сигналов;
-time-lst          - список, элементами которого являются универсальное время;
-ht-sname-oboznach - хеш-таблица, элементами которой являются:
-                    в качестве ключа    - имена сигналов;
-                    в качестве значений - обозначения сигналов
-Пример использования:
-"
-  (let ((trd (make-instance '<trd> :file-name trd-fname)))
-    (trd-open trd)
-    (let* ((s-list (a-signals trd str-signal-list))
-	   (rez nil)
-	   (data (mapcar #'(lambda (el) (trd-analog-mid-by-udate trd el    s-list)) time-lst))
-	   (dev  (mapcar #'(lambda (el) (trd-analog-stddev-by-udate trd el s-list)) time-lst))
-	   (d-time-str (mapcar #'(lambda (tm ) (list (date tm :stream nil)
-						     (day-time tm :stream nil)))
-			       time-lst)))
-      (setf data  (mapcar #'(lambda (tm da) (append tm da)) d-time-str data)
-	    dev   (mapcar #'(lambda (tm dv) (append tm dv)) d-time-str dev))
-      (setf rez (append  data dev ))
-      (push (append '("YYYY-MM-DD" "hh:mm:ss") (mapcar #'(lambda (el) (<a-signal>-units el)) s-list) ) rez)
-      (push (append '("-" "-") (mapcar #'(lambda (el) (<a-signal>-id el))    s-list) ) rez)
-      (push (append '("Date" "Time") (mapcar #'(lambda (el) (gethash (<a-signal>-id el) ht-sname-oboznach)) s-list)) rez)
-      (push (append '("Дата" "Время") (mapcar #'(lambda (el) (<a-signal>-description el)) s-list)) rez)
-      (when transpose (setf rez (transpose rez)))
-      (html-table:list-list-html-table rez html-fname))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defun find-trd-by-utime-dirname (utime dir-name &key (extension "trd"))
-  "Возвращает объект тренда, для которого существуют данные на момент 
-универсального времени utime в каталоге dir-name
-"
-  (let ((rezult nil))
-    (mapc  
-     #'(lambda (el)
-	 (let ((trd (make-instance '<trd> :file-name el)))
-	   (trd-open trd)
-	   (if (<= (<trd>-utime-start trd) utime (trd-utime-end trd))
-	       (setf rezult trd)
-	       (trd-close trd))))
-     (mnas-path:find-filename dir-name extension))
-    rezult))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defun make-html-trd-foo (trd-dname html-fname str-signal-list time-lst ht-sname-oboznach &key (transpose nil))
-  "Вывод в данных из тренда в файл trd-dname в файл html-fname;
-Данные выводятся по столбцам;
-trd-dname         - имя файла тренда;
-html-fname        - имя html-файла;
-str-signal-list   - список выводимых сигналов;
-time-lst          - список, элементами которого являются универсальное время;
-ht-sname-oboznach - хеш-таблица, элементами которой являются:
-                    в качестве ключа    - имена сигналов;
-                    в качестве значений - обозначения сигналов
-Пример использования:
-
-"
-  (let ((trd-lst (mapcar #'(lambda (ut) (find-trd-by-utime-dirname ut trd-dname)) time-lst))
-	(rez                  nil)
-	(data                 nil)
-	(dev                  nil)
-	(d-time-str           nil)
-	
-	(<a-signal>-units       nil)
-	(<a-signal>-id          nil)
-	(ht-sname             nil)
-	(<a-signal>-description nil)	
-	)
-    (mapc #'(lambda (trd time)
-	      (trd-open trd)
-	      (let ((s-list (a-signals trd str-signal-list)))
-		(setf <a-signal>-units (mapcar #'(lambda (el) (<a-signal>-units el)) s-list)
-		      <a-signal>-id (mapcar #'(lambda (el) (<a-signal>-id el))       s-list)
-		      ht-sname (mapcar #'(lambda (el) (gethash (<a-signal>-id el) ht-sname-oboznach)) s-list)
-		      <a-signal>-description (mapcar #'(lambda (el) (<a-signal>-description el)) s-list)
-		      
-		      )
-
-		(push (trd-analog-mid-by-utime trd time s-list)    data)
-		(push (trd-analog-stddev-by-utime trd time s-list) dev)
-		(push (list (date time :stream nil) (day-time time :stream nil)) d-time-str)))
-	  trd-lst time-lst)
-    (setf data (reverse data)
-	  dev  (reverse dev)
-	  d-time-str (reverse d-time-str)
-	  )
-    (setf data  (mapcar #'(lambda (tm da) (append tm da)) d-time-str data)
-	  dev   (mapcar #'(lambda (tm dv) (append tm dv)) d-time-str dev))
-    (setf rez (append  data dev ))
-    (push (append '("YYYY-MM-DD" "hh:mm:ss") <a-signal>-units ) rez)
-    (push (append '("-" "-") <a-signal>-id )                    rez)
-    (push (append '("Date" "Time") ht-sname  ) rez)
-    (push (append '("Дата" "Время") <a-signal>-description) rez)
-    (when transpose (setf rez (transpose rez)))
-    (html-table:list-list-html-table rez html-fname)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
-
-(defmethod trd-a-ids (a-sig-names (trd <trd>))
-  "@b(Описание:) метод @b(trd-a-ids) возвращает имена 
-идентификаторов аналоговых сигналов.
-@begin(list)
- @item(a-sig-names - список имен сигналов; )
- @item(trd         - тренд. )
-@end(list)
-"
-  (mapcar
-   #'(lambda (el)
-       (<a-signal>-id
-	(gethash el (<trd>-analog-ht trd))))
-   a-sig-names))
-
-(defmethod trd-a-units (a-sig-names (trd <trd>))
-  "@b(Описание:) метод @b(trd-a-units) возвращает размерности 
-аналоговых сигналов.
-@begin(list)
- @item(a-sig-names - список имен сигналов;)
- @item( trd        - тренд.)
-@end(list)
-"
-  (mapcar
-   #'(lambda (el)
-       (<a-signal>-units
-	(gethash el (<trd>-analog-ht trd))))
-   a-sig-names))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defparameter *trd-fname*

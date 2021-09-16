@@ -1,4 +1,4 @@
-;;;; ./src/tests/suites/trd.lisp
+;;;; ./src/tests/suites/org.lisp
 
 (in-package :recoder/tests)
 

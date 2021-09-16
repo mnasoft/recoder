@@ -88,9 +88,9 @@
   (let ((a-sig (<trd-seq>-a-sig trd-seq))
         (d-sig (<trd-seq>-d-sig trd-seq)))
     (coerce
-     (append #+nil (list (recoder/trd:trd-utime-by-record-number trd-seq index))
-             (when a-sig (recoder/get:trd-analog-by-rec-number  trd-seq index a-sig))
-             (when d-sig (recoder/get:trd-discret-by-rec-number trd-seq index d-sig)))
+     (append #+nil (list (recoder/trd:trd-record->utime trd-seq index))
+             (when a-sig (recoder/get:trd-analog-by-record  trd-seq index a-sig))
+             (when d-sig (recoder/get:trd-discret-by-record trd-seq index d-sig)))
      'vector)))
 
 (defmethod trd-open :after ((trd-seq <trd-seq>))
@@ -189,7 +189,7 @@
     (format os "~{~,S~^;~}~%" (append '("hh:mm:ss" "NUM") (<trd-seq>-units trd-seq)))
     (loop :for i :from start :below end :by by
 	  :do (format os "~S;~A;~{~,4F~^;~}~%"
-		      (mnas-org-mode:utime->time (recoder/trd:trd-utime-by-record-number trd-seq i))
+		      (mnas-org-mode:utime->time (recoder/trd:trd-record->utime trd-seq i))
 		      i
 		      (coerce (elt trd-seq i) 'list)))))
 

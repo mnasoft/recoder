@@ -44,7 +44,13 @@
 "))
 
 (defmethod print-object ((x <a-signal>) stream)
-  (format stream "~S ~S [~A ~A] ~S ~S" (<a-signal>-num x) (<a-signal>-id x) (<a-signal>-min x) (<a-signal>-max x) (<a-signal>-units x) (<a-signal>-description x)))
+  (format stream "#a-s(~S ~S [~A ~A] ~S ~S)"
+          (<a-signal>-num x)
+          (<a-signal>-id x)
+          (<a-signal>-min x)
+          (<a-signal>-max x)
+          (<a-signal>-units x)
+          (<a-signal>-description x)))
 
 (export '<a-signal>-value )
 
