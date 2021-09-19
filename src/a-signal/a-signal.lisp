@@ -2,6 +2,7 @@
 
 (defpackage #:recoder/a-signal
   (:use #:cl )
+  (:nicknames "R/A-SIG")
   (:export <a-signal>
 	   <a-signal>-units
 	   <a-signal>-num

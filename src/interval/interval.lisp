@@ -1,5 +1,6 @@
 (defpackage #:recoder/interval
   (:use #:cl  #:recoder/trd)
+  (:nicknames "R/INTERVAL") 
   (:export trd-interval-to-secods
            trd-interval-to-minutes
            trd-interval-to-hours))

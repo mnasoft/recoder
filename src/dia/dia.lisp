@@ -2,6 +2,7 @@
 
 (defpackage #:recoder/dia
   (:use #:cl #:mnas-string/print #:recoder/binary #:recoder/d-signal #:recoder/a-signal)
+  (:nicknames "R/DIA")
   (:export get-open-ternds
 	   get-open-ternd
 	   change-directory-default))

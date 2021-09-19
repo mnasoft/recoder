@@ -208,8 +208,7 @@
   ((:module "src/dir"
     :serial nil
     :components
-    ((:file "direcory-trd")
-     ))))
+    ((:file "dir")))))
 
 (defsystem "recoder/slist"
   :description "@b(Описание:) система @b(recoder/slist) служит для получения списка синалов."

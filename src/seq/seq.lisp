@@ -1,11 +1,13 @@
 ;;; ./src/trd-seq.lisp
 
 (defpackage #:recoder/seq
-  (:use #:cl #:mnas-string
-        #+NIL
-        #:recoder/trd
+  (:use #:cl
+        #:mnas-string
         #:recoder/slist
-        #:recoder/a-signal #:recoder/d-signal #:recoder/binary)
+        #:recoder/a-signal
+        #:recoder/d-signal
+        #:recoder/binary)
+  (:nicknames "R/SEQ")
   (:export trd-open)
   (:export <trd-seq>
            <trd-seq>-a-sig

@@ -1,9 +1,14 @@
 ;;;; ./src/org/org.lisp
 
 (defpackage #:recoder/org
-  (:use #:cl #:recoder/trd #:recoder/d-signal #:recoder/a-signal #:mnas-string/print)
-  (:export analog-signals
-           discret-signals
+  (:use #:cl
+        #:recoder/trd
+        #:recoder/d-signal
+        #:recoder/a-signal
+        #:mnas-string/print)
+  (:nicknames "R/ORG")
+  (:export a-signals
+           d-signals
            header))
 
 (in-package :recoder/org)
@@ -38,8 +43,8 @@
 	(push (list "Количество дискретных сигналов"      (<trd>-discret-number trd)) rez)))
     (nreverse rez)))
 
-(defmethod analog-signals ((trd <trd>))
-  "@b(Описание:) метод @b(analog-signals) возврвщает 2d-list список,
+(defmethod a-signals ((trd <trd>))
+  "@b(Описание:) метод @b(a-signals) возврвщает 2d-list список,
  отображающий все аналоговые сигналы в удобном виде для представления
  в ORG-режиме редактора Emacs.
 
@@ -47,14 +52,14 @@
 @begin[lang=org](code)
 #+begin_src lisp
 (recoder/org:header recoder/trd:*trd*)
-;;(recoder/org:analog-signals recoder/trd:*trd*)
-;;(recoder/org:discret-signals recoder/trd:*trd*)
+;;(recoder/org:a-signals recoder/trd:*trd*)
+;;(recoder/org:d-signals recoder/trd:*trd*)
 #+end_src
 @end(code)
 
  @b(Пример использования:)
 @begin[lang=lisp](code)
- (analog-signals *trd*) 
+ (a-signals *trd*) 
  =>
  ((0 \"FP510\" 0.0d0 1.600000023841858d0 \"МПа\" \"Избыточное давление газа перед суммирующ\")
   (1 \"FP520\" 0.0d0 16.0d0 \"кПа\" \"Перепад давления газа на суммирующем РУ\")
@@ -74,20 +79,20 @@
                   <a-signal>-min <a-signal>-max
                   <a-signal>-units <a-signal>-description))))
 
-(defmethod discret-signals ((trd <trd>))
-  "@b(Описание:) метод @b(discret-signals) возврвщает 2d-list список,
+(defmethod d-signals ((trd <trd>))
+  "@b(Описание:) метод @b(d-signals) возврвщает 2d-list список,
 отображающий все дискретные сигналы в удобном виде для представления в org режиме.
 
  @b(Пример использования:)
 @begin[lang=org](code)
 #+begin_src lisp
-(recoder/org:discret-signals recoder/trd:*trd*)
+(recoder/org:d-signals recoder/trd:*trd*)
 #+end_src
 @end(code)
 
  @b(Пример использования:)
 @begin[lang=lisp](code)
-  (discret-signals *trd*) 
+  (d-signals *trd*) 
 =>
  ((0 \"FH020\" \"Дроссельный кран рабочего насоса ДТ - от\")
   (1 \"FH021\" \"Дроссельный кран рабочего насоса ДТ - за\")

@@ -6,6 +6,7 @@
         #:recoder/d-signal
         #:recoder/a-signal
         #:mnas-string/print) ;;;; #:mnas-string/print #:recoder/binary
+  (:nicknames "R/HTML")
   (:export make-html-trd))
 
 (in-package #:recoder/html)

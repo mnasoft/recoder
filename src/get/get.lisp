@@ -6,6 +6,7 @@
         #:recoder/trd
         #:recoder/slist
         #:mnas-string/print)
+  (:nicknames "R/GET")
   (:export *offset*)
   (:export trd-analog-mid-by-snames
            trd-analog-stddev-by-snames

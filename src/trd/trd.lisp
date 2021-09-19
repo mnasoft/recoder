@@ -2,6 +2,7 @@
 
 (defpackage #:recoder/trd
   (:use #:cl #:mnas-string/print #:recoder/binary #:recoder/d-signal #:recoder/a-signal)
+  (:nicknames "R/TRD")
   (:export trd-open
            trd-close)
   (:export *trd*

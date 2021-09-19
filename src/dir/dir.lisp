@@ -2,17 +2,15 @@
 
 (defpackage #:recoder/dir
   (:use #:cl #:recoder/trd)
+  (:nicknames "R/DIR")
   (:export find-trd-by-utime-dirname
-            make-html-trd-foo
-           )
+            make-html-trd-foo)
   (:export analog-table)
   (:export <trd-dir>
 	   <trd-tc-dir>)
   (:intern analog-ids     
            analog-signals 
-           analog-units   
-           ) 
-  )
+           analog-units))
 
 (in-package :recoder/dir)
 

@@ -1,7 +1,8 @@
 ;;;; ./src/slist/slist.lisp
 
 (defpackage #:recoder/slist
-  (:use #:cl #:recoder/trd) 
+  (:use #:cl #:recoder/trd)
+  (:nicknames "R/SLIST")
   (:export a-signals
            d-signals
            not-signals)

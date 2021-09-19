@@ -2,6 +2,7 @@
 
 (defpackage #:recoder/d-signal
   (:use #:cl)
+  (:nicknames "R/D-SIG")
   ;; #:mnas-string #:recoder/binary
   (:export <d-signal>
            <d-signal>-num

@@ -24,32 +24,32 @@
                ("Количество аналоговых сигналов" 314)
                ("Количество дискретных сигналов" 101))))))
 
-(def-test analog-signals ()
+(def-test a-signals ()
   "Проверка извлечения заголовков аналоговых сигналов."
-  (is-true (equal (length (recoder/org:analog-signals *trd*)) 314))
+  (is-true (equal (length (recoder/org:a-signals *trd*)) 314))
   (is-true
    (equal
-    (elt (recoder/org:analog-signals *trd*) 10)
+    (elt (recoder/org:a-signals *trd*) 10)
     '(10 "FP620" 0.0d0 600.0d0 "кПа" "Избыточное давление топливного газа во 2")))
   (is-true
    (equal
-    (elt (recoder/org:analog-signals *trd*) 105)
+    (elt (recoder/org:a-signals *trd*) 105)
     '(105 "ET005" 0.0d0 1600.0d0 "°C" "Температура продуктов сгорания на выходе")))
   (is-true
    (equal
-    (elt (recoder/org:analog-signals *trd*) 313)
+    (elt (recoder/org:a-signals *trd*) 313)
     '(313 "SF2" 0.0d0 1000.0d0 "" "Площадь сечения на входе в кс, см2"))))
 
-(def-test discret-signals ()
+(def-test d-signals ()
   "Проверка извлечения заголовков дискретных сигналов."
   (is-true
-   (equal (length (recoder/org:discret-signals *trd*)) 101))
+   (equal (length (recoder/org:d-signals *trd*)) 101))
   (is-true
-   (equal (elt (recoder/org:discret-signals *trd*) 10)
+   (equal (elt (recoder/org:d-signals *trd*) 10)
           '(10 "FK530" "Кран №43 топливного газа крановой площад")))
   (is-true
-   (equal (elt (recoder/org:discret-signals *trd*) 50)
+   (equal (elt (recoder/org:d-signals *trd*) 50)
           '(50 "FK537" "Кран №43 топливного газа крановой площад")))
   (is-true
-   (equal (elt (recoder/org:discret-signals *trd*) 100)
+   (equal (elt (recoder/org:d-signals *trd*) 100)
           '(100 "FH011" "Кран подачи ДТ - закрыт"))))
