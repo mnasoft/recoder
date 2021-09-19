@@ -53,7 +53,7 @@
 "
   (when  (<trd>-file-descr trd)
     (let* ((rez nil)
-	   (n-start (- (trd-utime->record trd utime) n-before))
+	   (n-start (- (utime->record trd utime) n-before))
 	   (rezult (dotimes (i (+ n-before n-after 1) (math/list-matr:transpose rez))
 		     (push (trd-analog-by-record trd (+ n-start i) signal-list) rez))))
       (mapcar #'math/stat:standard-deviation rezult))))
@@ -71,7 +71,7 @@
 соответствующий сигналам signal-list."
   (when (and (<trd>-file-descr trd) (< -1 record (<trd>-total-records trd)))
     (file-position (<trd>-file-descr trd) 
-		   (+ (trd-start-offset trd) (* record (trd-record-length trd))))
+		   (+ (start-offset trd) (* record (record-length trd))))
     (let* ((v-sh (make-array (<trd>-analog-number trd) :element-type 'integer)))
       (dotimes (i (<trd>-analog-number trd) 'done)
 	(setf (svref v-sh i)
@@ -84,7 +84,7 @@
 значений аналоговых сигналов, содержащися в списке @b(signal-list),
 тренда @b(trd), соответствующих моменту времени @b(utime)."
   (trd-analog-by-record trd
-			    (trd-utime->record trd utime)
+			    (utime->record trd utime)
 			    signal-list))
 
 (defmethod trd-analog-mid-by-utime ((trd <trd>) utime signal-list &key (n-before *offset*) (n-after *offset*))
@@ -93,7 +93,7 @@
 тренда @b(trd), соответствующих моменту времени @b(utime)."
   (when  (<trd>-file-descr trd)
     (let* ((rez nil)
-	   (n-start (- (trd-utime->record trd utime) n-before))
+	   (n-start (- (utime->record trd utime) n-before))
 	   (rezult (dotimes (i (+ n-before n-after 1) (math/list-matr:transpose rez))
 		     (push (trd-analog-by-record trd (+ n-start i) signal-list) rez))))
       (mapcar #'math/stat:average-value rezult))))
@@ -106,10 +106,10 @@
  соответствующий сигналам d-signals."
   (when (and (<trd>-file-descr trd) (< -1 record (<trd>-total-records trd)))
     (file-position (<trd>-file-descr trd) 
-		   (+ (trd-start-offset trd)
-		      (* record (trd-record-length trd))
-		      (trd-discret-offset trd) ))
-    (let ((s-int (list-to-int (b-read (<trd>-file-descr trd) (trd-discret-length-byte trd)))))
+		   (+ (start-offset trd)
+		      (* record (record-length trd))
+		      (discret-offset trd) ))
+    (let ((s-int (list-to-int (b-read (<trd>-file-descr trd) (discret-length trd)))))
       (mapcar #'(lambda (el)
 		  (if (logbitp (<d-signal>-num  el ) s-int) 1 0))
 	      d-signals))))
@@ -120,21 +120,21 @@
 соответствующий сигналам d-signals."
   (when (and (<trd>-file-descr trd) (< -1 record (<trd>-total-records trd)))
     (file-position (<trd>-file-descr trd) 
-		   (+ (trd-start-offset trd)
-		      (* record (trd-record-length trd))
-		      (trd-discret-offset trd) ))
-    (let ((s-int (list-to-int (b-read (<trd>-file-descr trd) (trd-discret-length-byte trd)))))
+		   (+ (start-offset trd)
+		      (* record (record-length trd))
+		      (discret-offset trd) ))
+    (let ((s-int (list-to-int (b-read (<trd>-file-descr trd) (discret-length trd)))))
       (mapcar #'(lambda (el)
 		  (logbitp (<d-signal>-num  el ) s-int))
 	      d-signals))))
 
 (defmethod trd-discret-by-utime ( (trd <trd>) utime d-signals)
   "trd-discret-by-utime"
-  (trd-discret-by-record trd (trd-utime->record trd utime) d-signals))
+  (trd-discret-by-record trd (utime->record trd utime) d-signals))
 
 (defmethod trd-discret-by-utime-t-nil ( (trd <trd>) utime d-signals)
   "trd-discret-by-utime-t-nil"
-  (trd-discret-by-record-t-nil trd (trd-utime->record trd utime) d-signals))
+  (trd-discret-by-record-t-nil trd (utime->record trd utime) d-signals))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -164,8 +164,8 @@
 тренда @b(trd), соответствующих моменту времени @b(utime)."
   (when  (<trd>-file-descr trd)
     (analogs-in-records trd
-			(trd-utime->record trd start-utime)
-			(trd-utime->record trd end-utime)
+			(utime->record trd start-utime)
+			(utime->record trd end-utime)
 			a-signals)))
 
 (defmethod trd-discret-by-record ( (trd <trd>) rec-number d-signals)
@@ -174,10 +174,10 @@
 соответствующий сигналам d-signals."
   (when (and (<trd>-file-descr trd) (< -1 rec-number (<trd>-total-records trd)))
     (file-position (<trd>-file-descr trd) 
-		   (+ (trd-start-offset trd)
-		      (* rec-number (trd-record-length trd))
-		      (trd-discret-offset trd) ))
-    (let ((s-int (list-to-int (b-read (<trd>-file-descr trd) (trd-discret-length-byte trd)))))
+		   (+ (start-offset trd)
+		      (* rec-number (record-length trd))
+		      (discret-offset trd) ))
+    (let ((s-int (list-to-int (b-read (<trd>-file-descr trd) (discret-length trd)))))
       (mapcar #'(lambda (el)
 		  (if (logbitp (<d-signal>-num  el ) s-int) 1 0))
 	      d-signals))))

@@ -30,7 +30,7 @@
      #'(lambda (el)
 	 (let ((trd (make-instance '<trd> :file-name el)))
 	   (trd-open trd)
-	   (if (<= (<trd>-utime-start trd) utime (trd-utime-end trd))
+	   (if (<= (<trd>-utime-start trd) utime (utime-end trd))
 	       (setf rezult trd)
 	       (trd-close trd))))
      (mnas-path:find-filename dir-name extension))

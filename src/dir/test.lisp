@@ -28,7 +28,7 @@
         (first-rec (first records)))
     (mapcar #'(lambda (start end comment)
 	        (apply #'append (cons
-                                 (append (mnas-org-mode:utime->date-time (trd-record->utime trd first-rec))
+                                 (append (mnas-org-mode:utime->date-time (record->utime trd first-rec))
                                          (list (* (- end first-rec) dt) comment (* (- end start) dt)))
 			         (mapcar #'math/stat:aver-dmax-dmin
 				         (analogs-in-records 
@@ -173,7 +173,7 @@
 			      #'(lambda (el-1)
 				  ;; (break "001:~A" (first el-1))
 				  (elt-seq trd-seq (- (first el-1) (+ 50 15)) (- (first el-1) 15))
-				  (push (mnas-org-mode:utime->date-time (trd-record->utime trd-seq (- (first el-1) (+ 50 15)))) *d-t*))
+				  (push (mnas-org-mode:utime->date-time (record->utime trd-seq (- (first el-1) (+ 50 15)))) *d-t*))
 			      intervals)))
 		       *i-t-Oil2Gas*))))
 

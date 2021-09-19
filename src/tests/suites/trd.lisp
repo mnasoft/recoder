@@ -50,37 +50,37 @@
     (is-true (= (hash-table-count (recoder/trd:<trd>-analog-ht trd)) 314))
     (is-true (= (hash-table-count (recoder/trd:<trd>-discret-ht trd)) 101))))
 
-(def-test trd-analog-length-byte ()
+(def-test analog-length ()
   (with-fixture fix-open-trd ()
-    (is-true (= (recoder/trd:trd-analog-length-byte trd) 628))))
+    (is-true (= (recoder/trd:analog-length trd) 628))))
 
-(def-test trd-discret-length-byte ()
+(def-test discret-length ()
   (with-fixture fix-open-trd ()
-    (is-true (= (recoder/trd:trd-discret-length-byte trd) 13))))
+    (is-true (= (recoder/trd:discret-length trd) 13))))
 
-(def-test trd-discret-offset ()
+(def-test discret-offset ()
   (with-fixture fix-open-trd ()
-    (is-true (= (recoder/trd:trd-discret-offset trd) 628))))
+    (is-true (= (recoder/trd:discret-offset trd) 628))))
 
-(def-test trd-start-offset ()
+(def-test start-offset ()
   (with-fixture fix-open-trd ()
-    (is-true (= (recoder/trd:trd-start-offset trd) 28316))))
+    (is-true (= (recoder/trd:start-offset trd) 28316))))
 
-(def-test trd-record-length ()
+(def-test record-length ()
   (with-fixture fix-open-trd ()
-    (is-true (= (recoder/trd:trd-record-length trd) 641))))
+    (is-true (= (recoder/trd:record-length trd) 641))))
 
-(def-test trd-utime-end ()
+(def-test utime-end ()
   (with-fixture fix-open-trd ()
-    (is-true (= (recoder/trd:trd-utime-end trd) 3750481735))))
+    (is-true (= (recoder/trd:utime-end trd) 3750481735))))
 
-(def-test trd-record->utime()
+(def-test record->utime()
   (with-fixture fix-open-trd ()
-    (is-true (= (recoder/trd:trd-record->utime trd 1000) 3750478059))))
+    (is-true (= (recoder/trd:record->utime trd 1000) 3750478059))))
 
-(def-test trd-utime->record()
+(def-test utime->record()
   (with-fixture fix-open-trd ()
-    (is-true (= (recoder/trd:trd-utime->record trd 3750478059) 1000))))
+    (is-true (= (recoder/trd:utime->record trd 3750478059) 1000))))
 
 (def-test time-universal-encode()
     (is-true (= (recoder/trd:time-universal-encode 2021 09 16 12 27 25)  3840773245)))

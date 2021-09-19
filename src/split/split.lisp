@@ -56,8 +56,8 @@ todo: доработать, чтоб возвращался последний �
 todo: доработать, чтоб возвращался последний диапазон при поднятом флаге в конце"
   (mapcar
    #'(lambda (el)
-       (list (trd-record->utime trd (first el))
-	     (trd-record->utime trd (second el))))
+       (list (record->utime trd (first el))
+	     (record->utime trd (second el))))
    (split-on-intervals-when-flag-is-on trd  d-signal-str)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

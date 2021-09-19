@@ -1,7 +1,11 @@
 ;;;; ./src/trd/trd.lisp
 
 (defpackage #:recoder/trd
-  (:use #:cl #:mnas-string/print #:recoder/binary #:recoder/d-signal #:recoder/a-signal)
+  (:use #:cl
+        #:mnas-string/print
+        #:recoder/binary
+        #:recoder/d-signal
+        #:recoder/a-signal)
   (:nicknames "R/TRD")
   (:export trd-open
            trd-close)
@@ -20,17 +24,15 @@
            <trd>-utime-start
            <trd>-analog-ht 
            <trd>-discret-ht)
-  (:export trd-analog-length-byte
-           trd-discret-length-byte
-           trd-discret-offset
-           trd-start-offset
-           trd-record-length
-           trd-utime-end)  
-  (:export trd-record->utime
-           trd-utime->record
-           trd-record-number-by-udate)
-  (:export time-universal-encode)
-  (:export trd-utime-by-record-number))
+  (:export analog-length
+           discret-length
+           discret-offset
+           start-offset
+           record-length
+           utime-end)  
+  (:export record->utime
+           utime->record)
+  (:export time-universal-encode))
 
 ;;;; (declaim (optimize (space 0) (compilation-speed 0)  (speed 0) (safety 3) (debug 3)))
 ;;;; (declaim (optimize (compilation-speed 0) (debug 3) (safety 0) (space 0) (speed 0)))
@@ -130,7 +132,7 @@
     (format stream "[ ")
     (day-time (<trd>-utime-start trd) :stream stream)
     (format stream " ; ")
-    (day-time (trd-utime-end trd) :stream stream)
+    (day-time (utime-end trd) :stream stream)
     (format stream " ]")
     (format stream "~%Reserv         = ~A~%Total-records  = ~A~%Delta-time     = ~A~%Analog-number  = ~A~%Discret-number = ~A"
 	    (<trd>-reserv trd) (<trd>-total-records trd) (<trd>-delta-time trd) (<trd>-analog-number trd) (<trd>-discret-number trd))
@@ -185,8 +187,8 @@
 	    (<trd>-analog-number trd)  (b-read-short in)
 	    (<trd>-discret-number trd) (b-read-short in))
       (setf (<trd>-total-records trd)
-	    (/ (- (file-length (<trd>-file-descr trd)) (trd-start-offset trd))
-	       (trd-record-length trd)))))
+	    (/ (- (file-length (<trd>-file-descr trd)) (start-offset trd))
+	       (record-length trd)))))
   trd)
 
 (defmethod trd-read-analog-ht((trd <trd>))
@@ -229,55 +231,55 @@
     (close (<trd>-file-descr trd))
     (setf (<trd>-file-descr trd) nil)))
 
-(defmethod trd-start-offset ((trd <trd>))
-  "@b(Описание:) метод @b(trd-start-offset) возвращает смещение, 
+(defmethod start-offset ((trd <trd>))
+  "@b(Описание:) метод @b(start-offset) возвращает смещение, 
 выраженное в байтах, первой (нулевой) записи тренда."
   (+ +head-wid+
      (* (<trd>-analog-number trd) +analog-wid+)
      (* (<trd>-discret-number trd) +discret-wid+)))
 
-(defmethod trd-analog-length-byte ((trd <trd>))
-  "@b(Описание:) метод @b(trd-analog-length-byte) возвращает 
+(defmethod analog-length ((trd <trd>))
+  "@b(Описание:) метод @b(analog-length) возвращает 
 длину занимаемую аналоговыми сигналами одной записи тренда.
 "
   (* (<trd>-analog-number trd) 2))
 
-(defmethod trd-discret-length-byte ((trd <trd>))
-  "@b(Описание:) метод @b(trd-discret-length-byte) возвращает
+(defmethod discret-length ((trd <trd>))
+  "@b(Описание:) метод @b(discret-length) возвращает
 количество байт необходимое для записи дискретных сигналов
 одной записи.
 "
   (ceiling (/ (<trd>-discret-number trd) 8)))
 
-(defmethod trd-record-length ((trd <trd>))
-  "@b(Описание:) метод @b(trd-record-length) возвращает
+(defmethod record-length ((trd <trd>))
+  "@b(Описание:) метод @b(record-length) возвращает
 длину одной записи тренда."
-  (+  (trd-analog-length-byte trd)  (trd-discret-length-byte trd)))
+  (+  (analog-length trd)  (discret-length trd)))
 
-(defmethod trd-discret-offset ((trd <trd>))
-  "@b(Описание:) метод @b(trd-discret-offset) возвращает 
-смещение в байтах от начала записи до начала записи дискретных сигналов."
-  (trd-analog-length-byte trd))
+(defmethod discret-offset ((trd <trd>))
+  "@b(Описание:) метод @b(discret-offset) возвращает смещение в байтах
+от начала записи до начала записи дискретных сигналов."
+  (analog-length trd))
 
 
-(defmethod trd-utime->record ((trd <trd>) utime)
-  "@b(Описание:) метод @b(trd-utime->record) возвращает номер
+(defmethod utime->record ((trd <trd>) utime)
+  "@b(Описание:) метод @b(utime->record) возвращает номер
  записи по универсальному времени."
   (floor
    (- utime (<trd>-utime-start trd))
    (<trd>-delta-time trd)))
 
-(defmethod trd-record->utime ((trd <trd>) record)
-  "@b(Описание:) метод @b(trd-record->utime) возвращает время в
+(defmethod record->utime ((trd <trd>) record)
+  "@b(Описание:) метод @b(record->utime) возвращает время в
 универсальном формате по номеру записи."
   (+ (<trd>-utime-start trd)
      (floor record
             (/ (<trd>-delta-time trd)))))
 
-(defmethod trd-utime-end ((trd <trd>))
-  "@b(Описание:) метод @b(trd-utime-end) возвращает время окончания тренда.
+(defmethod utime-end ((trd <trd>))
+  "@b(Описание:) метод @b(utime-end) возвращает время окончания тренда.
 Время возвращается в универсальном формате (universal-time)"
-  (trd-record->utime trd (<trd>-total-records trd))
+  (record->utime trd (<trd>-total-records trd))
   #+nil
   (+ (<trd>-utime-start trd)
      (floor
