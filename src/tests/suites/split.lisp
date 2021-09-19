@@ -42,6 +42,8 @@
    (recoder/split::apply-or '(nil nil nil)))
   )
 
+#+nil
+(recoder/get:trd-discret-by-record *trd* 100 (recoder/slist:d-signals *trd* '("OIL" "GAS")))
 
 
 
