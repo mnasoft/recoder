@@ -12,18 +12,18 @@
   (:export *trd*
            *trd-fname*)
   (:export <trd>
-	   <trd>-total-records
-	   <trd>-delta-time
-           <trd>-analog-number
-           <trd>-file-descr
-           <trd>-discret-number
-           <trd>-id-string
-           <trd>-version
-	   <trd>-file-name
-           <trd>-reserv
-           <trd>-utime-start
-           <trd>-analog-ht 
-           <trd>-discret-ht)
+	   records
+	   increment
+           a-number
+           file-descr
+           d-number
+           id-string
+           version
+	   file-name
+           reserv
+           utime-start
+           analog-ht 
+           discret-ht)
   (:export analog-length
            discret-length
            discret-offset
@@ -74,18 +74,18 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defclass <trd> ()
-  ((file-name         :accessor <trd>-file-name      :initarg :file-name   :initform nil :documentation "Имя файла в файловой системе")
-   (file-descr        :accessor <trd>-file-descr                           :initform nil :documentation "Файл тренда")
-   (id-string         :accessor <trd>-id-string                            :initform nil :documentation "Строка идентифицирующая то, что это файл тренда")
-   (version           :accessor <trd>-version                              :initform nil :documentation "Версия тренда")
-   (utime-start       :accessor <trd>-utime-start                          :initform nil :documentation "Дата и время начала создания тренда в универсальном формате")
-   (reserv            :accessor <trd>-reserv                               :initform nil :documentation "Количество аналоговых сигналов + Количество дискретных сигналов")
-   (total-records     :accessor <trd>-total-records                        :initform nil :documentation "Общее число записей в тренде")
-   (delta-time        :accessor <trd>-delta-time                           :initform nil :documentation "Интервал между записями тренда")
-   (analog-number     :accessor <trd>-analog-number                        :initform nil :documentation "Количество аналоговых сигналов")
-   (discret-number    :accessor <trd>-discret-number                       :initform nil :documentation "Количество дискретных сигналов")
-   (analog-ht         :accessor <trd>-analog-ht                            :initform nil :documentation "Хеш-таблица аналоговых сигналов")
-   (discret-ht        :accessor <trd>-discret-ht                           :initform nil :documentation "Хеш-таблица дискретных сигналов"))
+  ((file-name         :accessor file-name      :initarg :file-name   :initform nil :documentation "Имя файла в файловой системе")
+   (file-descr        :accessor file-descr                           :initform nil :documentation "Файл тренда")
+   (id-string         :accessor id-string                            :initform nil :documentation "Строка идентифицирующая то, что это файл тренда")
+   (version           :accessor version                              :initform nil :documentation "Версия тренда")
+   (utime-start       :accessor utime-start                          :initform nil :documentation "Дата и время начала создания тренда в универсальном формате")
+   (reserv            :accessor reserv                               :initform nil :documentation "Количество аналоговых сигналов + Количество дискретных сигналов")
+   (records           :accessor records                              :initform nil :documentation "Общее число записей в тренде")
+   (increment         :accessor increment                            :initform nil :documentation "Интервал между записями тренда, с")
+   (analog-number     :accessor a-number                             :initform nil :documentation "Количество аналоговых сигналов")
+   (discret-number    :accessor d-number                             :initform nil :documentation "Количество дискретных сигналов")
+   (analog-ht         :accessor analog-ht                            :initform nil :documentation "Хеш-таблица аналоговых сигналов")
+   (discret-ht        :accessor discret-ht                           :initform nil :documentation "Хеш-таблица дискретных сигналов"))
   (:documentation "@b(Описание:) класс @b(<trd>) служит для предоставления
 интерфейса к файлу-тренду, содержащему записи аналоговых и дискретных сигналов.
 
@@ -126,24 +126,24 @@
 Сигналы упаковываются побайтно слева-направо."))
 
 (defmethod print-object ((trd <trd>) stream)
-  (format stream "Path= ~S~%" (<trd>-file-name trd) )
-  (when (<trd>-file-descr trd)
-    (format stream "id=~S version=~A " (<trd>-id-string trd) (<trd>-version trd))
+  (format stream "Path= ~S~%" (file-name trd) )
+  (when (file-descr trd)
+    (format stream "id=~S version=~A " (id-string trd) (version trd))
     (format stream "[ ")
-    (day-time (<trd>-utime-start trd) :stream stream)
+    (day-time (utime-start trd) :stream stream)
     (format stream " ; ")
     (day-time (utime-end trd) :stream stream)
     (format stream " ]")
     (format stream "~%Reserv         = ~A~%Total-records  = ~A~%Delta-time     = ~A~%Analog-number  = ~A~%Discret-number = ~A"
-	    (<trd>-reserv trd) (<trd>-total-records trd) (<trd>-delta-time trd) (<trd>-analog-number trd) (<trd>-discret-number trd))
+	    (reserv trd) (records trd) (increment trd) (a-number trd) (d-number trd))
     (format stream "~%==================================================
 Перечень аналоговых сигналов
 ==================================================~%")
-    (maphash #'(lambda (k v) (format stream "~S ~S~%" k v)) (<trd>-analog-ht trd) )
+    (maphash #'(lambda (k v) (format stream "~S ~S~%" k v)) (analog-ht trd) )
     (format stream "~%==================================================
 Перечень дискретных сигналов
 ==================================================~%")
-    (maphash #'(lambda (k v) (format stream "~S ~S~%" k v)) (<trd>-discret-ht trd) )))
+    (maphash #'(lambda (k v) (format stream "~S ~S~%" k v)) (discret-ht trd) )))
 
 (defmethod trd-open ((trd <trd>))
   "@b(Описание:) trd-open выполняет открытие файла тренда включая:
@@ -160,9 +160,9 @@
 
 (defmethod trd-read-header ((trd <trd>))
   "Выполняет открытие файла тренда и чтение заголовка тренда"
-  (when (null (<trd>-file-descr trd))
-    (setf (<trd>-file-descr trd) (open-b-read (<trd>-file-name trd)))
-    (let ((in (<trd>-file-descr trd))
+  (when (null (file-descr trd))
+    (setf (file-descr trd) (open-b-read (file-name trd)))
+    (let ((in (file-descr trd))
           (bufer nil)
           (date-day nil)
           (date-month nil)
@@ -170,8 +170,8 @@
           (time-hour nil)
           (time-minute nil)
           (time-second nil))
-      (setf (<trd>-id-string trd)      (decode-string (b-read in +head-id-wid+))
-	    (<trd>-version trd)        (car (b-read in +head-version-wid+))
+      (setf (id-string trd)        (decode-string (b-read in +head-id-wid+))
+	    (version trd)          (car (b-read in +head-version-wid+))
 	    bufer                  (b-read in +head-date-wid+)
 	    date-day               (first bufer)
 	    date-month             (second bufer)
@@ -180,30 +180,30 @@
 	    time-hour              (first bufer)
 	    time-minute            (second bufer)
 	    time-second            (third bufer)
-	    (<trd>-utime-start trd)      (encode-universal-time time-second time-minute time-hour date-day date-month date-year)
-	    (<trd>-reserv trd)         (b-read-short in)
-	    (<trd>-total-records trd)  (b-read-long in)
-	    (<trd>-delta-time trd)     (b-read-double in)
-	    (<trd>-analog-number trd)  (b-read-short in)
-	    (<trd>-discret-number trd) (b-read-short in))
-      (setf (<trd>-total-records trd)
-	    (/ (- (file-length (<trd>-file-descr trd)) (start-offset trd))
+	    (utime-start trd)      (encode-universal-time time-second time-minute time-hour date-day date-month date-year)
+	    (reserv trd)           (b-read-short in)
+	    (records trd)          (b-read-long in)
+	    (increment trd)        (b-read-double in)
+	    (a-number trd)         (b-read-short in)
+	    (d-number trd)         (b-read-short in))
+      (setf (records trd)
+	    (/ (- (file-length (file-descr trd)) (start-offset trd))
 	       (record-length trd)))))
   trd)
 
 (defmethod trd-read-analog-ht((trd <trd>))
   "Выполняет разбор аналоговых сигналов"
-  (when (null (<trd>-analog-ht trd))
-    (setf (<trd>-analog-ht trd)  (make-hash-table :test #'equal :size (<trd>-analog-number trd)))
-    (file-position (<trd>-file-descr trd) +head-wid+)
-    (let ((in (<trd>-file-descr trd)) (analog-id nil) (analog-description nil) (analog-units  nil) (analog-min nil) (analog-max nil))
-      (dotimes (i (<trd>-analog-number trd) 'done)
+  (when (null (analog-ht trd))
+    (setf (analog-ht trd)  (make-hash-table :test #'equal :size (a-number trd)))
+    (file-position (file-descr trd) +head-wid+)
+    (let ((in (file-descr trd)) (analog-id nil) (analog-description nil) (analog-units  nil) (analog-min nil) (analog-max nil))
+      (dotimes (i (a-number trd) 'done)
 	(setf analog-id          (decode-string (b-read in +signal-id-wid+))
 	      analog-description (decode-string (b-read in +signal-description-wid+))
 	      analog-units       (decode-string (b-read in +signal-units-wid+))
 	      analog-min         (b-read-double in)
 	      analog-max         (b-read-double in)
-	      (gethash analog-id (<trd>-analog-ht trd)) (make-instance '<a-signal>
+	      (gethash analog-id (analog-ht trd)) (make-instance '<a-signal>
 								     :num i
 								     :id  analog-id
 								     :description analog-description
@@ -213,43 +213,41 @@
 
 (defmethod trd-read-discret-ht((trd <trd>))
   "Выполняет разбор дискретных сигналов"
-  (when (null (<trd>-discret-ht trd))
-    (setf (<trd>-discret-ht trd) (make-hash-table :test #'equal :size (<trd>-discret-number trd)))
-    (file-position (<trd>-file-descr trd) (+ +head-wid+ (* (<trd>-analog-number trd) +analog-wid+)))
-    (let ((in (<trd>-file-descr trd)) (discret-id nil) (discret-description nil))
-      (dotimes (i (<trd>-discret-number trd) 'done)
+  (when (null (discret-ht trd))
+    (setf (discret-ht trd) (make-hash-table :test #'equal :size (d-number trd)))
+    (file-position (file-descr trd) (+ +head-wid+ (* (a-number trd) +analog-wid+)))
+    (let ((in (file-descr trd)) (discret-id nil) (discret-description nil))
+      (dotimes (i (d-number trd) 'done)
 	(setf discret-id          (decode-string (b-read in +signal-id-wid+))
 	      discret-description (decode-string (b-read in +signal-description-wid+))
-	      (gethash discret-id (<trd>-discret-ht trd)) (make-instance '<d-signal>
+	      (gethash discret-id (discret-ht trd)) (make-instance '<d-signal>
 								       :num i
 								       :id discret-id
 								       :description discret-description))))))
 
 (defmethod trd-close ((trd <trd>))
   "@b(Описание:) метод @b(trd-close) выполняет закрытие файла тренда"
-  (when (<trd>-file-descr trd)
-    (close (<trd>-file-descr trd))
-    (setf (<trd>-file-descr trd) nil)))
+  (when (file-descr trd)
+    (close (file-descr trd))
+    (setf (file-descr trd) nil)))
 
 (defmethod start-offset ((trd <trd>))
   "@b(Описание:) метод @b(start-offset) возвращает смещение, 
 выраженное в байтах, первой (нулевой) записи тренда."
   (+ +head-wid+
-     (* (<trd>-analog-number trd) +analog-wid+)
-     (* (<trd>-discret-number trd) +discret-wid+)))
+     (* (a-number trd) +analog-wid+)
+     (* (d-number trd) +discret-wid+)))
 
 (defmethod analog-length ((trd <trd>))
   "@b(Описание:) метод @b(analog-length) возвращает 
 длину занимаемую аналоговыми сигналами одной записи тренда.
 "
-  (* (<trd>-analog-number trd) 2))
+  (* (a-number trd) 2))
 
 (defmethod discret-length ((trd <trd>))
-  "@b(Описание:) метод @b(discret-length) возвращает
-количество байт необходимое для записи дискретных сигналов
-одной записи.
-"
-  (ceiling (/ (<trd>-discret-number trd) 8)))
+  "@b(Описание:) метод @b(discret-length) возвращает количество байт
+необходимое для записи дискретных сигналов одной записи."
+  (ceiling (/ (d-number trd) 8)))
 
 (defmethod record-length ((trd <trd>))
   "@b(Описание:) метод @b(record-length) возвращает
@@ -266,25 +264,20 @@
   "@b(Описание:) метод @b(utime->record) возвращает номер
  записи по универсальному времени."
   (floor
-   (- utime (<trd>-utime-start trd))
-   (<trd>-delta-time trd)))
+   (- utime (utime-start trd))
+   (increment trd)))
 
 (defmethod record->utime ((trd <trd>) record)
   "@b(Описание:) метод @b(record->utime) возвращает время в
 универсальном формате по номеру записи."
-  (+ (<trd>-utime-start trd)
+  (+ (utime-start trd)
      (floor record
-            (/ (<trd>-delta-time trd)))))
+            (/ (increment trd)))))
 
 (defmethod utime-end ((trd <trd>))
   "@b(Описание:) метод @b(utime-end) возвращает время окончания тренда.
 Время возвращается в универсальном формате (universal-time)"
-  (record->utime trd (<trd>-total-records trd))
-  #+nil
-  (+ (<trd>-utime-start trd)
-     (floor
-      (* (<trd>-total-records trd)
-         (<trd>-delta-time trd)))))
+  (record->utime trd (records trd)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

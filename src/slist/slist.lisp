@@ -25,10 +25,10 @@
    ; => (\"KAZNA-SCHO\")
 @end(code)
 "
-  (when (<trd>-file-descr trd)
+  (when (file-descr trd)
     (loop :for s-n :in s-names
-          :unless (or (gethash s-n (<trd>-analog-ht trd))
-                      (gethash s-n (<trd>-discret-ht trd)))
+          :unless (or (gethash s-n (analog-ht trd))
+                      (gethash s-n (discret-ht trd)))
             :collect s-n)))
 
 (defmethod a-signals ((trd <trd>) s-names)
@@ -47,9 +47,9 @@
      #a-s(25 \"ET300\" [0.0d0 1600.0d0]    \"°C\"   \"Т3 - средняя\"))
 @end(code)
 "
-  (when (<trd>-file-descr trd)
+  (when (file-descr trd)
     (loop :for s-n :in s-names
-      :when (gethash s-n (<trd>-analog-ht trd))
+      :when (gethash s-n (analog-ht trd))
         :collect :it)))
 #+nil
 (a-signals
@@ -72,9 +72,9 @@
      #d-s(63 \"FA566\" \"Кран тонкой регулировки топливного газа \"))
 @end(code)
 "
-  (when  (<trd>-file-descr trd)
+  (when  (file-descr trd)
         (loop :for s-n :in s-names
-      :when (gethash s-n (<trd>-discret-ht trd))
+      :when (gethash s-n (discret-ht trd))
         :collect :it)))
 
 #+nil

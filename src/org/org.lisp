@@ -30,17 +30,17 @@
  (header *trd*)
 @end(code)"
   (let ((rez nil))
-    (push (list "Файл" (<trd>-file-name trd )) rez)
-    (when (<trd>-file-descr trd)
+    (push (list "Файл" (file-name trd )) rez)
+    (when (file-descr trd)
       (progn
-	(push (list "Версия тренда" 	                  (<trd>-version        trd)) rez)
-	(push (list "Дата создания тренда"                (date (<trd>-utime-start trd) :stream nil)) rez)
-	(push (list "Время создания тренда"               (day-time (<trd>-utime-start trd) :stream nil)) rez)
-	(push (list "К-во аналоговых+дискретных сигналов" (<trd>-reserv         trd)) rez)
-	(push (list "Общее число записей в тренде"        (<trd>-total-records  trd)) rez)
-	(push (list "Интервал между записями тренда"      (<trd>-delta-time     trd)) rez)
-	(push (list "Количество аналоговых сигналов"      (<trd>-analog-number  trd)) rez)
-	(push (list "Количество дискретных сигналов"      (<trd>-discret-number trd)) rez)))
+	(push (list "Версия тренда" 	                  (version               trd)) rez)
+	(push (list "Дата создания тренда"                (date (utime-start trd) :stream nil)) rez)
+	(push (list "Время создания тренда"               (day-time (utime-start trd) :stream nil)) rez)
+	(push (list "К-во аналоговых+дискретных сигналов" (reserv                trd)) rez)
+	(push (list "Общее число записей в тренде"        (records               trd)) rez)
+	(push (list "Интервал между записями тренда"      (increment             trd)) rez)
+	(push (list "Количество аналоговых сигналов"      (a-number trd)) rez)
+	(push (list "Количество дискретных сигналов"      (d-number trd)) rez)))
     (nreverse rez)))
 
 (defmethod a-signals ((trd <trd>))
@@ -72,7 +72,7 @@
 .......................................................................................................
 | 313 | SF2      |   0.0d0 |            1000.0d0 |         | Площадь сечения на входе в кс, см2       |
 @end(code)"
-  (loop :for k :being :the hash-key :using (hash-value v) :of (<trd>-analog-ht trd)
+  (loop :for k :being :the hash-key :using (hash-value v) :of (analog-ht trd)
 	:collect
         (mapcar #'(lambda (f) (funcall f v))
                 '(<a-signal>-num <a-signal>-id
@@ -105,7 +105,7 @@
 ..........................................................
 | 100 | FH011 | Кран подачи ДТ - закрыт                  |
 @end(code)"
-  (loop :for k :being :the hash-key :using (hash-value v) :of (<trd>-discret-ht trd)
+  (loop :for k :being :the hash-key :using (hash-value v) :of (discret-ht trd)
 	:collect
                 (mapcar #'(lambda (f) (funcall f v))
                 '(<d-signal>-num <d-signal>-id <d-signal>-description))))

@@ -48,7 +48,7 @@
 (defmethod update ((trd-seq <trd-seq>))
   "@b(Описание:) метод @b(update) 
 "
-  (unless (recoder/trd:<trd>-file-descr trd-seq) (recoder/trd:trd-open trd-seq))
+  (unless (recoder/trd:file-descr trd-seq) (recoder/trd:trd-open trd-seq))
   (let ((a-sig (recoder/slist:a-signals trd-seq (<trd-seq>-s-sig trd-seq)))
         (d-sig (recoder/slist:d-signals trd-seq (<trd-seq>-s-sig trd-seq))))
     (setf (<trd-seq>-a-sig trd-seq) a-sig)
@@ -72,7 +72,7 @@
 (defmethod (setf <trd-seq>-s-sig) (new-value (trd-seq <trd-seq>))
   "@b(Описание:) метод @b(setf <trd-seq>-s-sig)
 "
-  (unless (recoder/trd:<trd>-file-descr trd-seq) (recoder/trd:trd-open trd-seq))
+  (unless (recoder/trd:file-descr trd-seq) (recoder/trd:trd-open trd-seq))
   (with-slots (s-sig) trd-seq
     (setf s-sig new-value)
     (update trd-seq)))
@@ -80,13 +80,13 @@
 (defmethod sequence:length ((trd-seq <trd-seq>))
   "@b(Описание:) метод @b(sequence:length)
 "
-  (unless (recoder/trd:<trd>-file-descr trd-seq) (recoder/trd:trd-open trd-seq))
-  (recoder/trd:<trd>-total-records trd-seq))
+  (unless (recoder/trd:file-descr trd-seq) (recoder/trd:trd-open trd-seq))
+  (recoder/trd:records trd-seq))
 
 (defmethod sequence:elt ((trd-seq <trd-seq>) index)
   "@b(Описание:) метод @b(sequence:elt)
 "
-  (unless (recoder/trd:<trd>-file-descr trd-seq) (recoder/trd:trd-open trd-seq))
+  (unless (recoder/trd:file-descr trd-seq) (recoder/trd:trd-open trd-seq))
   (let ((a-sig (<trd-seq>-a-sig trd-seq))
         (d-sig (<trd-seq>-d-sig trd-seq)))
     (coerce
@@ -173,7 +173,7 @@
 (defmethod export-to ((trd-seq <trd-seq>) (csv-stream <csv-stream>)
                       &key
                         (start 0)
-                        (end (recoder/trd:<trd>-total-records trd-seq))
+                        (end (recoder/trd:records trd-seq))
                         (by 1))
   "@b(Описание:) метод @b(export-to) выполняет вывод объекта @b(trd-seq) в
 поток @b(csv-stream).
@@ -184,7 +184,7 @@
  (export-to *trd-sig* *csv-stream*)
 @end(code)
 "
-  (with-open-file (os (concatenate 'string (recoder/trd:<trd>-file-name trd-seq) ".csv")
+  (with-open-file (os (concatenate 'string (recoder/trd:file-name trd-seq) ".csv")
 		      :direction :output :if-exists :supersede
 		      :external-format (<format-stream>-external-format csv-stream))
     (format os "Time;NUM;~{~,4F~^;~}~%" (<trd-seq>-s-sig trd-seq))

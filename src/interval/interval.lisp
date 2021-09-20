@@ -23,7 +23,7 @@
  (trd-interval-to-secods *trd* '(0 50)) => 12.5d0
 @end(code)
 "
-  (* (<trd>-delta-time trd) (apply #'- (reverse interval))))
+  (* (increment trd) (apply #'- (reverse interval))))
 
 (defmethod trd-interval-to-minutes ((trd <trd>) interval)
   "@b(Описание:) функция @b(trd-interval-to-secods) возвращает для

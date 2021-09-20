@@ -47,7 +47,7 @@
        (semi-equal
         (recoder/get:trd-analog-mid-by-snames
          trd
-         (+ 600 (recoder/trd:<trd>-utime-start trd))
+         (+ 600 (recoder/trd:utime-start trd))
          a-names)
         '(0.1269768607832238d0 106507.972838941d0 15.469356614241027d0 424.66468299382007d0))))))
 
@@ -58,7 +58,7 @@
        (semi-equal
         (recoder/get:trd-analog-stddev-by-snames
          trd
-         (+ 600 (recoder/trd:<trd>-utime-start trd))
+         (+ 600 (recoder/trd:utime-start trd))
          a-names)
         '(7.06355458741549d-4 40.08217147040062d0 0.04416575081504683d0 3.190519247625745d0))))))
 
@@ -69,7 +69,7 @@
        (semi-equal
         (recoder/get:trd-analog-mid-by-utime
          trd
-         (+ (recoder/trd:<trd>-utime-start trd) 2000)
+         (+ (recoder/trd:utime-start trd) 2000)
          (recoder/slist:a-signals trd a-names))
         '(0.13618677042801555d0 107386.45652813654d0 23.159540340130864d0 489.1862218298474d0))))))
 
@@ -80,7 +80,7 @@
        (semi-equal
         (recoder/get:trd-analog-stddev-by-utime
          trd
-         (+ (recoder/trd:<trd>-utime-start trd) 2000)
+         (+ (recoder/trd:utime-start trd) 2000)
          (recoder/slist:a-signals trd a-names))
         '(7.53353843676347d-4 47.907358065677975d0 0.029378371881425107d0 1.68445279343399d0))))))
 
@@ -102,12 +102,12 @@
     (with-fixture a-names ()
       (is-true (equal (recoder/get:trd-analog-by-utime
                        trd
-                       (+ 600 (recoder/trd:<trd>-utime-start trd))
+                       (+ 600 (recoder/trd:utime-start trd))
                        (recoder/slist:a-signals trd a-names))
                       '(0.1274128328374151d0 106446.93675135424d0 15.457389181353474d0 424.24963759823d0)))
       (is-true (equal (recoder/get:trd-analog-by-utime
                        trd
-                       (+ (floor 15706 4) (recoder/trd:<trd>-utime-start trd))
+                       (+ (floor 15706 4) (recoder/trd:utime-start trd))
                        (recoder/slist:a-signals trd a-names))
                       '(0.49477378500038144d0 156145.5710688945d0 34.91111619745175d0 4.736400396734569d0))))))
 
@@ -145,12 +145,12 @@
     (with-fixture d-names ()
     (is-true (equal (recoder/get:trd-discret-by-utime 
                      trd
-                     (+ 600 (recoder/trd:<trd>-utime-start trd))
+                     (+ 600 (recoder/trd:utime-start trd))
                      (recoder/slist:d-signals trd d-names))
                     '(0 0 0 0)))
     (is-true (equal (recoder/get:trd-discret-by-utime 
                      trd
-                     (+ (floor 15706 4) (recoder/trd:<trd>-utime-start trd))
+                     (+ (floor 15706 4) (recoder/trd:utime-start trd))
                      (recoder/slist:d-signals trd d-names))
                     '(0 0 0 0))))))
 
@@ -160,12 +160,12 @@
     (with-fixture d-names ()
       (is-true (equal (recoder/get:trd-discret-by-utime-t-nil
                        trd
-                       (+ 600 (recoder/trd:<trd>-utime-start trd))
+                       (+ 600 (recoder/trd:utime-start trd))
                        (recoder/slist:d-signals trd d-names))
                       '(nil nil nil nil)))
       (is-true (equal (recoder/get:trd-discret-by-utime-t-nil 
                        trd
-                       (+ (floor 15706 4) (recoder/trd:<trd>-utime-start trd))
+                       (+ (floor 15706 4) (recoder/trd:utime-start trd))
                        (recoder/slist:d-signals trd d-names))
                       '(nil nil nil nil))))))
 
@@ -197,8 +197,8 @@
       (is-true
        (equal
         (recoder/get:analogs-in-utimes trd
-                                       (+ 600 (recoder/trd:<trd>-utime-start trd))
-                                       (+ 601 (recoder/trd:<trd>-utime-start trd))
+                                       (+ 600 (recoder/trd:utime-start trd))
+                                       (+ 601 (recoder/trd:utime-start trd))
                                        (recoder/slist:a-signals trd names))
         '((0.1274128328374151d0 0.1274128328374151d0 0.1274128328374151d0 0.1274128328374151d0)
           (106446.93675135424d0 106446.93675135424d0 106446.93675135424d0 106446.93675135424d0)

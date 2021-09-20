@@ -79,9 +79,9 @@
                  "~/123.html"
                  s-names
                  (list
-                  (+ 10 (recoder/trd:<trd>-utime-start  recoder/trd:*trd*))
-                  (+ 20 (recoder/trd:<trd>-utime-start  recoder/trd:*trd*))
-                  (+ 30 (recoder/trd:<trd>-utime-start  recoder/trd:*trd*)))
+                  (+ 10 (recoder/trd:utime-start  recoder/trd:*trd*))
+                  (+ 20 (recoder/trd:utime-start  recoder/trd:*trd*))
+                  (+ 30 (recoder/trd:utime-start  recoder/trd:*trd*)))
                  :sname->des '(("V2" "v<sub>2</sub>")
                                ("P02" "p<sub>02</sub>")
                                ("T2"  "t<sub>2</sub>")

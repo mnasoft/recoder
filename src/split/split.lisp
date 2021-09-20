@@ -27,15 +27,15 @@
 
  Начало и конец диапазона выражено в порядковы номерах записи с начала тренда.
 todo: доработать, чтоб возвращался последний диапазон при поднятом флаге в конце"
-  (let* ((flag (gethash d-signal-str (<trd>-discret-ht trd)))
+  (let* ((flag (gethash d-signal-str (discret-ht trd)))
 	 (flag-lst (list flag))
-	 (total-rec (<trd>-total-records trd))
+	 (total-rec (records trd))
 	 (rez-lst nil)
 	 (n-start total-rec)
 	 (n-end -1)
 	 (rez nil)
 	 )
-    (dotimes (i (<trd>-total-records trd) (nreverse rez-lst))
+    (dotimes (i (records trd) (nreverse rez-lst))
       (setf rez (first(trd-discret-by-record-t-nil trd i flag-lst)))
       (if rez
 	  (setf n-start (min i n-start)
@@ -68,17 +68,19 @@ todo: доработать, чтоб возвращался последний �
 И возвращает длительность этих диапазонов"
   (let ((intervals (trd-flag-on-intervals trd d-signal-str)))
     (values
-     (mapcar #'(lambda (el) (* -1 (<trd>-delta-time trd) (apply #'- el))) intervals)
+     (mapcar #'(lambda (el) (* -1 (increment trd) (apply #'- el))) intervals)
      intervals)))
 
 (defmethod split-on-intervals-by-condition ((trd <trd>) start-signal-str-lst end-signal-str-lst)
-  "Выполняет деление тренда на диапазоны.
+  "@b(Описание:) метод @b(split-on-intervals-by-condition)
+Выполняет деление тренда на диапазоны.
 
 Возвращает список.
 
-Каждый элемент, возвращаемого списка, состоит из двух номеров записей - начальной и конечной.
+Каждый элемент, возвращаемого списка, состоит из двух номеров записей
+- начальной и конечной.
 
-Параметры:
+@b(Параметры:)
 @begin(list)
  @item(@cl:param(trd)                  - объект типа <trd> [тренд];)
  @item(@cl:param(start-signal-str-lst) - список имен [строк] дискретных сингалов тренда;)
@@ -102,15 +104,15 @@ todo: доработать, чтоб возвращался последний �
        соответствующие списку end-signal-str-lst установлены [равны единице].)
 @end(list)
 "
-  (let* ((start-flag-lst (mapcar #'(lambda(el) (gethash el (<trd>-discret-ht trd))) start-signal-str-lst))
-	 (end-flag-lst   (mapcar #'(lambda(el) (gethash el (<trd>-discret-ht trd))) end-signal-str-lst))
+  (let* ((start-flag-lst (mapcar #'(lambda(el) (gethash el (discret-ht trd))) start-signal-str-lst))
+	 (end-flag-lst   (mapcar #'(lambda(el) (gethash el (discret-ht trd))) end-signal-str-lst))
 	 (fl-start nil)
 	 (fl-end   nil)
-	 (total-rec (<trd>-total-records trd))
+	 (total-rec (records trd))
 	 (rez-lst nil)
 	 (n-start total-rec)
 	 (n-end -1))
-    (dotimes (i (<trd>-total-records trd) (nreverse rez-lst))
+    (dotimes (i (records trd) (nreverse rez-lst))
       (setf fl-start (or fl-start (apply-and (trd-discret-by-record-t-nil trd i start-flag-lst))))
       (if fl-start
 	  (progn

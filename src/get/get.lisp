@@ -42,7 +42,7 @@
  времени utime для списка сигналов, определяемых их именами snames.
 
  Осреднение происходит в интервале записей от @b(n-before) до @b(n-after)."
-  (when  (<trd>-file-descr trd)
+  (when  (file-descr trd)
     (trd-analog-mid-by-utime trd utime (a-signals trd snames) :n-before n-before :n-after n-after)))
 
 (defmethod trd-analog-stddev-by-utime ( (trd <trd>) utime signal-list &key (n-before *offset*) (n-after *offset*))
@@ -51,7 +51,7 @@
  signal-list; Осреднение происходит в интервале записей от n-before до
  n-after.
 "
-  (when  (<trd>-file-descr trd)
+  (when  (file-descr trd)
     (let* ((rez nil)
 	   (n-start (- (utime->record trd utime) n-before))
 	   (rezult (dotimes (i (+ n-before n-after 1) (math/list-matr:transpose rez))
@@ -62,20 +62,20 @@
   "Возвращает список стандартных отклонений для параметров,
 записанных в тренде trd в момент времени utime для списка сигналов, определяемых их именами snames;
 Осреднение происходит в интервале записей от  n-before до n-after"
-  (when  (<trd>-file-descr trd)
+  (when  (file-descr trd)
     (trd-analog-stddev-by-utime trd utime (a-signals trd snames) :n-before n-before :n-after n-after)))
 
 (defmethod trd-analog-by-record ((trd <trd>) record signal-list)
   "@b(Описание:) метод @b(trd-analog-by-record) возвращает список
 значений тренда @b(trd)  для записи под номером record,
 соответствующий сигналам signal-list."
-  (when (and (<trd>-file-descr trd) (< -1 record (<trd>-total-records trd)))
-    (file-position (<trd>-file-descr trd) 
+  (when (and (file-descr trd) (< -1 record (records trd)))
+    (file-position (file-descr trd) 
 		   (+ (start-offset trd) (* record (record-length trd))))
-    (let* ((v-sh (make-array (<trd>-analog-number trd) :element-type 'integer)))
-      (dotimes (i (<trd>-analog-number trd) 'done)
+    (let* ((v-sh (make-array (a-number trd) :element-type 'integer)))
+      (dotimes (i (a-number trd) 'done)
 	(setf (svref v-sh i)
-	      (b-read-short (<trd>-file-descr trd))))
+	      (b-read-short (file-descr trd))))
       (mapcar #'(lambda(el) (<a-signal>-value el (svref v-sh (<a-signal>-num el))))
 	      signal-list))))
 
@@ -91,7 +91,7 @@
   "@b(Описание:) метод @b(trd-analog-mid-by-utime)  возвращает список
 осредненных значений аналоговых сигналов, содержащися в списке @b(signal-list),
 тренда @b(trd), соответствующих моменту времени @b(utime)."
-  (when  (<trd>-file-descr trd)
+  (when  (file-descr trd)
     (let* ((rez nil)
 	   (n-start (- (utime->record trd utime) n-before))
 	   (rezult (dotimes (i (+ n-before n-after 1) (math/list-matr:transpose rez))
@@ -104,12 +104,12 @@
   "@b(Описание:) метод @b(trd-discret-by-record) возвращает список
  значений тренда <trd> для записи под номером record,
  соответствующий сигналам d-signals."
-  (when (and (<trd>-file-descr trd) (< -1 record (<trd>-total-records trd)))
-    (file-position (<trd>-file-descr trd) 
+  (when (and (file-descr trd) (< -1 record (records trd)))
+    (file-position (file-descr trd) 
 		   (+ (start-offset trd)
 		      (* record (record-length trd))
 		      (discret-offset trd) ))
-    (let ((s-int (list-to-int (b-read (<trd>-file-descr trd) (discret-length trd)))))
+    (let ((s-int (list-to-int (b-read (file-descr trd) (discret-length trd)))))
       (mapcar #'(lambda (el)
 		  (if (logbitp (<d-signal>-num  el ) s-int) 1 0))
 	      d-signals))))
@@ -118,12 +118,12 @@
   "@b(Описание:) метод @b(trd-discret-by-record-t-nil) возвращает 
 список значений тренда trd для записи под номером record,
 соответствующий сигналам d-signals."
-  (when (and (<trd>-file-descr trd) (< -1 record (<trd>-total-records trd)))
-    (file-position (<trd>-file-descr trd) 
+  (when (and (file-descr trd) (< -1 record (records trd)))
+    (file-position (file-descr trd) 
 		   (+ (start-offset trd)
 		      (* record (record-length trd))
 		      (discret-offset trd) ))
-    (let ((s-int (list-to-int (b-read (<trd>-file-descr trd) (discret-length trd)))))
+    (let ((s-int (list-to-int (b-read (file-descr trd) (discret-length trd)))))
       (mapcar #'(lambda (el)
 		  (logbitp (<d-signal>-num  el ) s-int))
 	      d-signals))))
@@ -153,7 +153,7 @@
 значений аналоговых сигналов, содержащися в списке @b(a-signals),
 тренда @b(trd), начиная с записи @b(start-record) включительно 
 до записи @b(end-record) исключительно."
-  (when  (<trd>-file-descr trd)
+  (when  (file-descr trd)
     (math/list-matr:transpose
      (loop :for i :from start-record :below end-record
 	   :collect (trd-analog-by-record trd i a-signals)))))
@@ -162,7 +162,7 @@
   "@b(Описание:) метод @b(trd-analog-mid-by-utime)  возвращает список
 осредненных значений аналоговых сигналов, содержащися в списке @b(a-signals),
 тренда @b(trd), соответствующих моменту времени @b(utime)."
-  (when  (<trd>-file-descr trd)
+  (when  (file-descr trd)
     (analogs-in-records trd
 			(utime->record trd start-utime)
 			(utime->record trd end-utime)
@@ -172,12 +172,12 @@
   "@b(Описание:) метод @b(trd-discret-by-record)
 возвращает список значений тренда <trd> для записи под номером rec-number,
 соответствующий сигналам d-signals."
-  (when (and (<trd>-file-descr trd) (< -1 rec-number (<trd>-total-records trd)))
-    (file-position (<trd>-file-descr trd) 
+  (when (and (file-descr trd) (< -1 rec-number (records trd)))
+    (file-position (file-descr trd) 
 		   (+ (start-offset trd)
 		      (* rec-number (record-length trd))
 		      (discret-offset trd) ))
-    (let ((s-int (list-to-int (b-read (<trd>-file-descr trd) (discret-length trd)))))
+    (let ((s-int (list-to-int (b-read (file-descr trd) (discret-length trd)))))
       (mapcar #'(lambda (el)
 		  (if (logbitp (<d-signal>-num  el ) s-int) 1 0))
 	      d-signals))))

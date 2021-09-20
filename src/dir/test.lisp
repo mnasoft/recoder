@@ -24,7 +24,7 @@
  (foo-Oil2Gas *trd* '(33479 33755))
 @end(code)
 "
-  (let ((dt (coerce (<trd>-delta-time trd) 'single-float))
+  (let ((dt (coerce (increment trd) 'single-float))
         (first-rec (first records)))
     (mapcar #'(lambda (start end comment)
 	        (apply #'append (cons
