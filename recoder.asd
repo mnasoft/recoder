@@ -151,7 +151,7 @@
 Содержит низкоуровневые функции ввода-вывода."
   :author "Nick Matvyeyev <mnasoft@gmail.com>"
   :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"  
-  :depends-on ("ieee-floats" "babel")
+  :depends-on ("ieee-floats" "babel" "babel-streams")
   ;; "mnas-string" "html-table" "math" "mnas-path" "mnas-file-dialog"
   :serial nil
   :components

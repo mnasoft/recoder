@@ -216,6 +216,11 @@
   (with-fixture fix-open-trd ()
     (with-fixture fix-sig-names ()
     (is-true (equal (recoder/get:trd-a-units names trd)
-                '("м3/с" "Па" "°C" "°C"))))))
+                    '("м3/с" "Па" "°C" "°C"))))))
+
+(with-fixture fix-open-trd ()
+    (with-fixture fix-sig-names ()
+      (recoder/get:trd-a-units names trd)))
+
 
 
