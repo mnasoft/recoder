@@ -18,6 +18,7 @@
 	   b-read-float
 	   b-read-double
            #+nil b-read-quad
+           b-read-string
 	   )
   (:export b-write
            b-write-short
@@ -27,23 +28,27 @@
 	   b-write-float
 	   b-write-double
            #+nil b-write-quad
+           b-write-string
 	   )
-  (:export b-read-string
-           b-write-string)
   (:export decode-string
            list-to-int
            int-to-list
-           ))
+           )
+  (:export *pangram-ru-1* *pangram-ru-2* *pangram-ru-3*
+           *pangram-uk-1* *pangram-uk-2* *pangram-uk-3*))
 
 ;;;; (declaim (optimize (space 0) (compilation-speed 0)  (speed 0) (safety 3) (debug 3)))
 ;;;; (declaim (optimize (compilation-speed 0) (debug 3) (safety 0) (space 0) (speed 0)))
 
 (in-package #:recoder/binary)
 
-(defparameter *s-r* "Съешь же ещё этих мягких французских булочек, да выпей чаю!")
-(defparameter *s-u* "З'їш же ще цих мяких французських смаколиків, та випєй чаю!")
-(defparameter *s1* "Да, да именно чаю!")
+(defparameter *pangram-ru-1* "Съешь же ещё этих мягких французских булок да выпей чаю.")
+(defparameter *pangram-ru-2* "Широкая электрификация южных губерний даст мощный толчок подъёму сельского хозяйства.")
+(defparameter *pangram-ru-3* "В чащах юга жил бы цитрус? Да, но фальшивый экземпляр!")
 
+(defparameter *pangram-uk-1* "Чуєш їх, доцю, га? Кумедна ж ти, прощайся без ґольфів!")
+(defparameter *pangram-uk-2* "Жебракують філософи при ґанку церкви в Гадячі, ще й шатро їхнє п'яне знаємо.")
+(defparameter *pangram-uk-3* "Гей, хлопці, не вспію - на ґанку ваша файна їжа знищується бурундучком.")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -164,7 +169,7 @@
 
 (defun b-read (in byte-number)
   "@b(Описание:) функция @b(b-read) выполняет чтение @b(byte-number)
- количества байт из бинарного потока in."
+ количества байт из бинарного потока @b(in)."
   (let ((lst nil)
 	(bt nil))
     (dotimes (i byte-number)
@@ -176,7 +181,7 @@
 
 (defun b-read-short (in &optional (len 2))
   "@b(Описание:) функция @b(b-read-short) выполняет чтение
-короткого (2 байта) беззнакового целого из бинарного потока in."
+короткого (2 байта) беззнакового целого из бинарного потока @b(in)."
   (multiple-value-bind (rez n file-stastus)
       (b-read in len)
     (if file-stastus
@@ -185,7 +190,7 @@
 
 (defun b-read-int (in &optional (len 4))
   "@b(Описание:) функция @b(b-read-int) выполняет чтение беззнакового
- целого (4 байта) числа из бинарного потока in."
+ целого (4 байта) числа из бинарного потока @b(in)."
   (multiple-value-bind (rez n file-stastus)
       (b-read in len)
     (if file-stastus
@@ -194,7 +199,7 @@
 
 (defun b-read-long (in &optional (len 4))
   "@b(Описание:) функция @b(b-read-long) выполняет чтение длинного (4
- байта) беззнакового целого числа из бинарного потока in."
+ байта) беззнакового целого числа из бинарного потока @b(in)."
   (multiple-value-bind (rez n file-stastus)
       (b-read in len)
     (if file-stastus
@@ -211,7 +216,7 @@
 
 (defun b-read-float (in &optional (len 4))
   "@b(Описание:) функция @b(b-read-float) выполняет чтение
- короткого (4 байта) числа с плавающей точкой из бинарного потока in."
+ короткого (4 байта) числа с плавающей точкой из бинарного потока @b(in)."
   (multiple-value-bind (rez n file-stastus)
       (b-read in len)
     (if file-stastus
@@ -222,7 +227,7 @@
 
 (defun b-read-double (in &optional (len 8))
   "@b(Описание:) функция @b(b-read-double) выполняет чтение
- длинного (8 байт) числа с плавающей точкой из бинарного потока in."
+ длинного (8 байт) числа с плавающей точкой из бинарного потока @b(in)."
   (multiple-value-bind (rez n file-stastus)
       (b-read in len)
     (if file-stastus
@@ -239,6 +244,35 @@
     (if file-stastus
 	(values (ie3fp:decode-ieee-quad (list-to-int rez)) n file-stastus)
 	(values 0 n file-stastus))))
+
+(defun b-read-string (in byte-number &key (encoding :cp1251))
+  "@b(Описание:) метод @b(b-read-string) возвращает строку,
+считываемую из бинарного потока @b(in). При этом из потока считывается
+количество байт @b(byte-number). Начальные и конечные нуль-символы из
+строки исключаются. Символы декодируются из кодировки @b(encoding).
+
+ @b(Пример использования:)
+@begin[lang=lisp](code)
+(progn
+  (let ((buffer-length 900)
+        (path
+          (merge-pathnames
+           #P\"trd/bin-01.bin\" 
+           (asdf:system-source-directory :recoder/binary))))
+    (let ((w (open-b-write path)))
+      (b-write-string w *pangram-uk-1* buffer-length :external-format :KOI8-U)
+      (close w))
+    (let* ((r (open-b-read path))
+           (rez (b-read-string r buffer-length :encoding :KOI8-U)))
+      (close r)
+      rez)))
+@end(code)
+"
+  (string-trim `,(format nil "~A" #\Nul)
+               (babel:octets-to-string
+                (coerce (b-read in byte-number)
+                        '(vector (unsigned-byte 8)))
+                :encoding encoding)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -268,34 +302,34 @@
   (open path :element-type 'unsigned-byte :direction :output :if-exists :supersede))
 
 (defun b-write (byte-list out &optional (byte-number (length  byte-list)))
-  "Выполняет запись bite-number элементов списка byte-list в бинарный
- поток вывода out."
+  "@b(Описание:) функция @b(b-write) выполняет запись @b(bite-number)
+ элементов списка byte-list в бинарный поток вывода @b(out)."
   (dotimes (i byte-number)
     (write-byte (pop byte-list ) out)))
 
 (defun b-write-short (int-val out &optional (len 2))
   "@b(Описание:) функция @b(b-write-short) выполняет запись
-короткого (2 байта) беззнакового целого в бинарный поток out."
+короткого (2 байта) беззнакового целого в бинарный поток @b(out)."
   (b-write (int-to-list int-val len) out len))
 
 (defun b-write-int (int-val out &optional (len 4))
   "@b(Описание:) функция @b(b-write-short) выполняет запись
-короткого (4 байта) беззнакового целого в бинарный поток out."
+короткого (4 байта) беззнакового целого в бинарный поток @b(out)."
   (b-write (int-to-list int-val len) out len))
 
 (defun b-write-long (int-val out &optional (len 4))
   "@b(Описание:) функция @b(b-write-long) выполняет запись
-длинного (4 байта) беззнакового целого в бинарный поток out."
+длинного (4 байта) беззнакового целого в бинарный поток @b(out)."
   (b-write (int-to-list int-val len) out len))
 
 (defun b-write-long-long (int-val out &optional (len 8))
   "@b(Описание:) функция @b(b-write-long-long) выполняет запись очень
-длинного (8 байта) беззнакового целого в бинарный поток out."
+длинного (8 байта) беззнакового целого в бинарный поток @b(out)."
   (b-write (int-to-list int-val len) out len))
 
 (defun b-write-float (val out &optional (len 4))
   "@b(Описание:) функция @b(b-write-float) выполняет запись
-короткого (4 байта) числа с плавающей точкой в бинарный поток out."
+короткого (4 байта) числа с плавающей точкой в бинарный поток @b(out)."
   (b-write
    (int-to-list #+nil (ie3fp:encode-ieee-float (coerce val 'float))
                 (ieee-floats:encode-float32 (coerce val 'float))    
@@ -305,7 +339,7 @@
 
 (defun b-write-double (val out &optional (len 8))
   "@b(Описание:) функция @b(b-write-float) выполняет запись
-длиного (8 байт) числа с плавающей точкой в бинарный поток out."
+длиного (8 байт) числа с плавающей точкой в бинарный поток @b(out)."
   (b-write
    (int-to-list #+nil (ie3fp:encode-ieee-double (coerce val 'double-float))
                 (ieee-floats:encode-float64 (coerce val 'double-float))
@@ -318,39 +352,6 @@
   "Выполняет чтение quad из потока in"
   (b-write
    (int-to-list (ie3fp:encode-ieee-quad (coerce val 'long-float)) len) out len))
-
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defun b-read-string (in byte-number &key (encoding :cp1251))
-  "@b(Описание:) метод @b(b-read-string) возвращает строку,
-считываемую из бинарного потока @b(in). При этом из потока считывается
-количество байт @b(byte-number). Начальные и конечные нуль-символы из
-строки исключаются. Символы декодируются из кодировки @b(encoding).
-
- @b(Пример использования:)
-@begin[lang=lisp](code)
-(progn
-  (let ((buffer-length 900)
-        (path
-          (merge-pathnames
-           #P\"trd/bin-01.bin\" 
-           (asdf:system-source-directory :recoder/binary))))
-    (let ((w (open-b-write path)))
-      (b-write-string w *s-u* buffer-length :external-format :KOI8-U)
-      (close w))
-    (let* ((r (open-b-read path))
-           (rez (b-read-string r buffer-length :encoding :KOI8-U)))
-      (close r)
-      rez)))
-@end(code)
-"
-  (string-trim `,(format nil "~A" #\Nul)
-               (babel:octets-to-string
-                (coerce (b-read in byte-number)
-                        '(vector (unsigned-byte 8)))
-                :encoding encoding)))
 
 ;;; TODO - реализация пока применима только для однобайтных кодировок.
 (defun b-write-string (out string byte-number &key (external-format :cp1251))
@@ -372,7 +373,7 @@
  (let ((w (open-b-write 
           (merge-pathnames #P\"trd/bin-01.bin\" 
                            (asdf:system-source-directory :recoder)))))
-  (b-write-string w *s-u* :external-format :KOI8-U :byte-number 200)
+  (b-write-string w *pangram-uk-1* :external-format :KOI8-U :byte-number 200)
   (close w))
 @end(code)
 "
