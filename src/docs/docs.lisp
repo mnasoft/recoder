@@ -64,7 +64,7 @@
   (mnas-package:make-mainfest-lisp
    '(:recoder :recoder/docs)
    "Recoder"
-   '("Nick Matvyeyev")
+   '("Mykola Matvyeyev")
    (mnas-package:find-sources "recoder")
    :output-format of)
   (codex:document :recoder)
