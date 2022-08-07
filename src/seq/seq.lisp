@@ -106,7 +106,7 @@
 @b(trd-seq) в диапазоне записей от @b(start) включительно до @b(end) 
 исключительно.
 "
-  (math/list-matr:average-col-value
+  (math/matr:average-col-value
    (loop :for i :from start :below end
 	 :collect (coerce (elt trd-seq i) 'list))))
 

@@ -54,7 +54,7 @@
   (when  (file-descr trd)
     (let* ((rez nil)
 	   (n-start (- (utime->record trd utime) n-before))
-	   (rezult (dotimes (i (+ n-before n-after 1) (math/list-matr:transpose rez))
+	   (rezult (dotimes (i (+ n-before n-after 1) (math/matr:transpose rez))
 		     (push (trd-analog-by-record trd (+ n-start i) signal-list) rez))))
       (mapcar #'math/stat:standard-deviation rezult))))
 
@@ -94,7 +94,7 @@
   (when  (file-descr trd)
     (let* ((rez nil)
 	   (n-start (- (utime->record trd utime) n-before))
-	   (rezult (dotimes (i (+ n-before n-after 1) (math/list-matr:transpose rez))
+	   (rezult (dotimes (i (+ n-before n-after 1) (math/matr:transpose rez))
 		     (push (trd-analog-by-record trd (+ n-start i) signal-list) rez))))
       (mapcar #'math/stat:average-value rezult))))
 
@@ -154,7 +154,7 @@
 тренда @b(trd), начиная с записи @b(start-record) включительно 
 до записи @b(end-record) исключительно."
   (when  (file-descr trd)
-    (math/list-matr:transpose
+    (math/matr:transpose
      (loop :for i :from start-record :below end-record
 	   :collect (trd-analog-by-record trd i a-signals)))))
 

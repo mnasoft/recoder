@@ -70,7 +70,7 @@
       (push (append '("Дата" "Время") a-designations '("Дата" "Время") a-designations) rez)
       #+nil
       (push (append '("Дата" "Время") (mapcar #'(lambda (el) (<a-signal>-description el)) s-list)) rez)
-      (when transpose (setf rez (math/list-matr:transpose rez)))
+      (when transpose (setf rez (math/matr:transpose rez)))
       (html-table:list-list-html-table rez html-fname)
       rez)))
 

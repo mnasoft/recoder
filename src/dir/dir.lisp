@@ -119,7 +119,7 @@
 @end(list)"
   (let ((rez (apply #'mapcar #'append (mapcar #'(lambda (td-signals) (analog-signals (first td-signals) u-times (second td-signals))) rest))))
     (setf rez (mapcar #'(lambda (ut data) (append (mnas-org-mode:utime->date-time ut) data )) u-times rez))
-    (setf rez (math/list-matr:prepend-rows
+    (setf rez (math/matr:prepend-rows
 	       (list
 		(append '("Дата" "Время")
 			(apply #'append (apply #'analog-table-ids  (append (list u-times) rest))))
