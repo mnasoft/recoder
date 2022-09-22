@@ -9,6 +9,7 @@
 
 (defun make-document ()
   (loop
+    :for j :from 1
     :for i :in
     '((:recoder          :recoder)
       (:recoder/dia      nil)
@@ -25,10 +26,14 @@
       (:recoder/d-signal nil)
       (:recoder/binary   nil)
       )
-    :do (apply #'mnas-package:document i)))
+    :do
+       (progn
+         (apply #'mnas-package:document i)
+         (format t "~A ~A~%" j i))))
 
 (defun make-graphs ()
   (loop
+    :for j :from 1
     :for i :in
     '(:recoder
       :recoder/dia
@@ -45,7 +50,9 @@
       :recoder/d-signal
       :recoder/binary
       )
-    :do (mnas-package:make-codex-graphs i i)))
+    :do (progn
+          (mnas-package:make-codex-graphs i i)
+          (format t "~A ~A~%" j i))))
 
 (defun make-all (&aux
                    (of (if (find (uiop:hostname)
