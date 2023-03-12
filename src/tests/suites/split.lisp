@@ -9,7 +9,7 @@
 (in-suite split)
 
 #+nil
-(defpackage #:recoder/split
+(defpackage :recoder/split
   (:use #:cl #:mnas-string/print #:recoder/trd)
   (:intern apply-and                                   +
 	   apply-or                                    +

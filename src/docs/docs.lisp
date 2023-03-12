@@ -1,4 +1,4 @@
-(defpackage #:recoder/docs
+(defpackage :recoder/docs
   (:use #:cl ) 
   (:nicknames "REC/DOCS")
   (:export make-all)

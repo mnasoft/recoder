@@ -1,6 +1,6 @@
 ;;;; test.lisp
 
-(defpackage #:recoder/dir
+(defpackage :recoder/dir
   (:use #:cl #:recoder/trd)
   (:nicknames "R/DIR")
   (:export find-trd-by-utime-dirname

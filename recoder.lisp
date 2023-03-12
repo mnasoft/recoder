@@ -1,6 +1,6 @@
 ;;;; package.lisp
 
-(defpackage #:recoder
+(defpackage :recoder
   (:use #:cl)
   (:documentation
    "@begin(section) @title(Обзор)

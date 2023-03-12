@@ -1,6 +1,6 @@
 ;;; ./src/trd-seq.lisp
 
-(defpackage #:recoder/seq
+(defpackage :recoder/seq
   (:use #:cl
         #:mnas-string
         #:recoder/slist
@@ -28,7 +28,7 @@
            <trd-seq>-units 
            ))
 
-(in-package #:recoder/seq)
+(in-package :recoder/seq)
 
 (defclass <trd-seq> (recoder/trd:<trd> sequence)
   ((s-sig :reader   <trd-seq>-s-sig :initform nil :initarg :s-sig :documentation "Список с именами сигналов.")

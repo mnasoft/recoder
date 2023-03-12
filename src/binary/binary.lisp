@@ -1,6 +1,6 @@
 ;;;; package.lisp
 
-(defpackage #:recoder/binary
+(defpackage :recoder/binary
   (:use #:cl) ;; #:mnas-string
   (:nicknames "R/BIN")
   (:export *cp1251*
@@ -40,7 +40,7 @@
 ;;;; (declaim (optimize (space 0) (compilation-speed 0)  (speed 0) (safety 3) (debug 3)))
 ;;;; (declaim (optimize (compilation-speed 0) (debug 3) (safety 0) (space 0) (speed 0)))
 
-(in-package #:recoder/binary)
+(in-package :recoder/binary)
 
 (defparameter *pangram-ru-1* "Съешь же ещё этих мягких французских булок да выпей чаю.")
 (defparameter *pangram-ru-2* "Широкая электрификация южных губерний даст мощный толчок подъёму сельского хозяйства.")

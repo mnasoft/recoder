@@ -9,7 +9,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #+nil
 
-(defpackage #:recoder/get
+(defpackage :recoder/get
   (:use #:cl
         #:recoder/binary
         #:recoder/d-signal

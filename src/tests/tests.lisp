@@ -1,6 +1,6 @@
 ;;;; tests/package.lisp
 
-(defpackage #:recoder/tests
+(defpackage :recoder/tests
   (:use #:cl #:fiveam)
   (:export #:run-tests))
 

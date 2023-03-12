@@ -1,4 +1,4 @@
-(defpackage #:recoder/get
+(defpackage :recoder/get
   (:use #:cl
         #:recoder/binary
         #:recoder/d-signal
@@ -27,7 +27,7 @@
            trd-a-units
            ))
 
-(in-package #:recoder/get)
+(in-package :recoder/get)
 
 (defparameter *offset*  10
   "@b(Описание:) переменная @b(*offset*) количество

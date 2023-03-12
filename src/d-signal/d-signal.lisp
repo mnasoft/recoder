@@ -1,6 +1,6 @@
 ;;;; d-signal-defmethods.lisp
 
-(defpackage #:recoder/d-signal
+(defpackage :recoder/d-signal
   (:use #:cl)
   (:nicknames "R/D-SIG")
   ;; #:mnas-string #:recoder/binary
@@ -13,7 +13,7 @@
 ;;;;(declaim (optimize (space 0) (compilation-speed 0)  (speed 0) (safety 3) (debug 3)))
 ;;;; (declaim (optimize (compilation-speed 0) (debug 3) (safety 0) (space 0) (speed 0)))
 
-(in-package #:recoder/d-signal)
+(in-package :recoder/d-signal)
       
 (defclass <d-signal> ()
   ((num         :accessor <d-signal>-num         :initarg :num         :initform nil :documentation "Номер сигнала в списке сигналов. Первый сигнал имеет номер 0")

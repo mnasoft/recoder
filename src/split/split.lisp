@@ -1,6 +1,6 @@
 ;;;; ./clisp/recoder/src/split/split.lisp
 
-(defpackage #:recoder/split
+(defpackage :recoder/split
   (:use #:cl #:mnas-string/print #:recoder/trd)
   (:intern apply-and
 	   apply-or
@@ -10,7 +10,7 @@
    	   split-on-intervals-by-condition
 	   split-on-utimes-when-flag-is-on))
 
-(in-package #:recoder/split)
+(in-package :recoder/split)
 
 (defun apply-and (lst)
   (mapc #'(lambda (el) (unless el (return-from  apply-and nil))) lst)

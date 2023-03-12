@@ -1,6 +1,6 @@
 ;;;; ./src/org/org.lisp
 
-(defpackage #:recoder/org
+(defpackage :recoder/org
   (:use #:cl
         #:recoder/trd
         #:recoder/d-signal

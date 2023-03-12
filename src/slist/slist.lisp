@@ -1,6 +1,6 @@
 ;;;; ./src/slist/slist.lisp
 
-(defpackage #:recoder/slist
+(defpackage :recoder/slist
   (:use #:cl #:recoder/trd)
   (:nicknames "R/SLIST")
   (:export a-signals
@@ -10,7 +10,7 @@
    "@b(Описание:) пакет @b(recoder/slist) предназначен для
  формирования списков сигналов аналоговых и дискретных."))
 
-(in-package #:recoder/slist)
+(in-package :recoder/slist)
 
 (defmethod not-signals ((trd <trd>) s-names)
   "@b(Описание:) метод @b(not-signals) возвращает список строк,

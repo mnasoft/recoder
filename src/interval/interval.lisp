@@ -1,11 +1,11 @@
-(defpackage #:recoder/interval
+(defpackage :recoder/interval
   (:use #:cl  #:recoder/trd)
   (:nicknames "R/INTERVAL") 
   (:export trd-interval-to-secods
            trd-interval-to-minutes
            trd-interval-to-hours))
 
-(in-package #:recoder/interval)
+(in-package :recoder/interval)
 
 (defmethod trd-interval-to-secods ((trd <trd>) interval)
   "@b(Описание:) функция @b(trd-interval-to-secods) возвращает для

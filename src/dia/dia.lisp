@@ -1,6 +1,6 @@
 ;;;; ./clisp/recoder/src/dia/dia.lisp
 
-(defpackage #:recoder/dia
+(defpackage :recoder/dia
   (:use #:cl #:mnas-string/print #:recoder/binary #:recoder/d-signal #:recoder/a-signal)
   (:nicknames "R/DIA")
   (:export get-open-ternds
@@ -8,7 +8,7 @@
 	   change-directory-default)
   (:export *trd*))
 
-(in-package #:recoder/dia)
+(in-package :recoder/dia)
 
 (defparameter *trd* nil
   "@b(Описание:) переменная @b(*trd*) содержит объект класса @b(recoder/trd:<trd>).

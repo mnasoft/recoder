@@ -1,6 +1,6 @@
 ;;;; a-signal-defmethods.lisp
 
-(defpackage #:recoder/a-signal
+(defpackage :recoder/a-signal
   (:use #:cl )
   (:nicknames "R/A-SIG")
   (:export <a-signal>
@@ -17,7 +17,7 @@
 ;;;;(declaim (optimize (space 0) (compilation-speed 0)  (speed 0) (safety 3) (debug 3)))
 ;;;; (declaim (optimize (compilation-speed 0) (debug 3) (safety 0) (space 0) (speed 0)))
 
-(in-package #:recoder/a-signal)
+(in-package :recoder/a-signal)
 
 (defparameter *ushort-max* (- (expt 2 16) 1)
   "Количество градаций аналогового сигнала от 0 до *ushort-max* при записи тренда")

@@ -1,6 +1,6 @@
 ;;;; ./src/html/html.lisp
 
-(defpackage #:recoder/html
+(defpackage :recoder/html
   (:use #:cl
         #:recoder/get
         #:recoder/d-signal
@@ -9,7 +9,7 @@
   (:nicknames "R/HTML")
   (:export make-html-trd))
 
-(in-package #:recoder/html)
+(in-package :recoder/html)
 
 (defun make-html-trd (trd-fname html-fname s-names utimes
                       &key
