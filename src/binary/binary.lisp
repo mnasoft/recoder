@@ -37,9 +37,6 @@
   (:export *pangram-ru-1* *pangram-ru-2* *pangram-ru-3*
            *pangram-uk-1* *pangram-uk-2* *pangram-uk-3*))
 
-;;;; (declaim (optimize (space 0) (compilation-speed 0)  (speed 0) (safety 3) (debug 3)))
-;;;; (declaim (optimize (compilation-speed 0) (debug 3) (safety 0) (space 0) (speed 0)))
-
 (in-package :recoder/binary)
 
 (defparameter *pangram-ru-1* "Съешь же ещё этих мягких французских булок да выпей чаю.")

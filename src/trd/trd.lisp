@@ -37,9 +37,6 @@
            read-discret-ht)
   )
 
-;;;; (declaim (optimize (space 0) (compilation-speed 0)  (speed 0) (safety 3) (debug 3)))
-;;;; (declaim (optimize (compilation-speed 0) (debug 3) (safety 0) (space 0) (speed 0)))
-
 (in-package :recoder/trd)
 
 (defconstant +head-id-wid+              5 "Строка идентификации файла тренда, char[5]")
