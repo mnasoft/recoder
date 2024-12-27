@@ -4,7 +4,9 @@
   (:use #:cl #:recoder/trd)
   (:nicknames "R/DIR")
   (:export find-trd-by-utime-dirname
-            make-html-trd-foo)
+           find-trd-by-utime-files
+           find-trds-by-utimes-files
+           make-html-trd-foo)
   (:export analog-table)
   (:export <trd-dir>
 	   <trd-tc-dir>)
@@ -261,3 +263,29 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
     (push (append '("Дата" "Время") <a-signal>-description) rez)
     (when transpose (setf rez (transpose rez)))
     (html-table:list-list-html-table rez html-fname)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+(defun find-trd-by-utime-files (utime files)
+  "Возвращает объект тренда, для которого существуют данные на момент 
+универсального времени utime в списке файлов files.
+"
+  (let ((rezult nil))
+    (mapc  
+     #'(lambda (el)
+	 (let ((trd (make-instance '<trd> :file-name el)))
+	   (trd-open trd)
+	   (if (<= (utime-start trd) utime (utime-end trd))
+	       (setf rezult trd)
+	       (trd-close trd))))
+     files)
+    rezult))
+
+(defun find-trds-by-utimes-files (utimes files)
+  "Возвращает объект тренда, для которого существуют данные на момент 
+универсального времени utime в списке файлов.
+"
+  (loop :for ut :in utimes
+        :collect
+        (list ut (find-trd-by-utime-files ut files))))
