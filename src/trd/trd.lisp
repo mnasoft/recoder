@@ -8,7 +8,8 @@
         #:recoder/a-signal)
   (:nicknames "R/TRD")
   (:export trd-open
-           trd-close)
+           trd-close
+           )
   (:export *trd*
            *trd-fname*)
   (:export <trd>
