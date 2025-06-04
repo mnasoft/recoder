@@ -1,0 +1,13 @@
+* Поиск файла тренда в каталоге
+Функция =r/dir:find-trd-by-utime-dirname= возвращает объект тренда,
+для которого существуют данные на момент универсального времени =utime=
+в каталоге =dir-name=.
+#+name: recoder-dir-find-trd-by-utime-dirname   
+#+BEGIN_SRC lisp :exports code
+  (let* ((utime (r/trd:time-universal-encode 2018 11 06 09 23 50))
+         (dir (mnas-path:asdf-path :recoder "trd/"))
+         (trd (r/dir:find-trd-by-utime-dirname utime dir)))
+    trd
+    ,#+nil (recoder/org:header trd))
+#+END_SRC
+

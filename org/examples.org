@@ -1,0 +1,14 @@
+* Примеры использования
+#+begin_src sh :exports results
+  for i in `ls example-*.org`
+  do
+      echo "[[./$i]]"
+  done
+
+#+end_src
+
+#+RESULTS:
+| [[./example-data.org]]    |
+| [[./example-dir.org]]     |
+| [[./example-org.org]]     |
+| [[./example-signals.org]] |

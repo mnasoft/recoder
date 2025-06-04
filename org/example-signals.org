@@ -1,0 +1,41 @@
+* Формирование списка сигналов из списка имен сигналов
+#+BEGIN_SRC lisp :exports code
+  (defparameter *signal-string-list*
+    (loop :for key :being :the :hash-keys :in (r/trd:analog-ht *trd*)
+          :for i :from 0  :below 5
+          :collect key))
+
+  (recoder/slist:a-signals *trd* *signal-string-list*)
+#+END_SRC
+
+** Создание списка имен сигналов
+#+name: s-names
+#+begin_src lisp :exports code
+  (defparameter *trd* recoder/trd:*trd*)
+  (defparameter *s-names* '("V2" "P02" "T2" "ET300" "FA530" "FK526" "FA526" "FA566" "KAZNA-SCHO"))
+  ,*s-names*
+#+end_src
+
+** Аналоговых
+#+name: a-signals    
+#+begin_src lisp :var s-names=s-names :exports both
+  (defparameter *a-signals*
+    (recoder/slist:a-signals *trd* *s-names*))
+
+  ,*a-signals*
+#+end_src
+
+#+RESULTS: a-signals
+: (#a-s(30 "V2" [0.0d0 25.0d0] "м3/с" "Объемный расход воздуха")
+:  #a-s(89 "P02" [0.0d0 1000000.0d0] "Па" "Полное давление на входе в КС")
+:  #a-s(24 "T2" [-10.0d0 600.0d0] "°C" "Т2 - средняя")
+:  #a-s(25 "ET300" [0.0d0 1600.0d0] "°C" "Т3 - средняя"))
+
+** Дискретых
+#+name: d-signals    
+#+begin_src lisp :var s-names=s-names :exports code
+  (defparameter *d-signals*
+    (recoder/slist:d-signals *trd* *s-names*))
+
+  ,*d-signals*
+#+end_src

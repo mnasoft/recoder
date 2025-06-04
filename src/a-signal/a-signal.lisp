@@ -53,13 +53,15 @@
           (<a-signal>-units x)
           (<a-signal>-description x)))
 
-(export '<a-signal>-value )
+(defgeneric <a-signal>-value (a-signal ushort-int)
+  (:documentation "@b(Описание:) обобщенная_функция @b(<a-signal>-value)
+возвращает расшифрованное значение сигнала @b(a-signal) по его зашифрованному значению
+@b(ushort-int) от 0 включтельно до 65536 исключительно."))
 
 (defmethod <a-signal>-value ((x <a-signal>) ushort-int)
   (+ (<a-signal>-min x)
      (* (- (<a-signal>-max x)
 	   (<a-signal>-min x))
 	(/ ushort-int *ushort-max*))))
-
 
 

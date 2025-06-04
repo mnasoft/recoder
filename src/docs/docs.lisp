@@ -21,7 +21,7 @@
       (:recoder/split    nil)
       (:recoder/get      nil)
       (:recoder/slist    nil)
-      (:recoder/trd      nil)
+      (:recoder/trd      :recoder/trd)
       (:recoder/a-signal nil)
       (:recoder/d-signal nil)
       (:recoder/binary   nil)

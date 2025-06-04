@@ -1,0 +1,16 @@
+* ORG
+
+#+name:recoder-org-header
+#+begin_src lisp :exports code
+  (recoder/org:header recoder/trd:*trd*)
+#+end_src
+
+#+name:recoder-org-analog-signals
+#+begin_src lisp :exports code
+  (recoder/org:a-signals recoder/trd:*trd*)
+#+end_src
+
+#+name:recoder-org-discret-signals
+#+begin_src lisp :exports code
+  (recoder/org:d-signals recoder/trd:*trd*)
+#+end_src

@@ -1,17 +1,5 @@
-* [6/7] Задачи
-1. [ ] Документировать
-   - [ ] <a-signal>
-     + [ ] a-signal-units
-     + [ ] a-signal-num
-     + [ ] a-signal-min
-     + [ ] a-signal-id
-     + [ ] a-signal-value
-     + [ ] a-signal-description
-     + [ ] a-signal-max
-   - [ ] <d-signal>
-     + [ ] d-signal-description
-     + [ ] d-signal-id
-     + [ ] d-signal-num
+* [0/1] ToDo
+1. [-] Документировать
    - [ ] <trd>
      - [ ] trd-analog-ht->org
      - [ ] trd-analog-mid-by-snames
@@ -100,6 +88,22 @@
 2. Функции trd-export-csv и trd-export-csv-singal-string не нашли широкого применения
    - [ ] Исключить trd-export-csv и trd-export-csv-singal-string
    - [X] Взамен них для класса <trd-seq> написать метод - export-to.
+* [8/8] DoNe
+1. [X] Документировать
+   - [X] recoder/a-signal:<a-signal>
+     + [X] recoder/a-signal:<a-signal>-units
+     + [X] recoder/a-signal:<a-signal>-num
+     + [X] recoder/a-signal:<a-signal>-min
+     + [X] recoder/a-signal:<a-signal>-id
+     + [X] recoder/a-signal:<a-signal>-value
+     + [X] recoder/a-signal:<a-signal>-description
+     + [X] recoder/a-signal:<a-signal>-max
+2. [X] Документировать       
+   - [X] <d-signal>
+     + [X] recoder/d-signal:<d-signal>-description
+     + [X] recoder/d-signal:<d-signal>-id
+     + [X] recoder/d-signal:<d-signal>-num
+
 3. [X] Написать метод для нахождения выборок значений аналоговых сигналов тренда для определенного интервала времени:
    - [X] выраженного в номерах записей тренда - analogs-in-records.
    - [X] выраженного в универсальном формате - analogs-in-utimes.

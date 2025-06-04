@@ -25,7 +25,9 @@
            )
   (:export trd-a-ids
            trd-a-units
-           ))
+           )
+  (:documentation "@b(Описание:) пакет @b(recoder/get) предназначен для получения о
+значений аналоговых и дискретных сигналов из тренда."))
 
 (in-package :recoder/get)
 
@@ -36,12 +38,29 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmethod trd-analog-mid-by-snames ((trd <trd>) utime snames &key (n-before *offset*) (n-after *offset*))
-  "@b(описание:) метод @b(trd-analog-mid-by-snames) возвращает список
- средних значений сигналов, записанных в тренде @b(trd) в момент
- времени utime для списка сигналов, определяемых их именами snames.
+(defgeneric trd-analog-mid-by-snames (trd utime snames &key n-before n-after)
+  (:documentation
+   "@b(Описание:) обобщенная_функция @b(trd-analog-mid-by-snames)
+ возвращает список средних значений сигналов, записанных в тренде
+ @b(trd) в момент времени @b(utime) для списка сигналов, определяемых
+ их именами @b(snames).
 
- Осреднение происходит в интервале записей от @b(n-before) до @b(n-after)."
+ Осреднение происходит в интервале записей от @b(n-before) до @b(n-after).")
+  )
+
+(defmethod trd-analog-mid-by-snames ((trd <trd>) utime snames &key (n-before *offset*) (n-after *offset*))
+  "
+ @b(Пример использования:)
+@begin[lang=lisp](code)
+  (let* ((trd (r:trd-open (mnas-path:asdf-path \"recoder\" \"trd/2018-11-06_092329.trd\")))
+         (snames '(\"V2\" \"ET022\"))
+         (u-start(r/trd:utime-start trd)) 
+         (u-end  (r/trd:utime-end   trd))
+         (p 0.5)
+         (u (+ u-start (* p (- u-end u-start)))))
+    (trd-analog-mid-by-snames trd u snames))  
+@end(code)
+"
   (when  (file-descr trd)
     (trd-analog-mid-by-utime trd utime (a-signals trd snames) :n-before n-before :n-after n-after)))
 

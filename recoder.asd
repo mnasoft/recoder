@@ -39,8 +39,6 @@
 
 (defsystem "recoder/trd"
   :description "Преднзначен для работы с трендами."
-  :author "Mykola Matvyeyev <mnasoft@gmail.com>"
-  :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"  
   :depends-on ("mnas-string"
                "html-table"
                "math"
@@ -62,8 +60,6 @@
 (defsystem "recoder/get"
   :description "@b(Описание:) система @b(recoder/get) содержит функции
   для извлечения информации из тренда."
-  :author "Mykola Matvyeyev <mnasoft@gmail.com>"
-  :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"  
   :depends-on ("recoder/slist") ;; "recoder/trd"
   :serial nil
   :components
@@ -75,8 +71,6 @@
 (defsystem "recoder/html"
   :description "@b(Описание:) система @b(recoder/html) содержит функции
   для извлечения информации из тренда."
-  :author "Mykola Matvyeyev <mnasoft@gmail.com>"
-  :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"  
   :depends-on ("recoder/get" "recoder/slist") ;; "recoder/trd"
   :serial nil
   :components
@@ -88,8 +82,6 @@
 (defsystem "recoder/interval"
   :description "@b(Описание:) система @b(recoder/get) содержит функции
   для извлечения информации из тренда."
-  :author "Mykola Matvyeyev <mnasoft@gmail.com>"
-  :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"  
   :depends-on ("recoder/trd")
   :serial nil
   :components
@@ -101,8 +93,6 @@
 (defsystem "recoder/org"
   :description "@b(Описание:) система @b(recoder/org) содержит функции
   для вывода информации из тренда в ORG-режиме редактора Emacs."
-  :author "Mykola Matvyeyev <mnasoft@gmail.com>"
-  :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"  
   :depends-on ("recoder/trd")
   :serial nil
   :components
@@ -114,8 +104,6 @@
 (defsystem "recoder/split"
   :description "@b(Описание:) система @b(recoder/split) содержит
   фукции поиска интервалов по в тренде по определенным критериям."
-  :author "Mykola Matvyeyev <mnasoft@gmail.com>"
-  :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"  
   :depends-on ("recoder/trd")
   :serial nil
   :components
@@ -127,8 +115,6 @@
 (defsystem "recoder/dia"
   :description "@b(Описание:) система @b(recoder/dia) содержит
   диалоговые фукции открытия трендов и каталогов с трендами."
-  :author "Mykola Matvyeyev <mnasoft@gmail.com>"
-  :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"  
   :depends-on ("mnas-file-dialog")
   :serial nil
   :components
@@ -139,8 +125,6 @@
 
 (defsystem "recoder/docs"
   :description "Зависимости для сборки документации."
-  :author "Mykola Matvyeyev <mnasoft@gmail.com>"
-  :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"  
   :depends-on ("recoder" "codex" "mnas-package")
   :components ((:module "src/docs"
 		:serial nil
@@ -150,8 +134,6 @@
   :description "Преднзначен для работы с трендами. 
 Содержит низкоуровневые функции ввода-вывода."
   :author "Mykola Matvyeyev <mnasoft@gmail.com>"
-  :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"  
-  :depends-on ("ieee-floats" "babel" "babel-streams")
   ;; "mnas-string" "html-table" "math" "mnas-path" "mnas-file-dialog"
   :serial nil
   :components
@@ -163,8 +145,6 @@
 (defsystem "recoder/a-signal"
   :description "Преднзначен для работы с трендами.
 Аналоговый сигнал"
-  :author "Mykola Matvyeyev <mnasoft@gmail.com>"
-  :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"  
   :serial nil
   :components
   ((:module "src/a-signal"
@@ -175,8 +155,6 @@
 (defsystem "recoder/seq"
   :description "Преднзначен для работы с трендами.
 Определяет классы и методы для представления тренда в виде последовательности (sequience)."
-  :author "Mykola Matvyeyev <mnasoft@gmail.com>"
-  :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"
   :depends-on ("recoder/slist" "recoder/get" "mnas-org-mode") ;;"recoder/trd"
   :serial nil
   :components
@@ -188,8 +166,6 @@
 (defsystem "recoder/d-signal"
   :description "Преднзначен для работы с трендами.
 Аналоговый сигнал"
-  :author "Mykola Matvyeyev <mnasoft@gmail.com>"
-  :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"  
   :serial nil
   :components
   ((:module "src/d-signal"
@@ -200,8 +176,6 @@
 
 (defsystem "recoder/dir"
   :description "Преднзначен для работы группами трендов, помещенными в отдельные каталоги."
-  :author "Mykola Matvyeyev <mnasoft@gmail.com>"
-  :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"
   :depends-on ("recoder/trd" "termo-container" "mnas-org-mode" "math" "mnas-format")
   :serial nil
   :components
@@ -212,8 +186,6 @@
 
 (defsystem "recoder/slist"
   :description "@b(Описание:) система @b(recoder/slist) служит для получения списка синалов."
-  :author "Mykola Matvyeyev <mnasoft@gmail.com>"
-  :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"
   :depends-on ("recoder/trd")
   :serial nil
   :components
@@ -226,8 +198,6 @@
 
 (defsystem "recoder/tests"
   :description "Тестирование систем, входящих  в проект Recoder."
-  :author "Mykola Matvyeyev <mnasoft@gmail.com>"
-  :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"  
   :depends-on ("recoder" "fiveam" "math/arr-matr")
   :perform (test-op (o s)
 		    (uiop:symbol-call :mnas-string/tests :run-tests))
