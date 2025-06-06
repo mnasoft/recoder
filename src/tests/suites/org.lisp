@@ -8,14 +8,13 @@
 
 (in-suite org)
 
-
 (def-test header ()
   "Проверка извлечения заголовка."
+    (with-fixture fix-open-trd ()
   (is-true (equal
-            (cdr (recoder/org:header recoder/trd:*trd*))
-            (cdr
-             '(("Файл" "D:/PRG/msys64/home/namatv/quicklisp/local-projects/clisp/recoder/trd/2018-11-06_092329.trd")
-               ("Версия тренда" 2)
+            (recoder/org:header trd)
+             `(("Файл"          ,(r/trd:<trd>-file-name trd))
+               ("Версия тренда" ,(r/trd:<trd>-version *trd*)) 
                ("Дата создания тренда" "2018-11-06")
                ("Время создания тренда" "09:23:29")
                ("К-во аналоговых+дискретных сигналов" 415)

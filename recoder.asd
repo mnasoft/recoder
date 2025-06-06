@@ -1,26 +1,8 @@
 ;;;; recoder.asd
 
 (defsystem "recoder"
-  :description "@b(Описание:) система @b(Recoder) преднзначена для работы с трендами.
-
- Система состоит из следующих подсистем:
-@begin(deflist)
-      
-@term(recoder/trd) @def(...)
-
-@term(recoder/seq) @def(Содержит функции, позволяющие работать с
-отдельным трендом как с последовательностью.)
-
-@term(recoder/org) @def(...)
-
-@term(recoder/dir) @def(...)
-@term(recoder/dia) @def(...)
-
-@term(recoder/split) @def(Содержит функции, позволяющие разделить
-тренд на группу диапазонов.)
-
-@end(deflist)
-"
+  :description "@b(Описание:) система @b(Recoder) преднзначена для работы с трендами."
+  :long-description #.(uiop:read-file-string "doc/recoder-long-description.txt")
   :author "Mykola Matvyeyev <mnasoft@gmail.com>"
   :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"  
   :depends-on ("recoder/trd"
@@ -39,14 +21,11 @@
 
 (defsystem "recoder/trd"
   :description "Преднзначен для работы с трендами."
-  :depends-on ("mnas-string"
-               "html-table"
-               "math"
-               "mnas-path"
-               ;; "mnas-file-dialog"
-               "recoder/binary"
+  :depends-on ("mnas-string/print"
                "recoder/a-signal"
                "recoder/d-signal"
+               "recoder/binary"
+               ;; "mnas-file-dialog" "html-table" "mnas-path" "math" "mnas-string"
                ) 
   :serial nil
   :in-order-to ((test-op (test-op "recoder/tests")))
@@ -60,7 +39,7 @@
 (defsystem "recoder/get"
   :description "@b(Описание:) система @b(recoder/get) содержит функции
   для извлечения информации из тренда."
-  :depends-on ("recoder/slist") ;; "recoder/trd"
+  :depends-on ("recoder/slist" "math") ;; "recoder/trd"
   :serial nil
   :components
   ((:module "src/get"
@@ -71,7 +50,7 @@
 (defsystem "recoder/html"
   :description "@b(Описание:) система @b(recoder/html) содержит функции
   для извлечения информации из тренда."
-  :depends-on ("recoder/get" "recoder/slist") ;; "recoder/trd"
+  :depends-on ("recoder/get" "recoder/slist" "html-table" "mnas-string/print")
   :serial nil
   :components
   ((:module "src/html"
@@ -93,7 +72,8 @@
 (defsystem "recoder/org"
   :description "@b(Описание:) система @b(recoder/org) содержит функции
   для вывода информации из тренда в ORG-режиме редактора Emacs."
-  :depends-on ("recoder/trd")
+  :depends-on ("recoder/trd"
+               "mnas-string/print")
   :serial nil
   :components
   ((:module "src/org"
@@ -104,7 +84,8 @@
 (defsystem "recoder/split"
   :description "@b(Описание:) система @b(recoder/split) содержит
   фукции поиска интервалов по в тренде по определенным критериям."
-  :depends-on ("recoder/trd")
+  :depends-on ("recoder/get"
+               "mnas-string/print")
   :serial nil
   :components
   ((:module "src/split"
@@ -115,7 +96,7 @@
 (defsystem "recoder/dia"
   :description "@b(Описание:) система @b(recoder/dia) содержит
   диалоговые фукции открытия трендов и каталогов с трендами."
-  :depends-on ("mnas-file-dialog")
+  :depends-on ("mnas-file-dialog" "recoder/trd")
   :serial nil
   :components
   ((:module "src/dia"
@@ -134,7 +115,7 @@
   :description "Преднзначен для работы с трендами. 
 Содержит низкоуровневые функции ввода-вывода."
   :author "Mykola Matvyeyev <mnasoft@gmail.com>"
-  ;; "mnas-string" "html-table" "math" "mnas-path" "mnas-file-dialog"
+  :depends-on ("ieee-floats" "babel-streams") ;; "mnas-string" "html-table" "math" "mnas-path" "mnas-file-dialog"
   :serial nil
   :components
   ((:module "src/binary"
@@ -155,7 +136,8 @@
 (defsystem "recoder/seq"
   :description "Преднзначен для работы с трендами.
 Определяет классы и методы для представления тренда в виде последовательности (sequience)."
-  :depends-on ("recoder/slist" "recoder/get" "mnas-org-mode") ;;"recoder/trd"
+  :depends-on ("recoder/get"
+               "mnas-org-mode") ;;"recoder/trd"
   :serial nil
   :components
   ((:module "src/seq"
@@ -176,7 +158,13 @@
 
 (defsystem "recoder/dir"
   :description "Преднзначен для работы группами трендов, помещенными в отдельные каталоги."
-  :depends-on ("recoder/trd" "termo-container" "mnas-org-mode" "math" "mnas-format")
+  :depends-on ("recoder/get" ;; -> "math"; "recoder/slist" -> "recoder/trd"
+               "termo-container"
+               "mnas-org-mode"
+               "mnas-format"
+               "mnas-path"
+               "html-table"
+               )
   :serial nil
   :components
   ((:module "src/dir"
@@ -198,7 +186,7 @@
 
 (defsystem "recoder/tests"
   :description "Тестирование систем, входящих  в проект Recoder."
-  :depends-on ("recoder" "fiveam" "math/arr-matr")
+  :depends-on ("recoder" "fiveam")      ; "math/arr-matr"
   :perform (test-op (o s)
 		    (uiop:symbol-call :mnas-string/tests :run-tests))
   :components ((:module "src/tests"
@@ -208,6 +196,8 @@
                 :depends-on ("src/tests")
 		:serial nil
                 :components ((:file "binary")
+                             (:file "a-signal")
+                             (:file "d-signal")
                              (:file "trd")
                              (:file "slist")
                              (:file "get")

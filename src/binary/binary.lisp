@@ -1,7 +1,7 @@
 ;;;; package.lisp
 
 (defpackage :recoder/binary
-  (:use #:cl) ;; #:mnas-string
+  (:use #:cl) 
   (:nicknames "R/BIN")
   (:export *cp1251*
 	   *cp866*

@@ -1,6 +1,6 @@
 ;;;; d-signal-defmethods.lisp
 
-(defpackage :recoder/d-signal
+(defpackage #:recoder/d-signal
   (:use #:cl)
   (:nicknames "R/D-SIG")
   ;; #:mnas-string #:recoder/binary

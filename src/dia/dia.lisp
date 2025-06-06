@@ -1,7 +1,9 @@
 ;;;; ./clisp/recoder/src/dia/dia.lisp
 
 (defpackage :recoder/dia
-  (:use #:cl #:mnas-string/print #:recoder/binary #:recoder/d-signal #:recoder/a-signal)
+  (:use #:cl
+        ;; #:mnas-string/print #:recoder/binary #:recoder/d-signal #:recoder/a-signal
+        )
   (:nicknames "R/DIA")
   (:export get-open-ternds
 	   get-open-ternd
@@ -24,7 +26,7 @@
 @end(code)"
   (setf *trd*
         (r/trd:trd-open
-         (make-instance 'recoder/trd:<trd> :file-name
+         (make-instance 'r/trd:<trd> :file-name
                         (mnas-file-dialog:get-open-file
                          :filetypes '(("Файлы трендов" "*.trd"))
                          :title "Выберите файл тренда")))))
@@ -43,5 +45,4 @@
    :title "Выберите файлы трендов" :multiple t))
 
 (defun change-directory-default ()
-  
   (mnas-file-dialog:change-directory-default))

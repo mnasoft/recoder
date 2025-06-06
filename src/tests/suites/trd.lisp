@@ -3,12 +3,7 @@
 (in-package :recoder/tests)
 
 (progn 
-  (defparameter *trd-fname*
-    (concatenate 'string
-                 (namestring (asdf:system-source-directory :recoder))
-                 "trd"
-                 "/"
-                 "2018-11-06_092329.trd"))
+  (defparameter *trd-fname* (mnas-path:asdf-path :recoder "trd/2018-11-06_092329.trd"))
 
   (defparameter *trd* (make-instance 'recoder/trd:<trd> :file-name *trd-fname*))
 
@@ -21,7 +16,7 @@
 (in-suite trd)
 
 (def-fixture fix-open-trd ()
-  (let ((trd (recoder/trd:trd-open
+  (let ((trd (r/trd:trd-open
               (make-instance 'recoder/trd:<trd> :file-name *trd-fname*))))
       (&body)))
 
@@ -29,36 +24,38 @@
   "Проверка открытия и закрытия треда."
   (with-fixture fix-open-trd ()
     (is-true trd)
-    (is-true (recoder/trd:file-descr trd))
-    (is-false (progn (recoder/trd:trd-close trd)
-                     (recoder/trd:file-descr trd)))
-    (is-true (progn (recoder/trd:trd-open trd)
-                     (recoder/trd:file-descr trd)))))
+    (is-true (r/trd:<trd>-file-descr trd))
+    (is-false (progn (r/trd:trd-close trd)
+                     (r/trd:<trd>-file-descr trd)))
+    (is-true (progn (r/trd:trd-open trd)
+                     (r/trd:<trd>-file-descr trd)))))
 
 (def-test trd-header-test ()
   "Проверка заголовка треда."
   (with-fixture fix-open-trd ()
-    (is-true (probe-file (recoder/trd:file-name trd)))
-    (is-true (string= (recoder/trd:id-string trd) "TREND" ))
-    (is-true (= (recoder/trd:version trd) 2 ))
-    (is-true (= (recoder/trd:utime-start trd) 3750477809))
-    (is-true (= (recoder/trd:reserv trd) 415))
-    (is-true (= (recoder/trd:a-number trd) 314))
-    (is-true (= (recoder/trd:d-number trd) 101))
-    (is-true (= (recoder/trd:records trd) 15706))
-    (is-true (= (recoder/trd:increment trd) 0.25d0))
-    (is-true (= (hash-table-count (recoder/trd:analog-ht trd)) 314))
-    (is-true (= (hash-table-count (recoder/trd:discret-ht trd)) 101))))
+    (is-true (probe-file (r/trd:<trd>-file-name trd)))
+    (is-true (string= (r/trd:<trd>-id-string trd) "TREND" ))
+    (is-true (= (r/trd:<trd>-version trd) 2 ))
+    (is-true (= (r/trd:<trd>-utime-start trd) 3750477809))
+    (is-true (= (r/trd:<trd>-reserv trd) 415))
+    (is-true (= (r/trd:<trd>-a-number trd) 314))
+    (is-true (= (r/trd:<trd>-d-number trd) 101))
+    (is-true (= (r/trd:<trd>-records trd) 15706))
+    (is-true (= (r/trd:<trd>-increment trd) 0.25d0))
+    (is-true (= (hash-table-count (r/trd:<trd>-analog-ht trd)) 314))
+    (is-true (= (hash-table-count (r/trd:<trd>-discret-ht trd)) 101))))
 
 (def-test analog-length ()
+  "Место (байты) в записи, занимаемое всеми аналоговыми сигналами."
   (with-fixture fix-open-trd ()
-    (is-true (= (recoder/trd:analog-length trd) 628))))
+    (is-true (= (r/trd:analog-length trd) 628))))
 
 (def-test discret-length ()
+  "Место (байты) в записи, занимаемое всеми дискретными сигналами."  
   (with-fixture fix-open-trd ()
     (is-true (= (recoder/trd:discret-length trd) 13))))
 
-(def-test discret-offset ()
+(def-test discret-offset () 
   (with-fixture fix-open-trd ()
     (is-true (= (recoder/trd:discret-offset trd) 628))))
 

@@ -1,7 +1,7 @@
 ;;;; a-signal-defmethods.lisp
 
-(defpackage :recoder/a-signal
-  (:use #:cl )
+(defpackage #:recoder/a-signal
+  (:use #:cl)
   (:nicknames "R/A-SIG")
   (:export <a-signal>
 	   <a-signal>-units
@@ -10,8 +10,10 @@
            <a-signal>-description
 	   <a-signal>-min
            <a-signal>-max
-	   <a-signal>-value
 	   )
+  (:export decode-value
+           encode-value)
+  (:export encode-lineary) ;; куда-то перенести
   (:intern *ushort-max*))
 
 ;;;;(declaim (optimize (space 0) (compilation-speed 0)  (speed 0) (safety 3) (debug 3)))
@@ -21,6 +23,17 @@
 
 (defparameter *ushort-max* (- (expt 2 16) 1)
   "Количество градаций аналогового сигнала от 0 до *ushort-max* при записи тренда")
+
+(defun encode-lineary (decoded-value deencoded-min decoded-max encoded-min coded-max)
+  "Линейно интерполирует значение из декодированного диапазона в кодированный.
+   Если значение выходит за границы, оно ограничивается."
+  (let ((scaled-value
+          (round
+           (+ encoded-min
+              (* (/ (- decoded-value decoded-min)
+                    (- decoded-max decoded-min))
+                 (- encoded-max encoded-min))))))
+    (min (max scaled-value coded-min) coded-max)))  ;; Ограничение в диапазоне
 
 (defclass <a-signal> ()
   ((num         :accessor <a-signal>-num         :initarg :num         :initform nil :documentation "Номер сигнала в списке сигналов. Первый сигнал имеет номер 0")
@@ -53,15 +66,55 @@
           (<a-signal>-units x)
           (<a-signal>-description x)))
 
+#+nil
 (defgeneric <a-signal>-value (a-signal ushort-int)
   (:documentation "@b(Описание:) обобщенная_функция @b(<a-signal>-value)
 возвращает расшифрованное значение сигнала @b(a-signal) по его зашифрованному значению
 @b(ushort-int) от 0 включтельно до 65536 исключительно."))
 
-(defmethod <a-signal>-value ((x <a-signal>) ushort-int)
-  (+ (<a-signal>-min x)
-     (* (- (<a-signal>-max x)
-	   (<a-signal>-min x))
-	(/ ushort-int *ushort-max*))))
+(defgeneric decode-value (encoded-value a-signal)
+  (:documentation
+   "@b(Описание:) обобщенная_функция @b(decode-value) выполняет
+раскодирование аналогового сигнала, представленного закодированным
+значением @b(encoded-value) по правилу, основанному на характеристиках
+дескриптора @b(a-signal)."))
+
+(defgeneric encode-value (decoded-value a-signal)
+  (:documentation
+   "@b(Описание:) обобщенная_функция @b(encode-value) выполняет
+кодирование аналогового сигнала, представленного раскодированным
+значением @b(decoded-value) по правилу, основанному на характеристиках
+дескриптора @b(a-signal)."))
 
 
+(defmethod decode-value ((encoded-value integer) (a-signal <a-signal>) )
+  (+ (<a-signal>-min a-signal)
+     (* (- (<a-signal>-max a-signal)
+	   (<a-signal>-min a-signal))
+	(/ encoded-value *ushort-max*))))
+
+(defmethod encode-value ((decoded-value float) (a-signal <a-signal>))
+  (let* ((encoded-min 0)
+         (coded-max *ushort-max*)
+         (scaled-value
+           (round
+            (+ encoded-min
+               (* (/ (- decoded-value (<a-signal>-min a-signal))
+                     (- (<a-signal>-max a-signal) (<a-signal>-min a-signal)))
+                  (- coded-max encoded-min))))))
+    (min (max scaled-value encoded-min) coded-max)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+#+nil
+(defparameter *a* (make-instance '<a-signal>
+                                 :num 0
+                                 :id "V2"
+                                 :min -1.0 :max 9.0
+                                 :units "м3/с"
+                                 :description "Объёмный расход через КС" ))
+
+;; encode-value
+#+nil
+(eval (cons 'and
+       (loop :for i :from 0 :to *ushort-max*
+             :collect (= i (encode-value (decode-value i *a*) *a*)))))

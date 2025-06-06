@@ -1,11 +1,7 @@
 ;;;; ./src/html/html.lisp
 
 (defpackage :recoder/html
-  (:use #:cl
-        #:recoder/get
-        #:recoder/d-signal
-        #:recoder/a-signal
-        #:mnas-string/print) ;;;; #:mnas-string/print #:recoder/binary
+  (:use #:cl)
   (:nicknames "R/HTML")
   (:export make-html-trd))
 
@@ -52,14 +48,14 @@
     (recoder/trd:trd-open trd)
     (let* ((date-time-units '("Y-M-D" "h:m:s"))
            (s-list (recoder/slist:a-signals trd s-names))
-           (a-units (mapcar #'(lambda (el) (<a-signal>-units el)) s-list))
-           (a-ids   (mapcar #'(lambda (el) (<a-signal>-id el))    s-list))
-           (a-designations (mapcar #'(lambda (el) (gethash (<a-signal>-id el) ht-sname->des)) s-list))
+           (a-units (mapcar #'(lambda (el) (r/a-sig:<a-signal>-units el)) s-list))
+           (a-ids   (mapcar #'(lambda (el) (r/a-sig:<a-signal>-id el))    s-list))
+           (a-designations (mapcar #'(lambda (el) (gethash (r/a-sig:<a-signal>-id el) ht-sname->des)) s-list))
 	   (rez nil)
-	   (data (mapcar #'(lambda (el) (trd-analog-mid-by-utime trd el    s-list)) utimes)) ;; trd-analog-mid-by-udate
-	   (dev  (mapcar #'(lambda (el) (trd-analog-stddev-by-utime trd el s-list)) utimes)) ;; trd-analog-stddev-by-udate
-	   (d-time-str (mapcar #'(lambda (tm ) (list (date tm :stream nil)
-						     (day-time tm :stream nil)))
+	   (data (mapcar #'(lambda (el) (r/get:trd-analog-mid-by-utime trd el    s-list)) utimes)) 
+	   (dev  (mapcar #'(lambda (el) (r/get:trd-analog-stddev-by-utime trd el s-list)) utimes)) 
+	   (d-time-str (mapcar #'(lambda (tm ) (list (mnas-string/print:date tm :stream nil)
+						     (mnas-string/print:day-time tm :stream nil)))
 			       utimes)))
       (setf rez
             (mapcar
@@ -74,14 +70,15 @@
       (html-table:list-list-html-table rez html-fname)
       rez)))
 
+#+nil
 (let ((s-names '("V2" "P02" "T2" "ET300" "FA530" "FK526" "FA526" "FA566" "KAZNA-SCHO")))
   (make-html-trd recoder/trd:*trd-fname*
                  "~/123.html"
                  s-names
                  (list
-                  (+ 10 (recoder/trd:utime-start  recoder/trd:*trd*))
-                  (+ 20 (recoder/trd:utime-start  recoder/trd:*trd*))
-                  (+ 30 (recoder/trd:utime-start  recoder/trd:*trd*)))
+                  (+ 10 (recoder/trd:<trd>-utime-start  recoder/trd:*trd*))
+                  (+ 20 (recoder/trd:<trd>-utime-start  recoder/trd:*trd*))
+                  (+ 30 (recoder/trd:<trd>-utime-start  recoder/trd:*trd*)))
                  :sname->des '(("V2" "v<sub>2</sub>")
                                ("P02" "p<sub>02</sub>")
                                ("T2"  "t<sub>2</sub>")

@@ -1,12 +1,7 @@
 ;;; ./src/trd-seq.lisp
 
 (defpackage :recoder/seq
-  (:use #:cl
-        #:mnas-string
-        #:recoder/slist
-        #:recoder/a-signal
-        #:recoder/d-signal
-        #:recoder/binary)
+  (:use #:cl)
   (:nicknames "R/SEQ")
   (:export trd-open)
   (:export <trd-seq>
@@ -30,7 +25,7 @@
 
 (in-package :recoder/seq)
 
-(defclass <trd-seq> (recoder/trd:<trd> sequence)
+(defclass <trd-seq> (r/trd:<trd> sequence)
   ((s-sig :reader   <trd-seq>-s-sig :initform nil :initarg :s-sig :documentation "Список с именами сигналов.")
    (a-sig :accessor <trd-seq>-a-sig :initform nil :documentation "Список аналоговых сигналов.")
    (d-sig :accessor <trd-seq>-d-sig :initform nil :documentation "Список дискретных сигналов.")
@@ -48,7 +43,7 @@
 (defmethod update ((trd-seq <trd-seq>))
   "@b(Описание:) метод @b(update) 
 "
-  (unless (recoder/trd:file-descr trd-seq) (recoder/trd:trd-open trd-seq))
+  (unless (r/trd:<trd>-file-descr trd-seq) (r/trd:trd-open trd-seq))
   (let ((a-sig (recoder/slist:a-signals trd-seq (<trd-seq>-s-sig trd-seq)))
         (d-sig (recoder/slist:d-signals trd-seq (<trd-seq>-s-sig trd-seq))))
     (setf (<trd-seq>-a-sig trd-seq) a-sig)
@@ -67,12 +62,12 @@
   "@b(Описание:) метод @b(trd-open) выполняет отркытие файла тренда,
 ассоциированного с объектом @b(trd-seq).
 "
-  (recoder/trd:trd-open trd-seq))
+  (r/trd:trd-open trd-seq))
 
 (defmethod (setf <trd-seq>-s-sig) (new-value (trd-seq <trd-seq>))
   "@b(Описание:) метод @b(setf <trd-seq>-s-sig)
 "
-  (unless (recoder/trd:file-descr trd-seq) (recoder/trd:trd-open trd-seq))
+  (unless (r/trd:<trd>-file-descr trd-seq) (r/trd:trd-open trd-seq))
   (with-slots (s-sig) trd-seq
     (setf s-sig new-value)
     (update trd-seq)))
@@ -80,17 +75,17 @@
 (defmethod sequence:length ((trd-seq <trd-seq>))
   "@b(Описание:) метод @b(sequence:length)
 "
-  (unless (recoder/trd:file-descr trd-seq) (recoder/trd:trd-open trd-seq))
-  (recoder/trd:records trd-seq))
+  (unless (r/trd:<trd>-file-descr trd-seq) (r/trd:trd-open trd-seq))
+  (r/trd:<trd>-records trd-seq))
 
 (defmethod sequence:elt ((trd-seq <trd-seq>) index)
   "@b(Описание:) метод @b(sequence:elt)
 "
-  (unless (recoder/trd:file-descr trd-seq) (recoder/trd:trd-open trd-seq))
+  (unless (r/trd:<trd>-file-descr trd-seq) (r/trd:trd-open trd-seq))
   (let ((a-sig (<trd-seq>-a-sig trd-seq))
         (d-sig (<trd-seq>-d-sig trd-seq)))
     (coerce
-     (append #+nil (list (recoder/trd:record->utime trd-seq index))
+     (append #+nil (list (r/trd:record->utime trd-seq index))
              (when a-sig (recoder/get:trd-analog-by-record  trd-seq index a-sig))
              (when d-sig (recoder/get:trd-discret-by-record trd-seq index d-sig)))
      'vector)))
@@ -173,7 +168,7 @@
 (defmethod export-to ((trd-seq <trd-seq>) (csv-stream <csv-stream>)
                       &key
                         (start 0)
-                        (end (recoder/trd:records trd-seq))
+                        (end (r/trd:<trd>-records trd-seq))
                         (by 1))
   "@b(Описание:) метод @b(export-to) выполняет вывод объекта @b(trd-seq) в
 поток @b(csv-stream).
@@ -184,14 +179,14 @@
  (export-to *trd-sig* *csv-stream*)
 @end(code)
 "
-  (with-open-file (os (concatenate 'string (recoder/trd:file-name trd-seq) ".csv")
+  (with-open-file (os (concatenate 'string (r/trd:<trd>-file-name trd-seq) ".csv")
 		      :direction :output :if-exists :supersede
 		      :external-format (<format-stream>-external-format csv-stream))
     (format os "Time;NUM;~{~,4F~^;~}~%" (<trd-seq>-s-sig trd-seq))
     (format os "~{~,S~^;~}~%" (append '("hh:mm:ss" "NUM") (<trd-seq>-units trd-seq)))
     (loop :for i :from start :below end :by by
 	  :do (format os "~S;~A;~{~,4F~^;~}~%"
-		      (mnas-org-mode:utime->time (recoder/trd:record->utime trd-seq i))
+		      (mnas-org-mode:utime->time (r/trd:record->utime trd-seq i))
 		      i
 		      (coerce (elt trd-seq i) 'list)))))
 
@@ -204,6 +199,3 @@
   (let ((trd-seq (make-instance '<trd-seq> :file-name fname :s-sig signals)))
     (trd-open trd-seq)
     (export-to trd-seq *csv-stream* :by by :start start)))
-
-
-

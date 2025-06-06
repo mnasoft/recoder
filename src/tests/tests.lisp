@@ -33,4 +33,4 @@
 
 (defun semi-equal (lst-1 lst-2)
   (recoder/split::apply-and
-   (mapcar #'math/matr:semi-equal lst-1 lst-2)))
+   (mapcar #'math/core:semi-equal lst-1 lst-2)))

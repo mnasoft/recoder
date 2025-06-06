@@ -1,7 +1,7 @@
 ;;;; test.lisp
 
 (defpackage :recoder/dir
-  (:use #:cl #:recoder/trd)
+  (:use #:cl)
   (:nicknames "R/DIR")
   (:export find-trd-by-utime-dirname
            find-trd-by-utime-files
@@ -32,7 +32,7 @@
      #'(lambda (el)
 	 (let ((trd (make-instance '<trd> :file-name el)))
 	   (trd-open trd)
-	   (if (<= (utime-start trd) utime (utime-end trd))
+	   (if (<= (<trd>-utime-start trd) utime (utime-end trd))
 	       (setf rezult trd)
 	       (trd-close trd))))
      (mnas-path:find-filename dir-name extension))
@@ -158,13 +158,13 @@
  Path= \"d:/PRG/msys32/home/namatv/quicklisp/local-projects/ZM/PM/pm-237/trd-CPiPES/2020-per/20200814_132922.trd\")
 @end(code)
 "
-  (let* ((trd (make-instance 'recoder/trd:<trd>))
+  (let* ((trd (make-instance 'r/trd:<trd>))
 	 (lst (apply #'append
 		     (mapcar
 		      #'(lambda (el)
 			  (let ((rez nil))
 			    (recoder/trd:trd-close trd)
-			    (setf (recoder/trd:file-name trd) el)
+			    (setf (r/trd:<trd>-file-name trd) el)
 			    (recoder/trd:trd-open trd)
 			    (setf rez (split-on-intervals-when-flag-is-on trd d-signal-str))
 			    (recoder/trd:trd-close trd)
@@ -203,7 +203,7 @@
 	    #'(lambda (el)
 		(let ((rez nil))
 		  (recoder/trd:trd-close trd)
-		  (setf (recoder/trd:file-name trd) el)
+		  (setf (r/trd:<trd>-file-name trd) el)
 		  (recoder/trd:trd-open trd)
 		  (setf rez
 			(split-on-utimes-when-flag-is-on trd d-signal-str))
@@ -276,7 +276,7 @@ ht-sname-oboznach - хеш-таблица, элементами которой �
      #'(lambda (el)
 	 (let ((trd (make-instance '<trd> :file-name el)))
 	   (trd-open trd)
-	   (if (<= (utime-start trd) utime (utime-end trd))
+	   (if (<= (<trd>-utime-start trd) utime (utime-end trd))
 	       (setf rezult trd)
 	       (trd-close trd))))
      files)

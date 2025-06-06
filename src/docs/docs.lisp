@@ -12,10 +12,10 @@
     :for j :from 1
     :for i :in
     '((:recoder          :recoder)
-      (:recoder/dia      nil)
-      (:recoder/dir      nil)
-      (:recoder/seq      nil)
-      (:recoder/html     nil)
+      (:recoder/dia      :recoder/dia)
+      (:recoder/dir      :recoder/dir)
+      (:recoder/seq      :recoder/seq)
+      (:recoder/html     :recoder/html)
       (:recoder/org      nil)
       (:recoder/interval nil)
       (:recoder/split    nil)

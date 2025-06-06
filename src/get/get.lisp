@@ -1,11 +1,5 @@
 (defpackage :recoder/get
-  (:use #:cl
-        #:recoder/binary
-        #:recoder/d-signal
-        #:recoder/a-signal
-        #:recoder/trd
-        #:recoder/slist
-        #:mnas-string/print)
+  (:use #:cl)
   (:nicknames "R/GET")
   (:export *offset*)
   (:export trd-analog-mid-by-snames
@@ -48,7 +42,7 @@
  Осреднение происходит в интервале записей от @b(n-before) до @b(n-after).")
   )
 
-(defmethod trd-analog-mid-by-snames ((trd <trd>) utime snames &key (n-before *offset*) (n-after *offset*))
+(defmethod trd-analog-mid-by-snames ((trd r/trd:<trd>) utime snames &key (n-before *offset*) (n-after *offset*))
   "
  @b(Пример использования:)
 @begin[lang=lisp](code)
@@ -61,104 +55,114 @@
     (trd-analog-mid-by-snames trd u snames))  
 @end(code)
 "
-  (when  (file-descr trd)
-    (trd-analog-mid-by-utime trd utime (a-signals trd snames) :n-before n-before :n-after n-after)))
+  (when  (r/trd:<trd>-file-descr trd)
+    (trd-analog-mid-by-utime trd utime (r/slist:a-signals trd snames) :n-before n-before :n-after n-after)))
 
-(defmethod trd-analog-stddev-by-utime ( (trd <trd>) utime signal-list &key (n-before *offset*) (n-after *offset*))
+(defmethod trd-analog-stddev-by-utime ( (trd r/trd:<trd>) utime signal-list &key (n-before *offset*) (n-after *offset*))
   "Возвращает список стандартных отклонений для параметров,
  записанных в тренде @b(trd) в момент времени utime для списка сигналов
  signal-list; Осреднение происходит в интервале записей от n-before до
  n-after.
 "
-  (when  (file-descr trd)
+  (when  (r/trd:<trd>-file-descr trd)
     (let* ((rez nil)
-	   (n-start (- (utime->record trd utime) n-before))
+	   (n-start (- (r/trd:utime->record trd utime) n-before))
 	   (rezult (dotimes (i (+ n-before n-after 1) (math/matr:transpose rez))
 		     (push (trd-analog-by-record trd (+ n-start i) signal-list) rez))))
       (mapcar #'math/stat:standard-deviation rezult))))
 
-(defmethod trd-analog-stddev-by-snames ((trd <trd>) utime snames &key (n-before *offset*) (n-after *offset*))
+(defmethod trd-analog-stddev-by-snames ((trd r/trd:<trd>) utime snames &key (n-before *offset*) (n-after *offset*))
   "Возвращает список стандартных отклонений для параметров,
 записанных в тренде trd в момент времени utime для списка сигналов, определяемых их именами snames;
 Осреднение происходит в интервале записей от  n-before до n-after"
-  (when  (file-descr trd)
-    (trd-analog-stddev-by-utime trd utime (a-signals trd snames) :n-before n-before :n-after n-after)))
+  (when  (r/trd:<trd>-file-descr trd)
+    (trd-analog-stddev-by-utime trd utime (r/slist:a-signals trd snames) :n-before n-before :n-after n-after)))
 
-(defmethod trd-analog-by-record ((trd <trd>) record signal-list)
+(defmethod trd-analog-by-record ((trd r/trd:<trd>) record signal-list)
   "@b(Описание:) метод @b(trd-analog-by-record) возвращает список
 значений тренда @b(trd)  для записи под номером record,
 соответствующий сигналам signal-list."
-  (when (and (file-descr trd) (< -1 record (records trd)))
-    (file-position (file-descr trd) 
-		   (+ (start-offset trd) (* record (record-length trd))))
-    (let* ((v-sh (make-array (a-number trd) :element-type 'integer)))
-      (dotimes (i (a-number trd) 'done)
+  (when (and (r/trd:<trd>-file-descr trd) (< -1 record (r/trd:<trd>-records trd)))
+    (file-position (r/trd:<trd>-file-descr trd) 
+		   (+ (r/trd:start-offset trd) (* record (r/trd:record-length trd))))
+    (let* ((v-sh (make-array (r/trd:<trd>-a-number trd) :element-type 'integer)))
+      (dotimes (i (r/trd:<trd>-a-number trd) 'done)
 	(setf (svref v-sh i)
-	      (b-read-short (file-descr trd))))
-      (mapcar #'(lambda(el) (<a-signal>-value el (svref v-sh (<a-signal>-num el))))
+	      (r/bin:b-read-short (r/trd:<trd>-file-descr trd))))
+      (mapcar
+       #'(lambda(el)
+           (r/a-sig:decode-value
+            (svref v-sh (r/a-sig:<a-signal>-num el))
+            el))
 	      signal-list))))
 
-(defmethod trd-analog-by-utime ( (trd <trd>) utime signal-list)
+(defmethod trd-analog-by-utime ( (trd r/trd:<trd>) utime signal-list)
   "@b(Описание:) метод @b(trd-analog-by-utime) возвращает список
 значений аналоговых сигналов, содержащися в списке @b(signal-list),
 тренда @b(trd), соответствующих моменту времени @b(utime)."
   (trd-analog-by-record trd
-			    (utime->record trd utime)
+			    (r/trd:utime->record trd utime)
 			    signal-list))
 
-(defmethod trd-analog-mid-by-utime ((trd <trd>) utime signal-list &key (n-before *offset*) (n-after *offset*))
+(defmethod trd-analog-mid-by-utime ((trd r/trd:<trd>) utime signal-list &key (n-before *offset*) (n-after *offset*))
   "@b(Описание:) метод @b(trd-analog-mid-by-utime)  возвращает список
 осредненных значений аналоговых сигналов, содержащися в списке @b(signal-list),
 тренда @b(trd), соответствующих моменту времени @b(utime)."
-  (when  (file-descr trd)
+  (when  (r/trd:<trd>-file-descr trd)
     (let* ((rez nil)
-	   (n-start (- (utime->record trd utime) n-before))
+	   (n-start (- (r/trd:utime->record trd utime) n-before))
 	   (rezult (dotimes (i (+ n-before n-after 1) (math/matr:transpose rez))
 		     (push (trd-analog-by-record trd (+ n-start i) signal-list) rez))))
       (mapcar #'math/stat:average-value rezult))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmethod trd-discret-by-record ((trd <trd>) record d-signals)
+(defmethod trd-discret-by-record ((trd r/trd:<trd>) record d-signals)
   "@b(Описание:) метод @b(trd-discret-by-record) возвращает список
  значений тренда <trd> для записи под номером record,
  соответствующий сигналам d-signals."
-  (when (and (file-descr trd) (< -1 record (records trd)))
-    (file-position (file-descr trd) 
-		   (+ (start-offset trd)
-		      (* record (record-length trd))
-		      (discret-offset trd) ))
-    (let ((s-int (list-to-int (b-read (file-descr trd) (discret-length trd)))))
+  (when (and (r/trd:<trd>-file-descr trd) (< -1 record (r/trd:<trd>-records trd)))
+    (file-position (r/trd:<trd>-file-descr trd) 
+		   (+ (r/trd:start-offset trd)
+		      (* record (r/trd:record-length trd))
+		      (r/trd:discret-offset trd) ))
+    (let ((s-int (r/bin:list-to-int
+                  (r/bin:b-read
+                   (r/trd:<trd>-file-descr trd)
+                   (r/trd:discret-length trd)))))
       (mapcar #'(lambda (el)
-		  (if (logbitp (<d-signal>-num  el ) s-int) 1 0))
+		  (if (logbitp (r/d-sig:<d-signal>-num  el ) s-int) 1 0))
 	      d-signals))))
 
-(defmethod trd-discret-by-record-t-nil ( (trd <trd>) record d-signals)
+(defmethod trd-discret-by-record-t-nil ( (trd r/trd:<trd>) record d-signals)
   "@b(Описание:) метод @b(trd-discret-by-record-t-nil) возвращает 
 список значений тренда trd для записи под номером record,
 соответствующий сигналам d-signals."
-  (when (and (file-descr trd) (< -1 record (records trd)))
-    (file-position (file-descr trd) 
-		   (+ (start-offset trd)
-		      (* record (record-length trd))
-		      (discret-offset trd) ))
-    (let ((s-int (list-to-int (b-read (file-descr trd) (discret-length trd)))))
+  (when (and (r/trd:<trd>-file-descr trd) (< -1 record (r/trd:<trd>-records trd)))
+    (file-position (r/trd:<trd>-file-descr trd) 
+		   (+ (r/trd:start-offset trd)
+		      (* record (r/trd:record-length trd))
+		      (r/trd:discret-offset trd) ))
+    (let ((s-int (r/bin:list-to-int
+                  (r/bin:b-read
+                   (r/trd:<trd>-file-descr trd)
+                   (r/trd:discret-length trd)))))
       (mapcar #'(lambda (el)
-		  (logbitp (<d-signal>-num  el ) s-int))
+		  (logbitp (r/d-sig:<d-signal>-num el ) s-int))
 	      d-signals))))
 
-(defmethod trd-discret-by-utime ( (trd <trd>) utime d-signals)
+(defmethod trd-discret-by-utime ( (trd r/trd:<trd>) utime d-signals)
   "trd-discret-by-utime"
-  (trd-discret-by-record trd (utime->record trd utime) d-signals))
+  (trd-discret-by-record trd (r/trd:utime->record trd utime) d-signals))
 
-(defmethod trd-discret-by-utime-t-nil ( (trd <trd>) utime d-signals)
+(defmethod trd-discret-by-utime-t-nil ( (trd r/trd:<trd>) utime d-signals)
   "trd-discret-by-utime-t-nil"
-  (trd-discret-by-record-t-nil trd (utime->record trd utime) d-signals))
+  (trd-discret-by-record-t-nil trd (r/trd:utime->record trd utime) d-signals))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-(defmethod trd-analog-discret-by-record ((trd <trd>) record a-signals d-signals)
+(defmethod trd-analog-discret-by-record ((trd r/trd:<trd>) record a-signals d-signals)
   "@b(Описание:) метод @b(trd-discret-by-record) возвращает список
   значений тренда <trd> для записи под номером @b(record),
   соответствующий сигналам d-signals."
@@ -167,43 +171,46 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmethod analogs-in-records ((trd <trd>) start-record end-record a-signals)
+(defmethod analogs-in-records ((trd r/trd:<trd>) start-record end-record a-signals)
   "@b(Описание:) метод @b(analogs-in-records) возвращает список
 значений аналоговых сигналов, содержащися в списке @b(a-signals),
 тренда @b(trd), начиная с записи @b(start-record) включительно 
 до записи @b(end-record) исключительно."
-  (when  (file-descr trd)
+  (when  (r/trd:<trd>-file-descr trd)
     (math/matr:transpose
      (loop :for i :from start-record :below end-record
 	   :collect (trd-analog-by-record trd i a-signals)))))
 
-(defmethod analogs-in-utimes ((trd <trd>) start-utime end-utime a-signals)
+(defmethod analogs-in-utimes ((trd r/trd:<trd>) start-utime end-utime a-signals)
   "@b(Описание:) метод @b(trd-analog-mid-by-utime)  возвращает список
 осредненных значений аналоговых сигналов, содержащися в списке @b(a-signals),
 тренда @b(trd), соответствующих моменту времени @b(utime)."
-  (when  (file-descr trd)
+  (when  (r/trd:<trd>-file-descr trd)
     (analogs-in-records trd
-			(utime->record trd start-utime)
-			(utime->record trd end-utime)
+			(r/trd:utime->record trd start-utime)
+			(r/trd:utime->record trd end-utime)
 			a-signals)))
 
-(defmethod trd-discret-by-record ( (trd <trd>) rec-number d-signals)
+(defmethod trd-discret-by-record ( (trd r/trd:<trd>) rec-number d-signals)
   "@b(Описание:) метод @b(trd-discret-by-record)
 возвращает список значений тренда <trd> для записи под номером rec-number,
 соответствующий сигналам d-signals."
-  (when (and (file-descr trd) (< -1 rec-number (records trd)))
-    (file-position (file-descr trd) 
-		   (+ (start-offset trd)
-		      (* rec-number (record-length trd))
-		      (discret-offset trd) ))
-    (let ((s-int (list-to-int (b-read (file-descr trd) (discret-length trd)))))
+  (when (and (r/trd:<trd>-file-descr trd) (< -1 rec-number (r/trd:<trd>-records trd)))
+    (file-position (r/trd:<trd>-file-descr trd) 
+		   (+ (r/trd:start-offset trd)
+		      (* rec-number (r/trd:record-length trd))
+		      (r/trd:discret-offset trd) ))
+    (let ((s-int (r/bin:list-to-int
+                  (r/bin:b-read
+                   (r/trd:<trd>-file-descr trd)
+                   (r/trd:discret-length trd)))))
       (mapcar #'(lambda (el)
-		  (if (logbitp (<d-signal>-num  el ) s-int) 1 0))
+		  (if (logbitp (r/d-sig:<d-signal>-num  el ) s-int) 1 0))
 	      d-signals))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmethod trd-a-ids (a-names (trd <trd>))
+(defmethod trd-a-ids (a-names (trd r/trd:<trd>))
   "@b(Описание:) метод @b(trd-a-ids) возвращает имена 
 идентификаторов аналоговых сигналов.
 @begin(list)
@@ -212,10 +219,10 @@
 @end(list)
 "
   (mapcar
-   #'(lambda (a-s) (<a-signal>-id a-s))
-   (recoder/slist:a-signals trd a-names)))
+   #'(lambda (a-s) (r/a-sig:<a-signal>-id a-s))
+   (r/slist:a-signals trd a-names)))
 
-(defmethod trd-a-units (a-names (trd <trd>))
+(defmethod trd-a-units (a-names (trd r/trd:<trd>))
   "@b(Описание:) метод @b(trd-a-units) возвращает размерности 
 аналоговых сигналов.
 @begin(list)
@@ -223,5 +230,5 @@
  @item( trd    - тренд.)
 @end(list)
 "
-  (mapcar #'(lambda (a-s) (<a-signal>-units a-s))
-          (recoder/slist:a-signals trd a-names)))
+  (mapcar #'(lambda (a-s) (r/a-sig:<a-signal>-units a-s))
+          (r/slist:a-signals trd a-names)))
