@@ -1,18 +1,10 @@
-* [1/2] ToDo
-1. [X] Избавиться от использования символов в пакетах
-   - [X] :recoder/get  
-   - [X] :recoder/dia
-   - [X] :recoder/dir
-   - [X] :recoder/html
-   - [X] :recoder/interval
-   - [X] :recoder/org
-   - [X] :recoder/seq
-   - [X] :recoder/split
-2. [ ] Документировать
+* [0/1] ToDo
+
+1. [-] Документировать
    - [ ] <trd>
      - [ ] trd-analog-ht->org
-     - [ ] trd-analog-mid-by-snames
-     - [ ] trd-a-units
+     - [ ] r/get:trd-analog-mid-by-snames
+     - [ ] r/get:trd-a-units
      - [ ] trd-discret-by-utime
      - [ ] trd-delta-time
      - [ ] trd-export-csv
@@ -56,10 +48,6 @@
      - [ ] trd-export-csv-singal-string
      - [ ] trd-discret-ht->org
      - [ ] trd-discret-ht
-   - [ ] split-on-intervals
-     - [ ] split-on-intervals-when-flag-is-on
-     - [ ] split-on-intervals-of-time-when-flag-is-on
-     - [ ] split-on-intervals-by-condition
    - [ ] defparameters
      - [ ] *cp1251*
      - [ ] *cp866*
@@ -94,11 +82,21 @@
    - [ ] list-to-int
    - [ ] open-trd-file-write
    - [ ] open-trd-file-read
-3. Функции trd-export-csv и trd-export-csv-singal-string не нашли широкого применения
+2. Функции trd-export-csv и trd-export-csv-singal-string не нашли широкого применения
    - [ ] Исключить trd-export-csv и trd-export-csv-singal-string
    - [X] Взамен них для класса <trd-seq> написать метод - export-to.
-* [9/9] DoNe
-1. [X] Избавиться от использования (:use) символов из иных систем в
+* [11/11] DoNe
+1. [X] Документировать       
+   - [X] split-on-intervals
+     - [X] r/split:split-on-intervals-when-flag-is-on
+     - [X] r/split:split-on-intervals-of-time-when-flag-is-on
+     - [X] r/split:split-on-intervals-by-condition
+
+2. [X] Добавить тестирование пакетов
+   - [X] :recoder/a-signal  
+   - [X] :recoder/d-signal  
+
+3. [X] Избавиться от использования (:use) символов из иных систем в
    пакетах
    - [X] :recoder/get  
    - [X] :recoder/dia
@@ -109,7 +107,7 @@
    - [X] :recoder/seq
    - [X] :recoder/split
 
-2. [X] Документировать
+4. [X] Документировать
    - [X] recoder/a-signal:<a-signal>
      + [X] recoder/a-signal:<a-signal>-units
      + [X] recoder/a-signal:<a-signal>-num
@@ -118,29 +116,29 @@
      + [X] recoder/a-signal:<a-signal>-value
      + [X] recoder/a-signal:<a-signal>-description
      + [X] recoder/a-signal:<a-signal>-max
-3. [X] Документировать       
+5. [X] Документировать       
    - [X] <d-signal>
      + [X] recoder/d-signal:<d-signal>-description
      + [X] recoder/d-signal:<d-signal>-id
      + [X] recoder/d-signal:<d-signal>-num
 
-4. [X] Написать метод для нахождения выборок значений аналоговых сигналов тренда для определенного интервала времени:
+6. [X] Написать метод для нахождения выборок значений аналоговых сигналов тренда для определенного интервала времени:
    - [X] выраженного в номерах записей тренда - analogs-in-records.
    - [X] выраженного в универсальном формате - analogs-in-utimes.
    - [X] Написать метод для нахождения универсального времени по номеру записи тренда - trd-utime-by-record-number.
-5. [X] Написать метод поиска который бы позволял: - реализовано через определение класса <trd-seq> 
+7. [X] Написать метод поиска который бы позволял: - реализовано через определение класса <trd-seq> 
    - искать как в прямом (увеличение записей) так и в обратном направлении;
    - начинать поиск с начала, с конца или с произвольного моммента времени;
    - искать до тех пор пока не встретится условие, определяемое функцией такого количества параметров
-6. [X] Разделить проект на части.
-7. [X] При выводе тренда функцией вывода выдавать его имя файла.
+8. [X] Разделить проект на части.
+9. [X] При выводе тренда функцией вывода выдавать его имя файла.
    - [X] Разделить считывание заголовка тренда на
      - [X] Считывание и разбор собственно заголовка 30 байт
      - [X] Считывание и разбор и построение хеш-таблицы аналоговых сигналов
      - [X] Считывание и разбор и построение хеш-таблицы дискретных сигналов
-8. [X] Переименовать:
-   - [X] get-trd-by-utime-dirname -> find-trd-by-utime-dirname;
-   - [X] trd-split-on-intervals-of-time-when-flag-is-on -> split-on-intervals-of-time-when-flag-is-on;
-   - [X] trd-split-on-intervals-when-flag-is-on -> split-on-intervals-when-flag-is-on;
-   - [X] trd-split-on-intervals-by-condition -> split-on-intervals-by-condition.
-9. [X] Переименовать имена параметров (trd <trd>) -> (trd <trd>).
+10. [X] Переименовать:
+    - [X] get-trd-by-utime-dirname -> find-trd-by-utime-dirname;
+    - [X] trd-split-on-intervals-of-time-when-flag-is-on -> split-on-intervals-of-time-when-flag-is-on;
+    - [X] trd-split-on-intervals-when-flag-is-on -> split-on-intervals-when-flag-is-on;
+    - [X] trd-split-on-intervals-by-condition -> split-on-intervals-by-condition.
+11. [X] Переименовать имена параметров (trd <trd>) -> (trd <trd>).

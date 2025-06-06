@@ -105,16 +105,3 @@
     (min (max scaled-value encoded-min) coded-max)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-#+nil
-(defparameter *a* (make-instance '<a-signal>
-                                 :num 0
-                                 :id "V2"
-                                 :min -1.0 :max 9.0
-                                 :units "м3/с"
-                                 :description "Объёмный расход через КС" ))
-
-;; encode-value
-#+nil
-(eval (cons 'and
-       (loop :for i :from 0 :to *ushort-max*
-             :collect (= i (encode-value (decode-value i *a*) *a*)))))
