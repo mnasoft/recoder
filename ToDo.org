@@ -1,10 +1,10 @@
-* [0/1] ToDo
-1. [ ] Написать обобщенную функцию записи в поток и чтения из потока
+* [0/2] ToDo
+1. [-] Написать обобщенную функцию записи в поток и чтения из потока
    для классов:
-   - [ ] r/a-sig:<a-signal>
-   - [ ] r/d-sig:<d-signal>
+   - [X] r/a-sig:<a-signal>
+   - [X] r/d-sig:<d-signal>
    - [ ] r/trd:<trd>
-1. [-] Документировать
+2. [ ] Документировать
    - [ ] <trd>
      - [ ] trd-analog-ht->org
      - [ ] r/get:trd-analog-mid-by-snames
@@ -86,7 +86,7 @@
    - [ ] list-to-int
    - [ ] open-trd-file-write
    - [ ] open-trd-file-read
-2. Функции trd-export-csv и trd-export-csv-singal-string не нашли широкого применения
+3. Функции trd-export-csv и trd-export-csv-singal-string не нашли широкого применения
    - [ ] Исключить trd-export-csv и trd-export-csv-singal-string
    - [X] Взамен них для класса <trd-seq> написать метод - export-to.
 * [11/11] DoNe
