@@ -63,12 +63,6 @@
 (defconstant +head-wid+                30 "Общая длина заголовка, char[30]")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
- 
-(defconstant +signal-id-wid+           10 "Длина строки обозначения сигнала, char[10]")
-
-(defconstant +signal-description-wid+  40 "Длина строки описания сигнала, char[40] ")
-
-(defconstant +signal-units-wid+         8 "Длина строки размерности аналогового сигнала, char[8]")
 
 (defconstant +signal-LowLimit-wid+      8 "Ширина поля для нижней  границы диапазона аналогового сигнала, double = char[8]")
 
@@ -76,10 +70,15 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defconstant +analog-wid+ (+ +signal-id-wid+ +signal-description-wid+ +signal-units-wid+ +signal-LowLimit-wid+ +signal-HighLimit-wid+)
+(defconstant +analog-wid+ (+ r/c:+signal-id-wid+
+                             r/c:+signal-description-wid+
+                             r/c:+signal-units-wid+
+                             +signal-LowLimit-wid+
+                             +signal-HighLimit-wid+)
   "Длина заголовка одной записи аналогового сигнала")
 
-(defconstant +discret-wid+ (+ +signal-id-wid+ +signal-description-wid+ )
+(defconstant +discret-wid+ (+ r/c:+signal-id-wid+
+                              r/c:+signal-description-wid+ )
   "Длина заголовка одной записи дискретного сигнала")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -209,39 +208,26 @@
   (when (null (<trd>-analog-ht trd))
     (setf (<trd>-analog-ht trd)  (make-hash-table :test #'equal :size (<trd>-a-number trd)))
     (file-position (<trd>-file-descr trd) +head-wid+)
-    (let ((in (<trd>-file-descr trd))
-          (analog-id nil)
-          (analog-description nil)
-          (analog-units  nil)
-          (analog-min nil)
-          (analog-max nil))
+    (let ((in (<trd>-file-descr trd)))
       (dotimes (i (<trd>-a-number trd) 'done)
-	(setf analog-id          (r/bin:b-read-string in +signal-id-wid+)) 
-	(setf analog-description (r/bin:b-read-string in +signal-description-wid+))
-        (setf analog-units       (r/bin:b-read-string in +signal-units-wid+))
-        (setf analog-min         (r/bin:b-read-double in))
-        (setf analog-max         (r/bin:b-read-double in))
-        (setf (gethash analog-id (<trd>-analog-ht trd))
-              (make-instance 'r/a-sig:<a-signal> :num i
-	                                         :id  analog-id
-	                                         :description analog-description
-	                                         :units analog-units
-	                                         :min analog-min
-	                                         :max analog-max))))))
+        (let ((a-signal (make-instance 'r/a-sig:<a-signal> :num i)))
+          (r/g:read-obj a-signal in)
+          (setf (gethash (r/a-sig:<a-signal>-id a-signal) (<trd>-analog-ht trd))
+                a-signal))))))
 
 (defmethod read-discret-ht ((trd <trd>))
   "@b(Описание:) метод @b(read-discret-ht) выполняет разбор дискретных сигналов."
   (when (null (<trd>-discret-ht trd))
-    (setf (<trd>-discret-ht trd) (make-hash-table :test #'equal :size (<trd>-d-number trd)))
-    (file-position (<trd>-file-descr trd) (+ +head-wid+ (* (<trd>-a-number trd) +analog-wid+)))
-    (let ((in (<trd>-file-descr trd)) (discret-id nil) (discret-description nil))
+    (setf (<trd>-discret-ht trd)
+          (make-hash-table :test #'equal :size (<trd>-d-number trd)))
+    (file-position (<trd>-file-descr trd)
+                   (+ +head-wid+ (* (<trd>-a-number trd) +analog-wid+)))
+    (let ((in (<trd>-file-descr trd)))
       (dotimes (i (<trd>-d-number trd) 'done)
-	(setf discret-id          (r/bin:b-read-string in +signal-id-wid+))
-	(setf discret-description (r/bin:b-read-string in +signal-description-wid+))
-        (setf (gethash discret-id (<trd>-discret-ht trd))
-              (make-instance 'r/d-sig:<d-signal> :num i
-			                         :id discret-id
-			                         :description discret-description))))))
+        (let ((d-signal (make-instance 'r/d-sig:<d-signal> :num i)))
+          (r/g:read-obj d-signal in)
+          (setf (gethash (r/d-sig:<d-signal>-id d-signal) (<trd>-discret-ht trd))
+                d-signal))))))
 
 (defmethod trd-close ((trd <trd>))
   "@b(Описание:) метод @b(trd-close) выполняет закрытие файла тренда."

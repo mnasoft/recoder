@@ -4,6 +4,7 @@
   (:use #:cl)
   (:nicknames "R")
   (:export trd-open)
+
   (:documentation
    "@begin(section) @title(Обзор)
 
@@ -30,3 +31,5 @@
     (let ((trd (make-instance 'r/trd:<trd> :file-name f-name)))
       (r/trd:trd-open trd)
       trd)))
+
+

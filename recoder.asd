@@ -111,10 +111,19 @@
 		:serial nil
                 :components ((:file "docs")))))
 
+
+(defsystem "recoder/constants"
+  :description "@b(Описание:) система @b(recoder/constants) определяет константы."
+  :serial nil
+  :components
+  ((:module "src/constants"
+    :serial t
+    :components
+    ((:file "constants")))))
+
 (defsystem "recoder/binary"
   :description "Преднзначен для работы с трендами. 
 Содержит низкоуровневые функции ввода-вывода."
-  :author "Mykola Matvyeyev <mnasoft@gmail.com>"
   :depends-on ("ieee-floats" "babel-streams") ;; "mnas-string" "html-table" "math" "mnas-path" "mnas-file-dialog"
   :serial nil
   :components
@@ -123,9 +132,22 @@
     :components
     ((:file "binary")))))
 
+(defsystem "recoder/d-signal"
+  :description "Преднзначен для работы с трендами.
+Аналоговый сигнал"
+  :depends-on ("recoder/constants" "recoder/generics" "recoder/binary")
+  :serial nil
+  :components
+  ((:module "src/d-signal"
+    :serial t
+    :components
+    ((:file "d-signal")
+     ))))
+
 (defsystem "recoder/a-signal"
   :description "Преднзначен для работы с трендами.
 Аналоговый сигнал"
+  :depends-on ("recoder/constants" "recoder/generics" "recoder/binary")
   :serial nil
   :components
   ((:module "src/a-signal"
@@ -145,16 +167,7 @@
     :components
     ((:file "seq")))))
 
-(defsystem "recoder/d-signal"
-  :description "Преднзначен для работы с трендами.
-Аналоговый сигнал"
-  :serial nil
-  :components
-  ((:module "src/d-signal"
-    :serial t
-    :components
-    ((:file "d-signal")
-     ))))
+
 
 (defsystem "recoder/dir"
   :description "Преднзначен для работы группами трендов, помещенными в отдельные каталоги."
@@ -208,3 +221,12 @@
                 :depends-on ("src/tests/suites")
 		:serial nil
                 :components ((:file "run")))))
+
+
+(defsystem "recoder/generics"
+  :description
+  "@b(Описание:) система @b(recoder/generics) определяет обобщенные
+ функции."
+  :components ((:module "src/generics"
+		:serial nil
+                :components ((:file "generics")))))

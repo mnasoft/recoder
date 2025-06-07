@@ -98,7 +98,7 @@
                             :collect
                             (r/bin:b-read-float fl-r))))
       (close fl-r))))
-
+ 
 (def-test write-read-double ()
   "Проверка записи и чтения целых чисел типа long-long."
   (let* ((up (expt 2 (* 8 8)))
@@ -116,7 +116,6 @@
                             (r/bin:b-read-double fl-r))))
       (close fl-r))))
 
-
 (def-test write-read-string ()
   (loop :for enc :in '(:KOI8-U #+nil :KOI8-R :KOI8-RU :CP1251 :UTF-16 :UTF-32) :do
     (loop :for str :in (list r/bin:*pangram-uk-1* r/bin:*pangram-uk-2*  r/bin:*pangram-uk-3*) :do
@@ -125,7 +124,7 @@
                   (let ((buffer-length 900)
                         (path *binary.bin*))
                     (let ((w (r/bin:open-b-write path)))
-                      (r/bin:b-write-string w str buffer-length :external-format enc)
+                      (r/bin:b-write-string str w buffer-length :external-format enc)
                       (close w))
                     (let* ((r (r/bin:open-b-read path))
                            (rez (r/bin:b-read-string r buffer-length :encoding enc)))
@@ -139,7 +138,7 @@
                   (let ((buffer-length 900)
                         (path *binary.bin*))
                     (let ((w (r/bin:open-b-write path)))
-                      (r/bin:b-write-string w str buffer-length :external-format enc)
+                      (r/bin:b-write-string str w buffer-length :external-format enc)
                       (close w))
                     (let* ((r (r/bin:open-b-read path))
                            (rez (r/bin:b-read-string r buffer-length :encoding enc)))
