@@ -12,6 +12,7 @@
            )
   (:export b-read
            b-read-short
+           b-read-char
            b-read-int
            b-read-long
 	   b-read-long-long
@@ -21,6 +22,7 @@
            b-read-string
 	   )
   (:export b-write
+           b-write-char
            b-write-short
            b-write-int
            b-write-long
@@ -43,16 +45,6 @@
 (ieee-floats:make-float-converters encode-float64 decode-float64 11 52 nil)
 (ieee-floats:make-float-converters encode-float128 decode-float128 15 112 nil)
 ;;(ieee-floats:make-float-converters encode-float80 decode-float80 15 64 nil)
-
-
-(progn
-(format t "Most positive long-float: ~E~%" most-positive-long-float)
-(format t "Least positive long-float: ~E~%" least-positive-normalized-long-float)
-(format t "Epsilon long-float: ~E~%" long-float-epsilon)
-(format t "Digits of precision: ~D~%" (float-digits 1.0L0))
-
- )
-
 
 (defparameter *pangram-ru-1* "Съешь же ещё этих мягких французских булок да выпей чаю.")
 (defparameter *pangram-ru-2* "Широкая электрификация южных губерний даст мощный толчок подъёму сельского хозяйства.")
@@ -191,6 +183,15 @@
 	  (push bt lst)))
     (values (nreverse lst) byte-number t)))
 
+(defun b-read-char (in &aux (len 1))
+  "@b(Описание:) функция @b(b-read-short) выполняет чтение 
+короткого (1 байт) беззнакового целого из бинарного потока @b(in)."
+  (multiple-value-bind (rez n file-stastus)
+      (b-read in len)
+    (if file-stastus
+	(values (list-to-int rez) n file-stastus)
+	(values 0 n file-stastus))))
+
 (defun b-read-short (in &aux (len 2))
   "@b(Описание:) функция @b(b-read-short) выполняет чтение
 короткого (2 байта) беззнакового целого из бинарного потока @b(in)."
@@ -314,6 +315,11 @@
  элементов списка byte-list в бинарный поток вывода @b(out)."
   (dotimes (i byte-number)
     (write-byte (pop byte-list ) out)))
+
+(defun b-write-char (int-val out &aux (len 1))
+  "@b(Описание:) функция @b(b-write-short) выполняет запись
+короткого (1 байта) беззнакового целого в бинарный поток @b(out)."
+  (b-write (int-to-list int-val len) out))
 
 (defun b-write-short (int-val out &aux (len 2))
   "@b(Описание:) функция @b(b-write-short) выполняет запись

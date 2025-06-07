@@ -31,10 +31,11 @@
 @end(table)"))
 
 (defmethod print-object ((x <d-signal>) stream)
-  (format stream "#d-s(~S ~S ~S)"
-          (<d-signal>-num x)
-          (<d-signal>-id x)
-          (<d-signal>-description x)))
+  (print-unreadable-object (x stream)
+    (format stream "~3D ~10S ~S"
+            (<d-signal>-num x)
+            (<d-signal>-id x)
+            (<d-signal>-description x))))
 
 (defmethod r/g:read-obj ((d-signal <d-signal>) in)
   (setf (<d-signal>-id d-signal)

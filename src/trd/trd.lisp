@@ -139,23 +139,23 @@
 
 (defmethod print-object ((trd <trd>) stream)
   (format stream "Path= ~S~%" (<trd>-file-name trd) )
-  (when (<trd>-file-descr trd)
-    (format stream "id=~S version=~A " (<trd>-id-string trd) (<trd>-version trd))
-    (format stream "[ ")
-    (mnas-string/print:day-time (<trd>-utime-start trd) :stream stream)
-    (format stream " ; ")
-    (mnas-string/print:day-time (utime-end trd) :stream stream)
-    (format stream " ]")
-    (format stream "~%Reserv         = ~A~%Total-records  = ~A~%Delta-time     = ~A~%Analog-number  = ~A~%Discret-number = ~A"
-	    (<trd>-reserv trd) (<trd>-records trd) (<trd>-increment trd) (<trd>-a-number trd) (<trd>-d-number trd))
-    (format stream "~%==================================================
+  (when t #+nil (<trd>-file-descr trd)
+        (format stream "id=~S version=~A " (<trd>-id-string trd) (<trd>-version trd))
+        (format stream "[ ")
+        (mnas-string/print:day-time (<trd>-utime-start trd) :stream stream)
+        (format stream " ; ")
+        (mnas-string/print:day-time (utime-end trd) :stream stream)
+        (format stream " ]")
+        (format stream "~%Reserv         = ~A~%Total-records  = ~A~%Delta-time     = ~A~%Analog-number  = ~A~%Discret-number = ~A"
+	        (<trd>-reserv trd) (<trd>-records trd) (<trd>-increment trd) (<trd>-a-number trd) (<trd>-d-number trd))
+        (format stream "~%==================================================
 Перечень аналоговых сигналов
 ==================================================~%")
-    (maphash #'(lambda (k v) (format stream "~S ~S~%" k v)) (<trd>-analog-ht trd) )
-    (format stream "~%==================================================
+        (alexandria:maphash-values #'(lambda (v) (format stream "~S~%" v)) (<trd>-analog-ht trd) )
+        (format stream "~%==================================================
 Перечень дискретных сигналов
 ==================================================~%")
-    (maphash #'(lambda (k v) (format stream "~S ~S~%" k v)) (<trd>-discret-ht trd) )))
+        (alexandria:maphash-values #'(lambda (v) (format stream "~S~%" v)) (<trd>-discret-ht trd) )))
 
 (defmethod trd-open ((trd <trd>))
   "@b(Описание:) trd-open выполняет открытие файла тренда включая:
@@ -202,7 +202,101 @@
 	    (/ (- (file-length (<trd>-file-descr trd)) (start-offset trd))
 	       (record-length trd)))))
   trd)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defmethod r/g:read-obj ((trd <trd>) in)
+  (block header 
+    (setf (<trd>-id-string trd) (r/bin:b-read-string in +head-id-wid+))
+    (setf (<trd>-version trd)   (r/bin:b-read-char in))
+    (let ((date-day             (r/bin:b-read-char in))
+          (date-month           (r/bin:b-read-char in))
+          (date-year             (+ 2000 (r/bin:b-read-char in)))
+	  (time-hour            (r/bin:b-read-char in))
+	  (time-minute          (r/bin:b-read-char in))
+	  (time-second          (r/bin:b-read-char in)))
+      (setf (<trd>-utime-start trd)
+            (encode-universal-time time-second time-minute time-hour
+                                   date-day date-month date-year)))
+    (setf (<trd>-reserv trd)           (r/bin:b-read-short in))
+    (setf (<trd>-records trd)          (r/bin:b-read-long in))
+    (setf (<trd>-increment trd)        (r/bin:b-read-double in))
+    (setf (<trd>-a-number trd)         (r/bin:b-read-short in))
+    (setf (<trd>-d-number trd)         (r/bin:b-read-short in))
+    ;; Альтернатива 1
+    (setf (<trd>-records trd)          (r/bin:b-read-long  in))
+    ;; Альтернатива 2
+    #+nil                                 
+    (setf (<trd>-records trd) 
+	  (/ (- (file-length (<trd>-file-descr trd)) (start-offset trd))
+	     (record-length trd)))
+    )
+  (block analog-ht
+    (setf (<trd>-analog-ht trd)  (make-hash-table :test #'equal :size (<trd>-a-number trd)))
+    #+nil (file-position (<trd>-file-descr trd) +head-wid+) ;; это можно и убрать
+    (dotimes (i (<trd>-a-number trd) 'done)
+      (let ((a-signal (make-instance 'r/a-sig:<a-signal> :num i)))
+        (r/g:read-obj a-signal in)
+        (setf (gethash (r/a-sig:<a-signal>-id a-signal) (<trd>-analog-ht trd))
+              a-signal))))
+  (block discret-ht
+    (setf (<trd>-discret-ht trd)
+          (make-hash-table :test #'equal :size (<trd>-d-number trd)))
+    (dotimes (i (<trd>-d-number trd) 'done)
+      (let ((d-signal (make-instance 'r/d-sig:<d-signal> :num i)))
+        (r/g:read-obj d-signal in)
+        (setf (gethash (r/d-sig:<d-signal>-id d-signal) (<trd>-discret-ht trd))
+              d-signal)))))
+
+
+(defmethod r/g:write-obj ((trd <trd>) out)
+  (block header 
+    (r/bin:b-write-string (r/trd:<trd>-id-string trd)
+                          out (length (r/trd:<trd>-id-string trd)))
+    (r/bin:b-write-char (<trd>-version trd) out )
+    (multiple-value-bind (time-second time-minute time-hour
+                          date-day date-month date-year)
+        (decode-universal-time (<trd>-utime-start trd))
+      (r/bin:b-write-char date-day out)
+      (r/bin:b-write-char date-month out)
+      (r/bin:b-write-char (- date-year 2000) out)
+      (r/bin:b-write-char time-hour out)
+      (r/bin:b-write-char	time-minute out)
+      (r/bin:b-write-char	time-second out))
+    (r/bin:b-write-short  (<trd>-reserv trd)    out)
+    (r/bin:b-write-long   (<trd>-records trd)   out)
+    (r/bin:b-write-double (<trd>-increment trd) out)
+    (r/bin:b-write-short  (<trd>-a-number trd)  out)
+    (r/bin:b-write-short  (<trd>-d-number trd)  out)
+    (r/bin:b-write-long (<trd>-records trd)     out))
+  (block analog-ht
+    (alexandria:maphash-values
+     #'(lambda (a-signal) (r/g:write-obj a-signal out))
+     (<trd>-analog-ht trd))
+    )
+  (block discret-ht
+    (alexandria:maphash-values
+     #'(lambda (d-signal) (r/g:write-obj d-signal out))
+     (<trd>-discret-ht trd))))
+
+(progn
+  (let ((trd *trd*))
+    (with-open-file (out "/home/mna/123321.bin" 
+                         :element-type 'unsigned-byte
+                         :direction :output
+                         :if-exists :supersede)
+      (r/g:write-obj trd  out)))
+
+  (defparameter *trd1* (make-instance '<trd>))
+  (let ((trd *trd1*))
+    (with-open-file (in "/home/mna/123321.bin" 
+                        :element-type 'unsigned-byte
+                        )
+      (r/g:read-obj trd in)
+      (<trd>-version trd))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+          
 (defmethod read-analog-ht ((trd <trd>))
   "@b(Описание:) метод @b(read-analog-ht) выполняет разбор аналоговых сигналов."
   (when (null (<trd>-analog-ht trd))

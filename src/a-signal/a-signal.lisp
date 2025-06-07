@@ -58,13 +58,14 @@
 "))
 
 (defmethod print-object ((x <a-signal>) stream)
-  (format stream "#a-s(~S ~S [~A ~A] ~S ~S)"
-          (<a-signal>-num x)
-          (<a-signal>-id x)
-          (<a-signal>-min x)
-          (<a-signal>-max x)
-          (<a-signal>-units x)
-          (<a-signal>-description x)))
+  (print-unreadable-object (x stream)
+    (format stream "~3D ~10S [~A ~A] ~S ~S"
+            (<a-signal>-num x)
+            (<a-signal>-id x)
+            (<a-signal>-min x)
+            (<a-signal>-max x)
+            (<a-signal>-units x)
+            (<a-signal>-description x))))
 
 #+nil
 (defgeneric <a-signal>-value (a-signal ushort-int)
