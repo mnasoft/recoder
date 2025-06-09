@@ -5,7 +5,8 @@
 (ieee-floats:make-float-converters encode-float32 decode-float32 8 23 nil)
 (ieee-floats:make-float-converters encode-float64 decode-float64 11 52 nil)
 (ieee-floats:make-float-converters encode-float128 decode-float128 15 112 nil)
-;;(ieee-floats:make-float-converters encode-float80 decode-float80 15 64 nil)
+
+(ieee-floats:make-float-converters encode-float80 decode-float80 15 64 nil)
 
 
 (defun b-read-float (in &aux (len 4))
@@ -24,6 +25,15 @@
       (b-read in len)
     (if file-stastus
 	(values (decode-float64 (list-to-int rez)) n file-stastus)
+	(values 0 n file-stastus))))
+
+(defun b-read-long-double (in &aux (len 10))
+  "@b(Описание:) функция @b(b-read-double) выполняет чтение
+ длинного (8 байт) числа с плавающей точкой из бинарного потока @b(in)."
+  (multiple-value-bind (rez n file-stastus)
+      (b-read in len)
+    (if file-stastus
+	(values (decode-float80 (list-to-int rez)) n file-stastus)
 	(values 0 n file-stastus))))
 
 (defun b-read-quad (in &aux (len 16))
