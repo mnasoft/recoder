@@ -130,7 +130,12 @@
   ((:module "src/binary"
     :serial t
     :components
-    ((:file "binary")))))
+    ((:file "binary")
+     (:file "b-open")
+     (:file "b-int")
+     (:file "b-float")
+     (:file "b-string")
+     ))))
 
 (defsystem "recoder/d-signal"
   :description "Преднзначен для работы с трендами.
