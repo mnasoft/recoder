@@ -278,6 +278,11 @@
     (alexandria:maphash-values
      #'(lambda (d-signal) (r/g:write-obj d-signal out))
      (<trd>-discret-ht trd))))
+
+(defparameter *fnm* 
+ "/home/mna/quicklisp/local-projects/clisp/recoder/trd/2018-11-06_092329.trd"
+  )
+
 #+nil
 (progn
   (let ((trd *trd*))
@@ -287,13 +292,15 @@
                          :if-exists :supersede)
       (r/g:write-obj trd  out)))
 
-  (defparameter *trd1* (make-instance '<trd>))
-  (let ((trd *trd1*))
-    (with-open-file (in "/home/mna/123321.bin" 
-                        :element-type 'unsigned-byte
-                        )
-      (r/g:read-obj trd in)
-      (<trd>-version trd))))
+  )
+(defparameter *trd1* (make-instance '<trd>))
+(let ((trd *trd1*))
+  (with-open-file (in *fnm* 
+                      :element-type 'unsigned-byte
+                      )
+    (r/g:read-obj trd in)))
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
           
