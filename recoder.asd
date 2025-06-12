@@ -2,7 +2,7 @@
 
 (defsystem "recoder"
   :description "@b(Описание:) система @b(Recoder) преднзначена для работы с трендами."
-  :long-description #.(uiop:read-file-string "doc/recoder-long-description.txt")
+  ;; :long-description #.(uiop:read-file-string "doc/recoder-long-description.txt")
   :author "Mykola Matvyeyev <mnasoft@gmail.com>"
   :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"  
   :depends-on ("recoder/trd"
