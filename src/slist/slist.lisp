@@ -56,10 +56,15 @@
    '(\"V2\" \"P02\" \"T2\" \"ET300\" \"FA530\" \"FK526\" \"FA526\" \"FA566\" \"KAZNA-SCHO\"))
 @end(code)
 "
+  #+nil
   (when (r/trd:<trd>-file-descr trd)
     (loop :for s-n :in s-names
       :when (gethash s-n (r/trd:<trd>-analog-ht trd))
-        :collect :it)))
+        :collect :it)
+    )
+  (loop :for s-n :in s-names
+      :when (gethash s-n (r/trd:<trd>-analog-ht trd))
+        :collect :it))
 
 (defmethod d-signals ((trd r/trd:<trd>) s-names)
   "
@@ -69,7 +74,10 @@
    recoder/trd:*trd*
    '(\"V2\" \"P02\" \"T2\" \"ET300\" \"FA530\" \"FK526\" \"FA526\" \"FA566\" \"KAZNA-SCHO\"))
 @end(code)"
-  (when (r/trd:<trd>-file-descr trd)
-        (loop :for s-n :in s-names
-      :when (gethash s-n (r/trd:<trd>-discret-ht trd))
-        :collect :it)))
+  #+nil (when (r/trd:<trd>-file-descr trd)
+          (loop :for s-n :in s-names
+                :when (gethash s-n (r/trd:<trd>-discret-ht trd))
+                  :collect :it))
+  (loop :for s-n :in s-names
+        :when (gethash s-n (r/trd:<trd>-discret-ht trd))
+          :collect :it))

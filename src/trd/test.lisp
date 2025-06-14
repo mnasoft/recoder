@@ -15,23 +15,27 @@
 
 (r/trd:trd-open *trd*)
 
-
-
-
-#+nil
-(progn
-  (let ((trd *trd*))
-    (with-open-file (out "/home/mna/123321.bin" 
-                         :element-type 'unsigned-byte
-                         :direction :output
-                         :if-exists :supersede)
-      (r/g:write-obj trd  out)))
-
-  )
 (defparameter *trd1* (make-instance '<trd>))
 (let ((trd *trd1*))
-  (with-open-file (in *fnm* 
-                      :element-type 'unsigned-byte
-                      )
+  (with-open-file (in *trd-fname*
+                      :element-type 'unsigned-byte)
     (r/g:read-obj trd in)))
+(let ((trd *trd1*))
+  (with-open-file (out "/home/mna/123321.bin" 
+                       :element-type 'unsigned-byte
+                       :direction :output
+                       :if-exists :supersede)
+    (r/g:write-obj trd  out)))
 
+(defparameter *signals*  (r/slist:a-signals  *trd1* '("Gv" "V2" "P02" "P03")))
+
+
+(defparameter *signals*  (r/slist:d-signals  *trd1* '("NJ010" "NJ020" "GAS" "OIL")))
+
+
+
+(r/get:signal-value *trd1* 2400
+                    (append
+                     (r/slist:a-signals  *trd1* '("Gv" "V2" "P02" "P03"))
+                     (r/slist:d-signals  *trd1* '("NJ010" "NJ020" "GAS" "OIL"))
+                     ))

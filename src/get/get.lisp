@@ -20,6 +20,8 @@
   (:export trd-a-ids
            trd-a-units
            )
+  (:export signal-value
+           )
   (:documentation "@b(Описание:) пакет @b(recoder/get) предназначен для получения о
 значений аналоговых и дискретных сигналов из тренда."))
 
@@ -175,7 +177,7 @@ rec-number,соответствующий сигналам d-signals."))
            (r/a-sig:decode-value
             (svref v-sh (r/a-sig:<a-signal>-num el))
             el))
-	      signal-list))))
+       signal-list))))
 
 (defmethod trd-analog-by-utime ( (trd r/trd:<trd>) utime signal-list)
 
@@ -276,3 +278,27 @@ rec-number,соответствующий сигналам d-signals."))
           (r/slist:a-signals trd a-names)))
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod signal-value ((trd r/trd:<trd>) record (a-signal r/a-sig:<a-signal>))
+  (when (< -1 record (r/trd:<trd>-records trd))
+    (setf (trivial-octet-streams::index (r/trd:<trd>-oc-i-sream trd))
+          (+ (* (r/a-sig:<a-signal>-num a-signal) 2)
+             (* record (r/trd:record-length trd))))
+    (r/a-sig:decode-value
+     (r/bin:b-read-ushort (r/trd:<trd>-oc-i-sream trd))
+     a-signal)))
+
+(defmethod signal-value ((trd r/trd:<trd>) record (d-signal r/d-sig:<d-signal>))
+  (when (< -1 record (r/trd:<trd>-records trd))
+    (multiple-value-bind (offset bit-position)
+        (floor (r/d-sig:<d-signal>-num d-signal) 8)
+      (setf (trivial-octet-streams::index (r/trd:<trd>-oc-i-sream trd))
+            (+ (* record (r/trd:record-length trd))
+               (r/trd:discret-offset trd)
+               offset))
+      (ldb (byte 1 bit-position)
+           (r/bin:b-read-uchar (r/trd:<trd>-oc-i-sream trd))))))
+
+(defmethod signal-value ((trd r/trd:<trd>) record (signals cons))
+  (mapcar #'(lambda (sig) (signal-value trd record sig)) signals))
