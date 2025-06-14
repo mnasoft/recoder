@@ -97,7 +97,7 @@
    (d-number          :accessor <trd>-d-number                       :initform nil :documentation "Количество дискретных сигналов")
    (analog-ht         :accessor <trd>-analog-ht                      :initform nil :documentation "Хеш-таблица аналоговых сигналов")
    (discret-ht        :accessor <trd>-discret-ht                     :initform nil :documentation "Хеш-таблица дискретных сигналов")
-   (oc-i-sream        :accessor <trd>-oc-i-sream                     :initform nil :documentation "Поток чтения октетов, представляющих записи тренда"))
+   (oc-i-sream        :accessor <trd>-oc-i-sream                     :initform nil :documentation "Поток чтения октетов, представляющих записи тренда")
    )
   (:documentation "@b(Описание:) класс @b(<trd>) служит для предоставления
 интерфейса к файлу-тренду, содержащему записи аналоговых и дискретных сигналов.
