@@ -10,30 +10,33 @@
   (:export open-b-read
            open-b-write
            )
+  (:export with-open-file-b-out
+           with-open-file-b-in)
   (:export b-read
-           b-read-char           b-read-uchar
+           )
+  (:export b-read-char           b-read-uchar
            b-read-short          b-read-ushort
            b-read-int            b-read-uint
-           b-read-long           b-read-ulong)
+           b-read-long           b-read-ulong
+           b-read-long-long      b-read-ulong-long 
+           )
   (:export b-read-float
-           b-read-double)
-  #+nil b-read-quad
-           
+           b-read-double
+           #+nil b-read-quad
+           )
   (:export b-read-string)
-  (:export b-write
-                                        ;b-write-char
-           b-write-uchar
-                                        ;b-write-short
-           b-write-ushort
-                                        ;b-write-int
-           b-write-uint
-                                        ;b-write-long
-           b-write-ulong
-           
-	   b-write-float
-	   b-write-double
+  (:export b-write)
+  (:export b-write-char      b-write-uchar
+           b-write-short     b-write-ushort
+           b-write-int       b-write-uint
+           b-write-long      b-write-ulong
+           b-write-long-long b-write-ulong-long 
+           )
+  (:export b-write-float
+           b-write-double
            #+nil b-write-quad
-           b-write-string
+           )
+  (:export b-write-string
 	   )
   (:export decode-string
            list-to-int
@@ -41,92 +44,6 @@
            )
   (:export *pangram-ru-1* *pangram-ru-2* *pangram-ru-3*
            *pangram-uk-1* *pangram-uk-2* *pangram-uk-3*)
-  (:export with-open-file-b-out
-           with-open-file-b-in))
+  )
 
 (in-package :recoder/binary)
-
-(defparameter *pangram-ru-1* "Съешь же ещё этих мягких французских булок да выпей чаю.")
-(defparameter *pangram-ru-2* "Широкая электрификация южных губерний даст мощный толчок подъёму сельского хозяйства.")
-(defparameter *pangram-ru-3* "В чащах юга жил бы цитрус? Да, но фальшивый экземпляр!")
-
-(defparameter *pangram-uk-1* "Чуєш їх, доцю, га? Кумедна ж ти, прощайся без ґольфів!")
-(defparameter *pangram-uk-2* "Жебракують філософи при ґанку церкви в Гадячі, ще й шатро їхнє п'яне знаємо.")
-(defparameter *pangram-uk-3* "Гей, хлопці, не вспію - на ґанку ваша файна їжа знищується бурундучком.")
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defparameter *ascii-sym*
-  '("NUL" 	"SOH" 	"STX" 	"ETX" 	"EOT" 	"ENQ" 	"ACK" 	"BEL" 	"BS" 	"HT" 	"LF" 	"VT" 	"FF" 	"CR" 	"SO" 	"SI"
-    "DLE" 	"DC1" 	"DC2" 	"DC3" 	"DC4" 	"NAK" 	"SYN" 	"ETB" 	"CAN" 	"EM" 	"SUB" 	"ESC" 	"FS" 	"GS" 	"RS" 	"US"
-    " "    	"!" 	"\"" 	"#" 	"$" 	"%" 	"&" 	"'" 	"(" 	")" 	"*" 	"+" 	"," 	"-" 	"." 	"/"
-    "0" 	"1" 	"2" 	"3" 	"4" 	"5" 	"6" 	"7" 	"8" 	"9" 	":" 	";" 	"<" 	"=" 	">" 	"?"
-    "@" 	"A" 	"B" 	"C" 	"D" 	"E" 	"F" 	"G" 	"H" 	"I" 	"J" 	"K" 	"L" 	"M" 	"N" 	"O"
-    "P" 	"Q" 	"R" 	"S" 	"T" 	"U" 	"V" 	"W" 	"X" 	"Y" 	"Z" 	"[" 	"\\" 	"]" 	"^" 	"_"
-    "`" 	"a" 	"b" 	"c" 	"d" 	"e" 	"f" 	"g" 	"h" 	"i" 	"j" 	"k" 	"l" 	"m" 	"n" 	"o"
-    "p" 	"q" 	"r" 	"s" 	"t" 	"u" 	"v" 	"w" 	"x" 	"y" 	"z" 	"{" 	"|" 	"}" 	"~" 	"DEL"))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defparameter
-    *cp866-sym*
-  '("А" 	"Б"	"В"	"Г"	"Д"	"Е"	"Ж"	"З"	"И"	"Й"	"К"	"Л"	"М"	"Н"	"О"	"П"
-    "Р" 	"С"	"Т"	"У"	"Ф"	"Х"	"Ц"	"Ч"	"Ш"	"Щ"	"Ъ"	"Ы"	"Ь"	"Э"	"Ю"	"Я"
-    "а" 	"б" 	"в" 	"г" 	"д" 	"е" 	"ж" 	"з" 	"и" 	"й" 	"к" 	"л" 	"м" 	"н" 	"о" 	"п"
-    "░" 	"▒" 	"▓" 	"│" 	"┤" 	"╡" 	"╢" 	"╖" 	"╕" 	"╣" 	"║" 	"╗" 	"╝" 	"╜" 	"╛" 	"┐"
-    "└" 	"┴" 	"┬" 	"├" 	"─" 	"┼" 	"╞" 	"╟" 	"╚" 	"╔" 	"╩" 	"╦" 	"╠" 	"═" 	"╬" 	"╧"
-    "╨" 	"╤" 	"╥" 	"╙" 	"╘" 	"╒" 	"╓" 	"╫" 	"╪" 	"┘"	"┌"	"█" 	"▄" 	"▌" 	"▐" 	"▀"
-    "р" 	"с" 	"т" 	"у" 	"ф" 	"х" 	"ц" 	"ч" 	"ш" 	"щ" 	"ъ" 	"ы" 	"ь" 	"э" 	"ю" 	"я"
-    "Ё" 	"ё" 	"Є" 	"є" 	"Ї" 	"ї" 	"Ў" 	"ў" 	"°" 	"∙" 	"·" 	"√" 	"№" 	"¤" 	"■" 	" "))
-
-(defparameter *cp866* (make-hash-table))
-
-(let ((i 0))
-  (mapc
-   #'(lambda (el)
-       (setf (gethash i *cp866*) el)
-       (setf i (1+ i)))
-   *ascii-sym*))
-
-(let ((i #x80))
-  (mapc
-   #'(lambda (el)
-       (setf (gethash i *cp866*) el)
-       (setf i (1+ i)))
-   *cp866-sym*))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defparameter
-    *cp1251-sym*
-  '("Ђ"  	"Ѓ" 	"‚" 	"ѓ" 	"„" 	"…" 	"†" 	"‡" 	"€" 	"‰" 	"Љ" 	"‹" 	"Њ" 	"Ќ" 	"Ћ" 	"Џ"
-    "ђ" 	"‘" 	"’" 	"“" 	"”" 	"•" 	"–" 	"—"     " "  	"™" 	"љ" 	"›" 	"њ" 	"ќ" 	"ћ" 	"џ"
-    "Ў" 	"ў" 	"Ј" 	"¤" 	"Ґ" 	"¦" 	"§" 	"Ё" 	"©" 	"Є" 	"«" 	"¬" 	" "     "­" 	"®" 	"Ї"
-    "°" 	"±" 	"І" 	"і" 	"ґ" 	"µ" 	"¶" 	"·" 	"ё" 	"№" 	"є" 	"»" 	"ј" 	"Ѕ" 	"ѕ" 	"ї"
-    "А" 	"Б"	"В"	"Г"	"Д"	"Е"	"Ж"	"З"	"И"	"Й"	"К"	"Л"	"М"	"Н"	"О"	"П"
-    "Р" 	"С"	"Т"	"У"	"Ф"	"Х"	"Ц"	"Ч"	"Ш"	"Щ"	"Ъ"	"Ы"	"Ь"	"Э"	"Ю"	"Я"
-    "а" 	"б" 	"в" 	"г" 	"д" 	"е" 	"ж" 	"з" 	"и" 	"й" 	"к" 	"л" 	"м" 	"н" 	"о" 	"п"
-    "р" 	"с" 	"т" 	"у" 	"ф" 	"х" 	"ц" 	"ч" 	"ш" 	"щ" 	"ъ" 	"ы" 	"ь" 	"э" 	"ю" 	"я"))
-
-(defparameter *cp1251* (make-hash-table))
-
-(let ((i 0))
-  (mapc
-   #'(lambda (el)
-       (setf (gethash i *cp1251*) el)
-       (setf i (1+ i)))
-   *ascii-sym*))
-
-(let ((i #x80))
-  (mapc
-   #'(lambda (el)
-       (setf (gethash i *cp1251*) el)
-       (setf i (1+ i)))
-   *cp1251-sym*))
-

@@ -2,6 +2,18 @@
 
 (in-package :recoder/tests)
 
+(defun random-in-range (from to)
+  "Генерирует случайное целое число от FROM до TO включительно."
+  (+ from (random (1+ (- to from)))))
+
+(defun min-range (bytes)
+  (* -1 (expt 2 (1- (* 8 bytes)))))
+
+(defun max-range (bytes)
+  (1- (expt 2 (1- (* 8 bytes)))))
+
+
+
 (progn 
   (defparameter *binary.bin*
     (concatenate 'string
@@ -16,68 +28,95 @@
 
 (def-test write-read-short ()
   "Проверка записи и чтения целых чисел типа short."
-  (let* ((up (expt 2 (* 2 8)))
-         (shorts (loop :for i :from 0 :to 100 :collect (random up))))
+  (let* ((bytes 1)
+         (min (min-range bytes))
+         (max (max-range bytes))
+         (nums (loop :for i :from 0 :to 100 :collect (random-in-range min max))))
+    (let ((fl-w (r/bin:open-b-write *binary.bin*)))
+      (mapcar
+       #'(lambda (el)
+           (r/bin:b-write-char el fl-w))
+       nums)
+      (close fl-w))
+    (let ((fl-r (r/bin:open-b-read *binary.bin*)))
+      (is-true (equal nums 
+                      (loop :for i :in nums
+                            :collect
+                            (r/bin:b-read-char fl-r))))
+      (close fl-r))))
+
+(def-test write-read-short ()
+  "Проверка записи и чтения целых чисел типа short."
+  (let* ((bytes 2)
+         (min (min-range bytes))
+         (max (max-range bytes))
+         (nums (loop :for i :from 0 :to 100 :collect (random-in-range min max))))
     (let ((fl-w (r/bin:open-b-write *binary.bin*)))
       (mapcar
        #'(lambda (el)
            (r/bin:b-write-short el fl-w))
-       shorts)
+       nums)
       (close fl-w))
     (let ((fl-r (r/bin:open-b-read *binary.bin*)))
-      (is-true (equal shorts 
-                      (loop :for i :in shorts
+      (is-true (equal nums 
+                      (loop :for i :in nums
                             :collect
                             (r/bin:b-read-short fl-r))))
       (close fl-r))))
 
 (def-test write-read-int ()
   "Проверка записи и чтения целых чисел типа int."
-  (let* ((up (expt 2 (* 4 8)))
-         (ints (loop :for i :from 0 :to 100 :collect (random up))))
+  (let* ((bytes 4)
+         (min (min-range bytes))
+         (max (max-range bytes))
+         (nums (loop :for i :from 0 :to 100 :collect (random-in-range min max))))
     (let ((fl-w (r/bin:open-b-write *binary.bin*)))
       (mapcar
        #'(lambda (el)
            (r/bin:b-write-int el fl-w))
-       ints)
+       nums)
       (close fl-w))
     (let ((fl-r (r/bin:open-b-read *binary.bin*)))
-      (is-true (equal ints 
-                      (loop :for i :in ints
+      (is-true (equal nums 
+                      (loop :for i :in nums
                             :collect
                             (r/bin:b-read-int fl-r))))
       (close fl-r))))
 
 (def-test write-read-long ()
   "Проверка записи и чтения целых чисел типа long."
-  (let* ((up (expt 2 (* 4 8)))
-         (longs (loop :for i :from 0 :to 100 :collect (random up))))
+  (let* ((bytes 8)
+         (min (min-range bytes))
+         (max (max-range bytes))
+         (nums (loop :for i :from 0 :to 100 :collect (random-in-range min max))))
     (let ((fl-w (r/bin:open-b-write *binary.bin*)))
       (mapcar
        #'(lambda (el)
            (r/bin:b-write-long el fl-w))
-       longs)
+       nums)
       (close fl-w))
     (let ((fl-r (r/bin:open-b-read *binary.bin*)))
-      (is-true (equal longs 
-                      (loop :for i :in longs
+      (is-true (equal nums 
+                      (loop :for i :in nums
                             :collect
                             (r/bin:b-read-long fl-r))))
       (close fl-r))))
 
 (def-test write-read-long-long ()
   "Проверка записи и чтения целых чисел типа long-long."
-  (let* ((up (expt 2 (* 8 8)))
-         (long-longs (loop :for i :from 0 :to 100 :collect (random up))))
+  (let* ((bytes 8)
+         (min (min-range bytes))
+         (max (max-range bytes))
+         (nums (loop :for i :from 0 :to 100 :collect (random-in-range min max))))
     (let ((fl-w (r/bin:open-b-write *binary.bin*)))
       (mapcar
        #'(lambda (el)
            (r/bin:b-write-long-long el fl-w))
-       long-longs)
+       nums)
       (close fl-w))
     (let ((fl-r (r/bin:open-b-read *binary.bin*)))
-      (is-true (equal long-longs 
-                      (loop :for i :in long-longs
+      (is-true (equal nums 
+                      (loop :for i :in nums
                             :collect
                             (r/bin:b-read-long-long fl-r))))
       (close fl-r))))
@@ -145,3 +184,4 @@
                       (close r)
                       rez)))
                 str)))))
+ 

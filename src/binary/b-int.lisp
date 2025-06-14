@@ -113,4 +113,6 @@ ENDIAN — :little или :big."
   (define-binary-integer-io b-read-uint   b-write-uint    4)
   (define-binary-integer-io b-read-long   b-write-long    8 :signed t)
   (define-binary-integer-io b-read-ulong  b-write-ulong   8)
+  (define-binary-integer-io b-read-long-long  b-write-long-long  16 :signed t)
+  (define-binary-integer-io b-read-ulong-long b-write-ulong-long 16)
   )

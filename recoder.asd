@@ -135,6 +135,7 @@
      (:file "b-int")
      (:file "b-float")
      (:file "b-string")
+     (:file "pangram")
      ))))
 
 (defsystem "recoder/d-signal"
