@@ -6,8 +6,6 @@
   (:export trd-open
            trd-close
            )
-  (:export *trd*
-           *trd-fname*)
   (:export <trd>
            <trd>-file-name   ;; file-name
            <trd>-file-descr  ;; file-descr
@@ -194,7 +192,7 @@
 	    time-second            (third bufer)
 	    (<trd>-utime-start trd)      (encode-universal-time time-second time-minute time-hour date-day date-month date-year)
 	    (<trd>-reserv trd)           (r/bin:b-read-ushort in)
-	    (<trd>-records trd)          (r/bin:b-read-ulong in)
+	    (<trd>-records trd)          (r/bin:b-read-uint in)
 	    (<trd>-increment trd)        (r/bin:b-read-double in)
 	    (<trd>-a-number trd)         (r/bin:b-read-ushort in)
 	    (<trd>-d-number trd)         (r/bin:b-read-ushort in))
@@ -279,29 +277,6 @@
      #'(lambda (d-signal) (r/g:write-obj d-signal out))
      (<trd>-discret-ht trd))))
 
-(defparameter *fnm* 
- "/home/mna/quicklisp/local-projects/clisp/recoder/trd/2018-11-06_092329.trd"
-  )
-
-#+nil
-(progn
-  (let ((trd *trd*))
-    (with-open-file (out "/home/mna/123321.bin" 
-                         :element-type 'unsigned-byte
-                         :direction :output
-                         :if-exists :supersede)
-      (r/g:write-obj trd  out)))
-
-  )
-(defparameter *trd1* (make-instance '<trd>))
-(let ((trd *trd1*))
-  (with-open-file (in *fnm* 
-                      :element-type 'unsigned-byte
-                      )
-    (r/g:read-obj trd in)))
-
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
           
 (defmethod read-analog-ht ((trd <trd>))
@@ -385,8 +360,6 @@
   (record->utime trd (<trd>-records trd)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun time-universal-encode (year month day hour min sec)
   "@b(Описание:) функция @b(time-universal-encode) возвращает время в
@@ -399,16 +372,3 @@
  (time-universal-encode 2021 08 30 10 00 00 ) => 3839295600
 @end(code)"
   (encode-universal-time sec min hour day month year))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defparameter *trd-fname*
-  (concatenate 'string
-	       (namestring (asdf:system-source-directory :recoder)) "trd" "/" "2018-11-06_092329.trd")
-  "Для примеров.")
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defparameter *trd* (make-instance '<trd> :file-name *trd-fname*))
-
-(trd-open *trd*)

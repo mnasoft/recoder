@@ -169,7 +169,7 @@ rec-number,соответствующий сигналам d-signals."))
     (let* ((v-sh (make-array (r/trd:<trd>-a-number trd) :element-type 'integer)))
       (dotimes (i (r/trd:<trd>-a-number trd) 'done)
 	(setf (svref v-sh i)
-	      (r/bin:b-read-short (r/trd:<trd>-file-descr trd))))
+	      (r/bin:b-read-ushort (r/trd:<trd>-file-descr trd))))
       (mapcar
        #'(lambda(el)
            (r/a-sig:decode-value

@@ -11,27 +11,23 @@
            open-b-write
            )
   (:export b-read
-           ;b-read-char
-           b-read-uchar
-           ;b-read-short
-           b-read-ushort
-           ;b-read-int
-           b-read-uint
-           ;b-read-long
-           b-read-ulong
-	   b-read-float
-	   b-read-double
-           #+nil b-read-quad
-           b-read-string
-	   )
+           b-read-char           b-read-uchar
+           b-read-short          b-read-ushort
+           b-read-int            b-read-uint
+           b-read-long           b-read-ulong)
+  (:export b-read-float
+           b-read-double)
+  #+nil b-read-quad
+           
+  (:export b-read-string)
   (:export b-write
-           ;b-write-char
+                                        ;b-write-char
            b-write-uchar
                                         ;b-write-short
            b-write-ushort
-           ;b-write-int
+                                        ;b-write-int
            b-write-uint
-           ;b-write-long
+                                        ;b-write-long
            b-write-ulong
            
 	   b-write-float
