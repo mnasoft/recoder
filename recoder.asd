@@ -153,7 +153,10 @@
 (defsystem "recoder/a-signal"
   :description "Преднзначен для работы с трендами.
 Аналоговый сигнал"
-  :depends-on ("recoder/constants" "recoder/generics" "recoder/binary")
+  :depends-on ("recoder/constants"
+               "recoder/generics"
+               "recoder/binary"
+               "float-features")
   :serial nil
   :components
   ((:module "src/a-signal"

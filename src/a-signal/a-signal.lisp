@@ -40,8 +40,10 @@
    (id          :accessor <a-signal>-id          :initarg :id          :initform nil :documentation "Обозначение сигнала, char[10]")
    (description :accessor <a-signal>-description :initarg :description :initform nil :documentation "Описание сигнала, char[40]")
    (units       :accessor <a-signal>-units       :initarg :units       :initform nil :documentation "Размерность аналогового сигнала, char[8]")
-   (min         :accessor <a-signal>-min         :initarg :min         :initform nil :documentation "Нижняя граница диапазона аналогового сигнала, double = char[8]")
-   (max         :accessor <a-signal>-max         :initarg :max         :initform nil :documentation "Верхняя граница диапазона аналогового сигнала, double = char[8]"))
+   (min         :accessor <a-signal>-min         :initarg :min         :initform float-features:double-float-positive-infinity
+                :documentation "Нижняя граница диапазона аналогового сигнала, double = char[8]")
+   (max         :accessor <a-signal>-max         :initarg :max         :initform float-features:double-float-negative-infinity
+                :documentation "Верхняя граница диапазона аналогового сигнала, double = char[8]"))
   (:documentation "Дескриптор (описание) аналогового сигнала.
 
 Запись дескриптора аналогового сигнала имеет следующую структуру:
