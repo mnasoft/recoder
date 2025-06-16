@@ -25,6 +25,7 @@
                "recoder/a-signal"
                "recoder/d-signal"
                "recoder/binary"
+               "trivial-octet-streams"
                ;; "mnas-file-dialog" "html-table" "mnas-path" "math" "mnas-string"
                ) 
   :serial nil
