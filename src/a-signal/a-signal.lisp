@@ -14,6 +14,7 @@
   (:export decode-value
            encode-value)
   (:export encode-lineary) ;; куда-то перенести
+  (:export correct-range)
   (:intern *ushort-max*))
 
 ;;;;(declaim (optimize (space 0) (compilation-speed 0)  (speed 0) (safety 3) (debug 3)))
@@ -133,3 +134,12 @@
   (r/bin:b-write-double (<a-signal>-max a-signal) out)
   a-signal)
 
+
+(defmethod correct-range ((a-signal <a-signal>))
+  (let ((v-min (<a-signal>-min a-signal))
+        (v-max (<a-signal>-max a-signal)))
+  (cond
+    ((and (= v-min v-max 0.0d0))
+     (setf (<a-signal>-max a-signal) 1.0d0))
+    ((and (= (- v-max v-min) 0.0d0))
+     (setf (<a-signal>-max a-signal) (+ v-max 1.0d0))))))

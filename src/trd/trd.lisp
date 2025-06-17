@@ -30,6 +30,9 @@
   (:export record->utime
            utime->record)
   (:export time-universal-encode)
+  (:export a-signal-list
+           d-signal-list
+           )
   (:intern read-analog-ht
            read-discret-ht)
   (:documentation
@@ -90,9 +93,9 @@
    (id-string         :accessor <trd>-id-string                      :initform nil :documentation "Строка идентифицирующая то, что это файл тренда")
    (version           :accessor <trd>-version                        :initform nil :documentation "Версия тренда")
    (utime-start       :accessor <trd>-utime-start                    :initform nil :documentation "Дата и время начала создания тренда в универсальном формате")
-   (reserv            :accessor <trd>-reserv                               :initform nil :documentation "Количество аналоговых сигналов + Количество дискретных сигналов")
-   (records           :accessor <trd>-records                              :initform nil :documentation "Общее число записей в тренде")
-   (increment         :accessor <trd>-increment                            :initform nil :documentation "Интервал между записями тренда, с")
+   (reserv            :accessor <trd>-reserv                         :initform nil :documentation "Количество аналоговых сигналов + Количество дискретных сигналов")
+   (records           :accessor <trd>-records                        :initform nil :documentation "Общее число записей в тренде")
+   (increment         :accessor <trd>-increment                      :initform nil :documentation "Интервал между записями тренда, с")
    (a-number          :accessor <trd>-a-number                       :initform nil :documentation "Количество аналоговых сигналов")
    (d-number          :accessor <trd>-d-number                       :initform nil :documentation "Количество дискретных сигналов")
    (analog-ht         :accessor <trd>-analog-ht                      :initform nil :documentation "Хеш-таблица аналоговых сигналов")
@@ -142,11 +145,12 @@
   (format stream "Path= ~S~%" (<trd>-file-name trd) )
   (when t #+nil (<trd>-file-descr trd)
         (format stream "id=~S version=~A " (<trd>-id-string trd) (<trd>-version trd))
-        (format stream "[ ")
-        (mnas-string/print:day-time (<trd>-utime-start trd) :stream stream)
-        (format stream " ; ")
-        (mnas-string/print:day-time (utime-end trd) :stream stream)
-        (format stream " ]")
+        (when (<trd>-utime-start trd) 
+          (format stream "[ ")
+          (mnas-string/print:day-time (<trd>-utime-start trd) :stream stream)
+          (format stream " ; ")
+          (mnas-string/print:day-time (utime-end trd) :stream stream)
+          (format stream " ]"))
         (format stream "~%Reserv         = ~A~%Total-records  = ~A~%Delta-time     = ~A~%Analog-number  = ~A~%Discret-number = ~A"
 	        (<trd>-reserv trd) (<trd>-records trd) (<trd>-increment trd) (<trd>-a-number trd) (<trd>-d-number trd))
         (format stream "~%==================================================
@@ -229,7 +233,6 @@
 	     (record-length trd))))
   (block analog-ht
     (setf (<trd>-analog-ht trd)  (make-hash-table :test #'equal :size (<trd>-a-number trd)))
-    #+nil (file-position (<trd>-file-descr trd) +head-wid+) ;; это можно и убрать
     (dotimes (i (<trd>-a-number trd) 'done)
       (let ((a-signal (make-instance 'r/a-sig:<a-signal> :num i)))
         (r/g:read-obj a-signal in)
@@ -384,3 +387,14 @@
  (time-universal-encode 2021 08 30 10 00 00 ) => 3839295600
 @end(code)"
   (encode-universal-time sec min hour day month year))
+
+
+(defmethod a-signal-list ((trd <trd>))
+  (when (<trd>-analog-ht trd)
+    (sort (alexandria:hash-table-values (<trd>-analog-ht trd))
+          #'< :key #'r/a-sig:<a-signal>-num)))
+
+(defmethod d-signal-list ((trd <trd>))
+  (when (<trd>-discret-ht trd)
+    (sort (alexandria:hash-table-values (<trd>-discret-ht trd))
+          #'< :key #'r/d-sig:<d-signal>-num)))
