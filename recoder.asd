@@ -34,6 +34,7 @@
 		:serial t
                 :components
 		((:file "trd")
+                 (:file "read-obj-pathname")
 		 ;; (:file "test") 
 		 ))))
 
