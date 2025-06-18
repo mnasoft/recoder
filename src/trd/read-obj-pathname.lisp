@@ -7,6 +7,11 @@
     (pathname
      (concatenate 'string (namestring f-name-xls) ".txt"))))
 
+(defun fname-xls->trd (f-name-xls)
+  (when (probe-file f-name-xls)
+    (pathname
+     (concatenate 'string (namestring f-name-xls) ".trd"))))
+
 (defun xls->txt (f-name &key (skip-rows "15") (power-shell-script *Convert-Excel-To-Txt-ps1*))
   (when (and (probe-file f-name) (probe-file power-shell-script))
     (let* ((f-name-xls  (uiop/filesystem:native-namestring f-name))

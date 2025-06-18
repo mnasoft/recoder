@@ -292,6 +292,12 @@
             :do (r/bin:b-write-uchar
                  (r/bin:b-read-uchar (<trd>-oc-i-sream trd)) out))))
 
+(defmethod r/g:write-obj ((trd <trd>) (path pathname))
+  (when (string/= (pathname-type path) "trd")
+    (error "~S" (pathname-type path)))
+  (r/bin:with-open-file-b-out (out path)
+    (r/g:write-obj trd out)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
           
 (defmethod read-analog-ht ((trd <trd>))

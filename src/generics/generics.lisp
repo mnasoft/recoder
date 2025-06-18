@@ -9,12 +9,12 @@
 
 (in-package #:recoder/generics)
 
-(defgeneric read-obj (obj stream)
+(defgeneric read-obj (obj stream_or_pathname)
   (:documentation
    "@b(Описание:) обобщенная_функция @b(read-obj) чтение данных об объекте
-@b(obj) из потока @b(stream)."))
+@b(obj) из потока или файл @b(stream_or_pathname)."))
 
-(defgeneric write-obj (obj stream)
+(defgeneric write-obj (obj stream_or_pathname)
   (:documentation
    "@b(Описание:) обобщенная_функция @b(write-obj) записи данных объекта
-@b(obj) в поток @b(stream)."))
+@b(obj) в поток или файл @b(stream_or_pathname)."))

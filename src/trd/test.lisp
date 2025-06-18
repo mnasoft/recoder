@@ -49,13 +49,28 @@
   (probe-file
    (fname-xls->txt *fn-xls*)))
 
+(defparameter *fn-trd*
+   (fname-xls->trd *fn-xls*))
+
 (defparameter *trd* (make-instance '<trd> :file-name *fn-txt*))
 
 (r/g:read-obj *trd* *fn-txt*)
 
-(utime-stream *fn-txt* *trd*)
+(r/bin:with-open-file-b-out (out *fn-trd*)
+  (r/g:write-obj *trd* out))
 
+(defparameter *trd1* (make-instance '<trd> :file-name *fn-trd*))
+
+(r/bin:with-open-file-b-in (in *fn-trd*)
+  (r/g:read-obj *trd1* in))
+
+(defparameter *signals*
+  (r/slist:a-signals *trd1* '("EB010" "ET020" "ET030")))
+
+(r/get:signal-value *trd1* 2000 *signals*)
+
+(r/g:write-obj *trd1* #P"/home/mna/quicklisp/local-projects/clisp/recoder/trd/COOOL.trd")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(file-path pathname)
+
