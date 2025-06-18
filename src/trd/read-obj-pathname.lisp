@@ -133,9 +133,17 @@
             (coerce (/ (- ut-end ut-start) i) 'double-float))
       trd)))
 
-(defmethod r/g:read-obj ((trd <trd>) (file-path pathname))
+(defmethod r/g:read-obj ((trd <trd>) (path pathname) &aux pathname-txt)
+  (cond
+    ((string= (pathname-type path) "txt")
+     (setf pathname-txt path))
+    #+nil
+    ((string= (pathname-type path) "xls")
+     (xls->txt path)
+     (setf pathname-txt (fname-xls->txt path)))
+    (t (error "~S" (pathname-type path))))
   (let ((a-signals
-          (signal-min-max-detect file-path)))
+          (signal-min-max-detect pathname-txt)))
     (setf (<trd>-a-number trd) (length a-signals))
     (setf (<trd>-id-string trd) "TREND")
     (setf (<trd>-version   trd) 2)
@@ -154,11 +162,11 @@
                       a-signal)))
     (block encode-a-signal-to-stream
       (with-open-stream (out (trivial-octet-streams:make-octet-output-stream))
-        (signal-encode-to-stream file-path trd out)
+        (signal-encode-to-stream pathname-txt trd out)
         (let ((buffer (trivial-octet-streams:get-output-stream-octets out)))
           (setf (<trd>-records trd) (/ (length buffer) (<trd>-a-number trd) 2))
           (setf (<trd>-oc-i-sream trd)
                 (trivial-octet-streams:make-octet-input-stream buffer))
           buffer)))
     (block increment-utime-start
-        (utime-stream file-path trd))))
+      (utime-stream pathname-txt trd))))

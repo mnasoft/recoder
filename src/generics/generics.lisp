@@ -9,12 +9,12 @@
 
 (in-package #:recoder/generics)
 
-(defgeneric read-obj (d-signal stream)
+(defgeneric read-obj (obj stream)
   (:documentation
-   "@b(Описание:) обобщенная_функция @b(read-obj) считывание данных о
-сигнале @b(d-signal) из потока."))
+   "@b(Описание:) обобщенная_функция @b(read-obj) чтение данных об объекте
+@b(obj) из потока @b(stream)."))
 
-(defgeneric write-obj (d-signal stream)
+(defgeneric write-obj (obj stream)
   (:documentation
-   "@b(Описание:) обобщенная_функция @b(read-obj) считывание данных о
-сигнале @b(d-signal) из потока."))
+   "@b(Описание:) обобщенная_функция @b(write-obj) записи данных объекта
+@b(obj) в поток @b(stream)."))

@@ -49,8 +49,6 @@
   (probe-file
    (fname-xls->txt *fn-xls*)))
 
-(pathname-type *fn-xls*)
-
 (defparameter *trd* (make-instance '<trd> :file-name *fn-txt*))
 
 (r/g:read-obj *trd* *fn-txt*)
