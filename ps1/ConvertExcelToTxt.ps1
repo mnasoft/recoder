@@ -10,7 +10,7 @@ param(
 )
 
 $excel = New-Object -ComObject Excel.Application
-$excel.Visible = $true
+$excel.Visible = $false
 $workbook = $excel.Workbooks.Open($InputFile)
 $worksheet = $workbook.Worksheets.Item(1)
 

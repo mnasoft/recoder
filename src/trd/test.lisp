@@ -41,30 +41,54 @@
                      ))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defparameter *fn*
+(defparameter *fn-xls*
+   (probe-file
+    (mnas-path:asdf-path :recoder "trd/1_Custom_sec_14April2025_10226_PM.xls")))
+
+
+
+(defun detect-utime (line)
+  (let* ((lst (ppcre:split #\tab line))
+         (dd-mm-yyyy (ppcre:split #\. (first lst)))
+         (hh-mm-ss (ppcre:split #\: (second lst)))
+         (ss-mm-hh-dd-mm-yyyy
+           (append (mapcar #'parse-integer (reverse hh-mm-ss))
+                   (mapcar #'parse-integer dd-mm-yyyy))))
+    (apply #'encode-universal-time ss-mm-hh-dd-mm-yyyy)))
+
+
+(defun utime-stream (file-name trd)
+  (with-open-file (in file-name :external-format :utf-16le)
+    (read-line in) ;; Пропускаем первую строку заголовков
+    (let ((ut-start nil)
+          (ut-end   nil)
+          (i -1))
+      (loop :for line = (read-line in nil nil)
+            :while (and line
+                        (< 0 (length
+                              (string-trim '(#\Space #\Tab #\Return) line))))
+            :do
+               (incf i)
+               (if (= i 0)
+                 (setf ut-start (detect-utime line))
+                 (setf ut-end   (detect-utime line))))
+      (setf (<trd>-utime-start trd) ut-start)
+      (setf (<trd>-increment trd)
+            (coerce (/ (- ut-end ut-start) i) 'double-float))
+      trd)))
+
+(utime-stream *fn-txt*)
+
+(defparameter *fn-txt*
   (probe-file
-   (mnas-path:asdf-path :recoder "trd/1_Custom_sec_14April2025_10226_PM.txt")))
+   (fname-xls->txt *fn-xls*)))
 
-(defparameter *trd* (make-instance '<trd> :file-name *fn*))
+(defparameter *trd* (make-instance '<trd> :file-name *fn-txt*))
 
-(r/g:read-obj *trd* *fn*)
+(r/g:read-obj *trd* *fn-txt*)
+
+(utime-stream *fn-txt* *trd*)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(uiop:run-program '("powershell.exe" "-Command" "Get-Date") :output :string :external-format :cp866)
-
-(uiop:run-program '("powershell.exe" "-Command" "Get-Date") :output :string :external-format :cp866)
-
-$Script = "D:\\home\\_namatv\\PRG\\msys64\\home\\namatv\\quicklisp\\local-projects\\clisp\\recoder\\ps1\\ConvertExcelToTxt.ps1"
-$InputFile = 
-$OutputFile = 
-$SkipRows = 15
-
-(uiop:run-program
- '("powershell.exe"
-   "-ExecutionPolicy" "Bypass"
-   "-File" "D:\\home\\_namatv\\PRG\\msys64\\home\\namatv\\quicklisp\\local-projects\\clisp\\recoder\\ps1\\ConvertExcelToTxt.ps1"
-   "-InputFile" "D:\\home\\_namatv\\PRG\\msys64\\home\\namatv\\quicklisp\\local-projects\\clisp\\recoder\\trd\\1_Custom_sec_14April2025_10226_PM.xls"
-   "-OutputFile" "D:\\home\\_namatv\\PRG\\msys64\\home\\namatv\\quicklisp\\local-projects\\clisp\\recoder\\trd\\1_Custom_sec_14April2025_10226_PM.xls.txt"
-   "-SkipRows" "15"))

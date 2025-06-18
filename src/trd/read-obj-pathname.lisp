@@ -2,6 +2,27 @@
 
 (in-package :recoder/trd)
 
+(defun fname-xls->txt (f-name-xls)
+  (when (probe-file f-name-xls)
+    (pathname
+     (concatenate 'string (namestring f-name-xls) ".txt"))))
+
+(defun xls->txt (f-name &key (skip-rows "15") (power-shell-script *Convert-Excel-To-Txt-ps1*))
+  (when (and (probe-file f-name) (probe-file power-shell-script))
+    (let* ((f-name-xls  (uiop/filesystem:native-namestring f-name))
+           (f-name-txt  (uiop/filesystem:native-namestring (fname-xls->txt f-name-xls)))
+           (f-script    (uiop/filesystem:native-namestring power-shell-script))
+           )
+      (uiop:run-program
+       `("powershell.exe"
+         "-ExecutionPolicy" "Bypass"
+         "-File"       ,f-script
+         "-InputFile"  ,f-name-xls
+         "-OutputFile" ,f-name-txt
+         "-SkipRows"   ,skip-rows))
+      )))
+
+
 (defun a-singal-name-unit-description (string)
   (multiple-value-bind (whole m1)
       (ppcre:scan-to-strings
@@ -90,10 +111,6 @@
                 a-signals))
       out)))
 
-
-
-
-
 (defmethod r/g:read-obj ((trd <trd>) (file-path pathname))
   (let ((a-signals (signal-min-max-detect file-path)))
     (setf (<trd>-a-number trd) (length a-signals))
@@ -119,5 +136,5 @@
           (setf (<trd>-records trd) (/ (length buffer) (<trd>-a-number trd) 2))
           (setf (<trd>-oc-i-sream trd)
                 (trivial-octet-streams:make-octet-input-stream buffer))
-          buffer
-          )))))
+          buffer)))
+    (utime-stream file-path trd)))
