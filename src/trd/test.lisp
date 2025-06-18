@@ -69,7 +69,10 @@
 
 (r/get:signal-value *trd1* 2000 *signals*)
 
-(r/g:write-obj *trd1* #P"/home/mna/quicklisp/local-projects/clisp/recoder/trd/COOOL.trd")
+(defun recode (path) 
+  (let ((trd (make-instance 'r/trd:<trd>)))
+    (r/g:read-obj trd path)
+    (r/g:write-obj trd (fname-xls->trd path))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
