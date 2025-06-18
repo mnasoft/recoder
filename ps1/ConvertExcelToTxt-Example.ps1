@@ -1,17 +1,6 @@
-powershell -ExecutionPolicy Bypass -File ConvertExcelToTxt.ps1 -InputFile "C:\вход.xlsx" -OutputFile "C:\выход.txt" -SkipRows 15
+$Script = "D:\home\_namatv\PRG\msys64\home\namatv\quicklisp\local-projects\clisp\recoder\ps1\ConvertExcelToTxt.ps1"
+$InputFile = "D:\home\_namatv\PRG\msys64\home\namatv\quicklisp\local-projects\clisp\recoder\trd\1_Custom_sec_14April2025_10226_PM.xls"
+$OutputFile = "D:\home\_namatv\PRG\msys64\home\namatv\quicklisp\local-projects\clisp\recoder\trd\1_Custom_sec_14April2025_10226_PM.xls.txt"
+$SkipRows = 15
 
-
-
-$start = $ws.Range("A15")
-$end = $start.End(-4167) # -4167 — xlUp (Ctrl + ↑)
-Write-Host "Новая ячейка: $($end.Address)"
-Write-Host "Значение: $($end.Value())"
-
-1 — xlToLeft (Ctrl + ←)
-
-2 — xlToRight (Ctrl + →)
-
-3 — xlDown (Ctrl + ↓)
-
--4167 — xlUp (Ctrl + ↑)
-
+powershell -ExecutionPolicy Bypass -File $Script -InputFile  $InputFile -OutputFile $OutputFile -SkipRows $SkipRows

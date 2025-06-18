@@ -1,32 +1,26 @@
 param(
     [Parameter(Mandatory = $true)]
-    [string]$InputFile="C:\Users\uakaz\ps1\1_Custom_sec_14April2025_10226_PM.xls",
+    [string]$InputFile ,
 
     [Parameter(Mandatory = $true)]
-    [string]$OutputFile="C:\Users\uakaz\ps1\1_Custom_sec_14April2025_10226_PM.xls.txt",
+    [string]$OutputFile ,
 
     [Parameter(Mandatory = $false)]
     [int]$SkipRows = 0
 )
 
 $excel = New-Object -ComObject Excel.Application
-$excel.Visible = $false
+$excel.Visible = $true
 $workbook = $excel.Workbooks.Open($InputFile)
 $worksheet = $workbook.Worksheets.Item(1)
 
-$usedRange = $worksheet.UsedRange
-$usedRange.NumberFormat = "General"
+$worksheet.Cells.NumberFormat = "Основной"
+$worksheet.Columns.Item("A").NumberFormat = "ДД.ММ.ГГГГ"
+$worksheet.Columns.Item("B").NumberFormat = "чч:мм:сс"
 
-$range = $worksheet.Range("A:A")
-$range.NumberFormat = "yyyy-mm-dd"
+$worksheet.Range("1:$SkipRows").EntireRow.Delete()
 
-$range = $worksheet.Range("B:B")
-$range.NumberFormat = "hh:mm:ss"
-
-$range = $worksheet.Range("1:$SkipRows")
-$range.EntireRow.Delete()
-
-# РЎРѕС…СЂР°РЅСЏРµРј РєР°Рє С‚РµРєСЃС‚РѕРІС‹Р№ С„Р°Р№Р» (Р®РЅРёРєРѕРґ)
+# Сохраняем как текстовый файл (Юникод)
 $xlUnicodeText = 42
 $workbook.SaveAs($OutputFile, $xlUnicodeText)
 
