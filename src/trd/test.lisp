@@ -50,3 +50,21 @@
 (r/g:read-obj *trd* *fn*)
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(uiop:run-program '("powershell.exe" "-Command" "Get-Date") :output :string :external-format :cp866)
+
+(uiop:run-program '("powershell.exe" "-Command" "Get-Date") :output :string :external-format :cp866)
+
+$Script = "D:\\home\\_namatv\\PRG\\msys64\\home\\namatv\\quicklisp\\local-projects\\clisp\\recoder\\ps1\\ConvertExcelToTxt.ps1"
+$InputFile = 
+$OutputFile = 
+$SkipRows = 15
+
+(uiop:run-program
+ '("powershell.exe"
+   "-ExecutionPolicy" "Bypass"
+   "-File" "D:\\home\\_namatv\\PRG\\msys64\\home\\namatv\\quicklisp\\local-projects\\clisp\\recoder\\ps1\\ConvertExcelToTxt.ps1"
+   "-InputFile" "D:\\home\\_namatv\\PRG\\msys64\\home\\namatv\\quicklisp\\local-projects\\clisp\\recoder\\trd\\1_Custom_sec_14April2025_10226_PM.xls"
+   "-OutputFile" "D:\\home\\_namatv\\PRG\\msys64\\home\\namatv\\quicklisp\\local-projects\\clisp\\recoder\\trd\\1_Custom_sec_14April2025_10226_PM.xls.txt"
+   "-SkipRows" "15"))
