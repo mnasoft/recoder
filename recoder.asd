@@ -22,6 +22,8 @@
 (defsystem "recoder/trd"
   :description "Преднзначен для работы с трендами."
   :depends-on ("mnas-string/print"
+               "mnas-string/parse"
+               "cl-ppcre"
                "recoder/a-signal"
                "recoder/d-signal"
                "recoder/binary"
