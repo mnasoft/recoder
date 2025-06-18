@@ -1,4 +1,4 @@
-;;;; [[/home/mna/quicklisp/local-projects/clisp/recoder/recoder.lisp]]
+;;;; ./recoder.lisp
 
 (defpackage :recoder
   (:use #:cl)
