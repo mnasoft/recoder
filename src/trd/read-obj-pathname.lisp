@@ -22,14 +22,6 @@
          "-SkipRows"   ,skip-rows))
       )))
 
-
-(defun a-singal-name-unit-description (string)
-  (multiple-value-bind (whole m1)
-      (ppcre:scan-to-strings
-       "^([^:]*):?([^,]*),?(.*)$" string)
-    (loop :for i :across m1
-          :collect (string-trim " " i))))
-
 (defun a-singal-name-unit-description (string)
   (let ((m1 (nth-value 1 (ppcre:scan-to-strings
                           "^([^:]*):?([^,]*),?(.*)$" string))))
