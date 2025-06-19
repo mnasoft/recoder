@@ -5,7 +5,8 @@
   ;; :long-description #.(uiop:read-file-string "doc/recoder-long-description.txt")
   :author "Mykola Matvyeyev <mnasoft@gmail.com>"
   :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"  
-  :depends-on ("recoder/trd"
+  :depends-on ("mnas-path"
+               "recoder/trd"
                "recoder/get"
                "recoder/html"
                "recoder/interval"

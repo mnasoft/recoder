@@ -33,12 +33,14 @@
   (:export a-signal-list
            d-signal-list
            )
+  (:export *Convert-Excel-To-Txt-ps1*
+           fname-xls->trd
+           fname-xls->txt
+           )
   (:intern read-analog-ht
            read-discret-ht)
   (:documentation
-   "@b(Описание:) пакет @b(recoder/trd)
-")
-  )
+   "@b(Описание:) пакет @b(recoder/trd)"))
 
    "@begin(section) @title(Обзор)
 

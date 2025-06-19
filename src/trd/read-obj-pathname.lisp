@@ -12,6 +12,9 @@
     (pathname
      (concatenate 'string (namestring f-name-xls) ".trd"))))
 
+(defparameter *Convert-Excel-To-Txt-ps1*
+  (probe-file (mnas-path:asdf-path :recoder "ps1/ConvertExcelToTxt.ps1")))
+
 (defun xls->txt (f-name &key (skip-rows "15") (power-shell-script *Convert-Excel-To-Txt-ps1*))
   (when (and (probe-file f-name) (probe-file power-shell-script))
     (let* ((f-name-xls  (uiop/filesystem:native-namestring f-name))
@@ -142,7 +145,6 @@
   (cond
     ((string= (pathname-type path) "txt")
      (setf pathname-txt path))
-    #+nil
     ((string= (pathname-type path) "xls")
      (xls->txt path)
      (setf pathname-txt (fname-xls->txt path)))

@@ -54,7 +54,7 @@
 
 (defparameter *trd* (make-instance '<trd> :file-name *fn-txt*))
 
-(r/g:read-obj *trd* *fn-txt*)
+(r/g:read-obj *trd* *fn-xls*)
 
 (r/bin:with-open-file-b-out (out *fn-trd*)
   (r/g:write-obj *trd* out))
@@ -69,11 +69,13 @@
 
 (r/get:signal-value *trd1* 2000 *signals*)
 
-(defun recode (path) 
-  (let ((trd (make-instance 'r/trd:<trd>)))
-    (r/g:read-obj trd path)
-    (r/g:write-obj trd (fname-xls->trd path))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(recode *fn-xls*)
 
+*load-truename*
+
+(uiop:pathname-directory-pathname (first sb-ext:*posix-argv*))
+
+(r:recode *fn-xls*)
