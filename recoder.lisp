@@ -5,6 +5,7 @@
   (:nicknames "R")
   (:export trd-open
            recode
+           recode-xls
            )
 
   (:documentation
@@ -34,6 +35,13 @@
       (r/trd:trd-open trd)
       trd)))
 
+(defun recode-xls ()
+  (loop :for i :in (directory "*.xls")
+        :for n :from 1
+        :do
+           (format t "~3A ~A~%" n i)
+           (recode i)))
+
 (defun recode (path)
   "@b(Описание:) функция @b(path) выполняет перекодирование тренда из
 формата xls или txt в формат трендера trd.
@@ -42,12 +50,23 @@
 "
   (let ((ps1-script
           (probe-file
-           (merge-pathnames "ConvertExelToTxt.ps1" (mnas-path:posix-arg0-path)))))
+           (first
+            (directory
+             (concatenate 'string
+                          (namestring (mnas-path:posix-arg0-path))
+                          "*.ps1"))))))
+    (format t "~A~%"ps1-script)
     (cond
-      ((probe-file r/trd:*convert-excel-to-txt-ps1*))
       (ps1-script
        (setf r/trd:*convert-excel-to-txt-ps1* ps1-script))
+      ((probe-file r/trd:*convert-excel-to-txt-ps1*))
+
       (t (error "~A" r/trd:*convert-excel-to-txt-ps1*)))
     (let ((trd (make-instance 'r/trd:<trd>)))
       (r/g:read-obj trd path)
       (r/g:write-obj trd (r/trd::fname-xls->trd path)))))
+
+
+;; sbcl --eval "(asdf:load-system :recoder)" --eval "(save-lisp-and-die \"r.exe\" :toplevel #'r:recode-xls :executable t)"
+#+nil (asdf:load-system :recoder)
+#+nil (save-lisp-and-die  "r.exe" :executable t :top-level #'r:recode-xls  )
