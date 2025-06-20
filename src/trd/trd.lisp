@@ -141,26 +141,55 @@
 
 Сигналы упаковываются побайтно слева-направо."))
 
+(defparameter *trd-print-format* :long)
+
+(defun trd-print-format ()
+  *trd-print-format*)
+
+(defun (setf trd-print-format) (value)
+  (declare (type (member :long :short) value))
+  (setf *trd-print-format* value))
+
+#+nil (setf (trd-print-format) :short)
+#+nil (setf (trd-print-format) :long)
+
 (defmethod print-object ((trd <trd>) stream)
-  (format stream "Path= ~S~%" (<trd>-file-name trd) )
-  (when t #+nil (<trd>-file-descr trd)
-        (format stream "id=~S version=~A " (<trd>-id-string trd) (<trd>-version trd))
-        (when (<trd>-utime-start trd) 
-          (format stream "[ ")
-          (mnas-string/print:day-time (<trd>-utime-start trd) :stream stream)
-          (format stream " ; ")
-          (mnas-string/print:day-time (utime-end trd) :stream stream)
-          (format stream " ]"))
-        (format stream "~%Reserv         = ~A~%Total-records  = ~A~%Delta-time     = ~A~%Analog-number  = ~A~%Discret-number = ~A"
-	        (<trd>-reserv trd) (<trd>-records trd) (<trd>-increment trd) (<trd>-a-number trd) (<trd>-d-number trd))
-        (format stream "~%==================================================
-Перечень аналоговых сигналов
-==================================================~%")
-        (alexandria:maphash-values #'(lambda (v) (format stream "~S~%" v)) (<trd>-analog-ht trd) )
-        (format stream "~%==================================================
-Перечень дискретных сигналов
-==================================================~%")
-        (alexandria:maphash-values #'(lambda (v) (format stream "~S~%" v)) (<trd>-discret-ht trd) )))
+  (print-unreadable-object (trd stream :type t :identity t)  
+    (when (eq (trd-print-format) :long)
+      (format stream "~%")
+      (format stream "Path           = ~S~%" (<trd>-file-name trd))
+      (format stream "id             = ~S~%" (<trd>-id-string trd))
+      (format stream "version        = ~A~%" (<trd>-version trd))
+      (when (<trd>-utime-start trd)
+        (format stream "date = ~A~%" (mnas-string/print:date (<trd>-utime-start trd)))
+        (format stream "time = [ ")
+        (mnas-string/print:day-time (<trd>-utime-start trd) :stream stream)
+        (format stream " ; ")
+        (mnas-string/print:day-time (utime-end trd) :stream stream)
+        (format stream " ]"))
+      (format stream "Reserv         = ~A~%" (<trd>-reserv trd))
+      (format stream "Total-records  = ~A~%" (<trd>-records trd))
+      (format stream "Delta-time     = ~A~%" (<trd>-increment trd))
+      (format stream "Analog-number  = ~A~%" (<trd>-a-number trd)) 
+      (format stream "Discret-number = ~A~%" (<trd>-d-number trd))
+      (when (<trd>-analog-ht trd)
+        (format stream "==================================================~%")
+        (format stream "            Перечень аналоговых сигналов          ~%")
+        (format stream "==================================================~%")
+        (alexandria:maphash-values
+         #'(lambda (v)
+             (format stream "~S~%" v))
+         (<trd>-analog-ht trd)))
+      (when (<trd>-discret-ht trd)
+        (format stream "==================================================~%")
+        (format stream "            Перечень дискретных сигналов          ~%")
+        (format stream "==================================================~%")
+        (alexandria:maphash-values
+         #'(lambda (v)
+             (format stream "~S~%" v))
+         (<trd>-discret-ht trd))))))
+
+(make-instance '<trd>  )
 
 (defmethod trd-open ((trd <trd>))
   "@b(Описание:) trd-open выполняет открытие файла тренда включая:
