@@ -8,7 +8,6 @@
            )
   (:export <trd>
            <trd>-file-name   ;; file-name
-           <trd>-file-descr  ;; file-descr
            <trd>-id-string   ;; id-string
            <trd>-version     ;; version
            <trd>-utime-start ;; utime-start
@@ -91,7 +90,6 @@
 
 (defclass <trd> ()
   ((file-name         :accessor <trd>-file-name :initarg :file-name  :initform nil :documentation "Имя файла в файловой системе")
-   (file-descr        :accessor <trd>-file-descr                     :initform nil :documentation "Дескриптор файла-тренда")
    (id-string         :accessor <trd>-id-string                      :initform nil :documentation "Строка идентифицирующая то, что это файл тренда")
    (version           :accessor <trd>-version                        :initform nil :documentation "Версия тренда")
    (utime-start       :accessor <trd>-utime-start                    :initform nil :documentation "Дата и время начала создания тренда в универсальном формате")
