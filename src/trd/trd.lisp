@@ -3,9 +3,6 @@
 (defpackage :recoder/trd
   (:use #:cl)
   (:nicknames "R/TRD")
-  (:export trd-open
-           trd-close
-           )
   (:export <trd>
            <trd>-file-name   ;; file-name
            <trd>-id-string   ;; id-string
@@ -189,54 +186,6 @@
              (format stream "~S~%" v))
          (<trd>-discret-ht trd))))))
 
-(make-instance '<trd>  )
-
-(defmethod trd-open ((trd <trd>))
-  "@b(Описание:) trd-open выполняет открытие файла тренда включая:
-@begin(list)
- @item(чтение заголовка;)
- @item(разбор аналоговых сигналов;)
-@item(разбор дискретных сигналов.)
-@end(list)
-"
-  (trd-read-header trd)
-  (read-analog-ht trd )
-  (read-discret-ht trd)
-  trd)
-
-(defmethod trd-read-header ((trd <trd>))
-  "Выполняет открытие файла тренда и чтение заголовка тренда"
-  (when (null (<trd>-file-descr trd))
-    (setf (<trd>-file-descr trd) (r/bin:open-b-read (<trd>-file-name trd)))
-    (let ((in (<trd>-file-descr trd))
-          (bufer nil)
-          (date-day nil)
-          (date-month nil)
-          (date-year nil)
-          (time-hour nil)
-          (time-minute nil)
-          (time-second nil))
-      (setf (<trd>-id-string trd)        (r/bin:b-read-string in +head-id-wid+)
-            (<trd>-version trd)          (car (r/bin:b-read in +head-version-wid+))
-            bufer                  (r/bin:b-read in +head-date-wid+)
-            date-day               (first bufer)
-            date-month             (second bufer)
-            date-year              (+ 2000 (third bufer))
-            bufer                  (r/bin:b-read in +head-time-wid+)
-            time-hour              (first bufer)
-            time-minute            (second bufer)
-            time-second            (third bufer)
-            (<trd>-utime-start trd)      (encode-universal-time time-second time-minute time-hour date-day date-month date-year)
-            (<trd>-reserv trd)           (r/bin:b-read-ushort in)
-            (<trd>-records trd)          (r/bin:b-read-uint in)
-            (<trd>-increment trd)        (r/bin:b-read-double in)
-            (<trd>-a-number trd)         (r/bin:b-read-ushort in)
-            (<trd>-d-number trd)         (r/bin:b-read-ushort in))
-      (setf (<trd>-records trd)
-            (/ (- (file-length (<trd>-file-descr trd)) (start-offset trd))
-               (record-length trd)))))
-  trd)
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmethod r/g:read-obj ((trd <trd>) in)
@@ -329,38 +278,6 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
           
-(defmethod read-analog-ht ((trd <trd>))
-  "@b(Описание:) метод @b(read-analog-ht) выполняет разбор аналоговых сигналов."
-  (when (null (<trd>-analog-ht trd))
-    (setf (<trd>-analog-ht trd)  (make-hash-table :test #'equal :size (<trd>-a-number trd)))
-    (file-position (<trd>-file-descr trd) +head-wid+)
-    (let ((in (<trd>-file-descr trd)))
-      (dotimes (i (<trd>-a-number trd) 'done)
-        (let ((a-signal (make-instance 'r/a-sig:<a-signal> :num i)))
-          (r/g:read-obj a-signal in)
-          (setf (gethash (r/a-sig:<a-signal>-id a-signal) (<trd>-analog-ht trd))
-                a-signal))))))
-
-(defmethod read-discret-ht ((trd <trd>))
-  "@b(Описание:) метод @b(read-discret-ht) выполняет разбор дискретных сигналов."
-  (when (null (<trd>-discret-ht trd))
-    (setf (<trd>-discret-ht trd)
-          (make-hash-table :test #'equal :size (<trd>-d-number trd)))
-    (file-position (<trd>-file-descr trd)
-                   (+ +head-wid+ (* (<trd>-a-number trd) +analog-wid+)))
-    (let ((in (<trd>-file-descr trd)))
-      (dotimes (i (<trd>-d-number trd) 'done)
-        (let ((d-signal (make-instance 'r/d-sig:<d-signal> :num i)))
-          (r/g:read-obj d-signal in)
-          (setf (gethash (r/d-sig:<d-signal>-id d-signal) (<trd>-discret-ht trd))
-                d-signal))))))
-
-(defmethod trd-close ((trd <trd>))
-  "@b(Описание:) метод @b(trd-close) выполняет закрытие файла тренда."
-  (when (<trd>-file-descr trd)
-    (close (<trd>-file-descr trd))
-    (setf (<trd>-file-descr trd) nil)))
-
 (defmethod start-offset ((trd <trd>))
   "@b(Описание:) метод @b(start-offset) возвращает смещение, 
 выраженное в байтах, первой (нулевой) записи тренда."

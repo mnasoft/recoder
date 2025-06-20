@@ -57,7 +57,7 @@
 	  :do  (setf (gethash s (<trd-seq>-h-tbl trd-seq)) i ))
     trd-seq))
 
-(defmethod trd-open ((trd-seq <trd-seq>))
+#+nil (defmethod trd-open ((trd-seq <trd-seq>))
   "@b(Описание:) метод @b(trd-open) выполняет отркытие файла тренда,
 ассоциированного с объектом @b(trd-seq).
 "

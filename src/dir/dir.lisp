@@ -23,7 +23,7 @@
 
 (defclass <trd-tc-dir> (<dir>) ())
 
-(defun find-trd-by-utime-dirname (utime dir-name &key (extension "trd"))
+#+nil (defun find-trd-by-utime-dirname (utime dir-name &key (extension "trd"))
   "Возвращает объект тренда, для которого существуют данные на момент 
 универсального времени utime в каталоге dir-name.
 "
@@ -140,7 +140,7 @@
 @b(d-signal-str) имеет значение 1.
 "))
 
-(defmethod split-on-intervals-when-flag-is-on ((trd-dir <trd-dir>) d-signal-str)
+#+nil (defmethod split-on-intervals-when-flag-is-on ((trd-dir <trd-dir>) d-signal-str)
   "@b(Описание:) метод @b(split-on-intervals-when-flag-is-on)
  возвращает список, каждый элемент которого содержит два
  элемента. Первый - список интервалов, при которых значение
@@ -184,7 +184,7 @@
 разделяет тренд (или последовательность трендов) на временные интервалы, 
 для которых флаг @b(d-signal-str) имеет значение 1."))
 
-(defmethod split-on-utimes-when-flag-is-on ((trd-dir <trd-dir>) d-signal-str )
+#+nil (defmethod split-on-utimes-when-flag-is-on ((trd-dir <trd-dir>) d-signal-str )
   "@b(Описание:) метод @b(split-on-utimes-when-flag-is-on) возвращает список, 
 каждый элемент которого содержит два элемента - начало и конец временного интервала,
 для которого значение дискретного флага @b(d-signal-str) равно 1.

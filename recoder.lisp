@@ -22,7 +22,7 @@
 
 (in-package :recoder)
 
-(defun trd-open (f-name)
+#+nil (defun trd-open (f-name)
   "@b(Описание:) функция @b(trd-open) возвращает объект тренда.
 
  @b(Переменые:)

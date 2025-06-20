@@ -7,7 +7,7 @@
 
 (in-package :recoder/html)
 
-(defun make-html-trd (trd-fname html-fname s-names utimes
+#+nil (defun make-html-trd (trd-fname html-fname s-names utimes
                       &key
                         (sname->des nil)
                         (ht-sname->des

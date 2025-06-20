@@ -19,17 +19,7 @@
   (let ((trd (r/trd:trd-open
               (make-instance 'recoder/trd:<trd> :file-name *trd-fname*))))
       (&body)))
-
-(def-test trd-open-test ()
-  "Проверка открытия и закрытия треда."
-  (with-fixture fix-open-trd ()
-    (is-true trd)
-    (is-true (r/trd:<trd>-file-descr trd))
-    (is-false (progn (r/trd:trd-close trd)
-                     (r/trd:<trd>-file-descr trd)))
-    (is-true (progn (r/trd:trd-open trd)
-                     (r/trd:<trd>-file-descr trd)))))
-
+ 
 (def-test trd-header-test ()
   "Проверка заголовка треда."
   (with-fixture fix-open-trd ()

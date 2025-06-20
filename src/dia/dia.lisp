@@ -16,7 +16,7 @@
   "@b(Описание:) переменная @b(*trd*) содержит объект класса @b(recoder/trd:<trd>).
 ")
 
-(defun get-open-ternd ()
+#+ nil (defun get-open-ternd ()
   "@b(Описание:) функция @b(get-open-ternd) возвращает объект класса
   @b(recoder/trd:<trd>).
 
