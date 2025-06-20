@@ -41,11 +41,10 @@
    ; => (\"KAZNA-SCHO\")
 @end(code)
 "
-  (when (r/trd:<trd>-file-descr trd)
-    (loop :for s-n :in s-names
+  (loop :for s-n :in s-names
           :unless (or (gethash s-n (r/trd:<trd>-analog-ht trd))
                       (gethash s-n (r/trd:<trd>-discret-ht trd)))
-            :collect s-n)))
+            :collect s-n))
 
 (defmethod a-signals ((trd r/trd:<trd>) s-names)
   "
