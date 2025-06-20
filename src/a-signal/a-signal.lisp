@@ -60,15 +60,29 @@
 
 "))
 
+(defparameter *a-signal-print-format* :long)
+
+(defun a-signal-print-format ()
+ *a-signal-print-format*)
+
+(defun (setf a-signal-print-format) (value)
+  (declare (type (member :long :short) value))
+  (setf *a-signal-print-format* value))
+
+#+nil (setf (a-signal-print-format) :short)
+#+nil (setf (a-signal-print-format) :long)
+
+
 (defmethod print-object ((x <a-signal>) stream)
-  (print-unreadable-object (x stream)
-    (format stream "~3D ~10S [~A ~A] ~S ~S"
-            (<a-signal>-num x)
-            (<a-signal>-id x)
-            (<a-signal>-min x)
-            (<a-signal>-max x)
-            (<a-signal>-units x)
-            (<a-signal>-description x))))
+  (print-unreadable-object (x stream :type t :identity t)
+    (when (eq (a-signal-print-format) :long)
+      (format stream "~3D ~10S [~A ~A] ~S ~S"
+              (<a-signal>-num x)
+              (<a-signal>-id x)
+              (<a-signal>-min x)
+              (<a-signal>-max x)
+              (<a-signal>-units x)
+              (<a-signal>-description x)))))
 
 #+nil
 (defgeneric <a-signal>-value (a-signal ushort-int)
