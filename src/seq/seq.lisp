@@ -43,7 +43,6 @@
 (defmethod update ((trd-seq <trd-seq>))
   "@b(Описание:) метод @b(update) 
 "
-  (unless (r/trd:<trd>-file-descr trd-seq) (r/trd:trd-open trd-seq))
   (let ((a-sig (recoder/slist:a-signals trd-seq (<trd-seq>-s-sig trd-seq)))
         (d-sig (recoder/slist:d-signals trd-seq (<trd-seq>-s-sig trd-seq))))
     (setf (<trd-seq>-a-sig trd-seq) a-sig)
@@ -67,7 +66,6 @@
 (defmethod (setf <trd-seq>-s-sig) (new-value (trd-seq <trd-seq>))
   "@b(Описание:) метод @b(setf <trd-seq>-s-sig)
 "
-  (unless (r/trd:<trd>-file-descr trd-seq) (r/trd:trd-open trd-seq))
   (with-slots (s-sig) trd-seq
     (setf s-sig new-value)
     (update trd-seq)))
@@ -75,13 +73,11 @@
 (defmethod sequence:length ((trd-seq <trd-seq>))
   "@b(Описание:) метод @b(sequence:length)
 "
-  (unless (r/trd:<trd>-file-descr trd-seq) (r/trd:trd-open trd-seq))
   (r/trd:<trd>-records trd-seq))
 
 (defmethod sequence:elt ((trd-seq <trd-seq>) index)
   "@b(Описание:) метод @b(sequence:elt)
 "
-  (unless (r/trd:<trd>-file-descr trd-seq) (r/trd:trd-open trd-seq))
   (let ((a-sig (<trd-seq>-a-sig trd-seq))
         (d-sig (<trd-seq>-d-sig trd-seq)))
     (coerce

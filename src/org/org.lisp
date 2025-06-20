@@ -28,16 +28,15 @@
 @end(code)"
   (let ((rez nil))
     (push (list "Файл" (r/trd:<trd>-file-name trd )) rez)
-    (when (r/trd:<trd>-file-descr trd)
-      (progn
-	(push (list "Версия тренда" 	                  (r/trd:<trd>-version               trd)) rez)
-	(push (list "Дата создания тренда"                (mnas-string/print:date (r/trd:<trd>-utime-start trd) :stream nil)) rez)
-	(push (list "Время создания тренда"               (mnas-string/print:day-time (r/trd:<trd>-utime-start trd) :stream nil)) rez)
-	(push (list "К-во аналоговых+дискретных сигналов" (r/trd:<trd>-reserv                trd)) rez)
-	(push (list "Общее число записей в тренде"        (r/trd:<trd>-records               trd)) rez)
-	(push (list "Интервал между записями тренда"      (r/trd:<trd>-increment             trd)) rez)
-	(push (list "Количество аналоговых сигналов"      (r/trd:<trd>-a-number trd)) rez)
-	(push (list "Количество дискретных сигналов"      (r/trd:<trd>-d-number trd)) rez)))
+    (progn
+      (push (list "Версия тренда" 	                  (r/trd:<trd>-version               trd)) rez)
+      (push (list "Дата создания тренда"                (mnas-string/print:date (r/trd:<trd>-utime-start trd) :stream nil)) rez)
+      (push (list "Время создания тренда"               (mnas-string/print:day-time (r/trd:<trd>-utime-start trd) :stream nil)) rez)
+      (push (list "К-во аналоговых+дискретных сигналов" (r/trd:<trd>-reserv                trd)) rez)
+      (push (list "Общее число записей в тренде"        (r/trd:<trd>-records               trd)) rez)
+      (push (list "Интервал между записями тренда"      (r/trd:<trd>-increment             trd)) rez)
+      (push (list "Количество аналоговых сигналов"      (r/trd:<trd>-a-number trd)) rez)
+      (push (list "Количество дискретных сигналов"      (r/trd:<trd>-d-number trd)) rez))
     (nreverse rez)))
 
 (defmethod a-signals ((trd r/trd:<trd>))
