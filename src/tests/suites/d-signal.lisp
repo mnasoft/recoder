@@ -39,3 +39,4 @@
     (is-true (string= "FH03" (r/d-sig:<d-signal>-id d-signal)))
     (is-true (string= "Положение клапан FH03" (r/d-sig:<d-signal>-description d-signal)))
     (is-true (stringp (format nil "~%~A" d-signal))))))
+

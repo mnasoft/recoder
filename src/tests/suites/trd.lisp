@@ -4,10 +4,20 @@
 
 (progn 
   (defparameter *trd-fname* (mnas-path:asdf-path :recoder "trd/2018-11-06_092329.trd"))
-
   (defparameter *trd* (make-instance 'recoder/trd:<trd> :file-name *trd-fname*))
-
   (recoder/trd:trd-open *trd*))
+
+(recoder/get:trd-discret-by-record-t-nil
+ *trd*
+ 15705
+ (recoder/slist:d-signals *trd*
+                          '("FA530" "FK526" "FA526" "FA566")))
+
+(recoder/get:trd-discret-by-record
+ *trd*
+ 15705
+ (recoder/slist:d-signals *trd*
+                          '("FA530" "FK526" "FA526" "FA566")))
 
 (def-suite trd
   :description "Мастер-набор всех тестов проекта trd."
@@ -18,7 +28,7 @@
 (def-fixture fix-open-trd ()
   (let ((trd (r/trd:trd-open
               (make-instance 'recoder/trd:<trd> :file-name *trd-fname*))))
-      (&body)))
+    (&body)))
  
 (def-test trd-header-test ()
   "Проверка заголовка треда."

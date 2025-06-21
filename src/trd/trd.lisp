@@ -3,6 +3,7 @@
 (defpackage :recoder/trd
   (:use #:cl)
   (:nicknames "R/TRD")
+  (:export trd-open)
   (:export <trd>
            <trd>-file-name   ;; file-name
            <trd>-id-string   ;; id-string
@@ -147,7 +148,7 @@
   (declare (type (member :long :short) value))
   (setf *trd-print-format* value))
 
-#+nil (setf (trd-print-format) :short)
+(setf (trd-print-format) :short)
 #+nil (setf (trd-print-format) :long)
 
 (defmethod print-object ((trd <trd>) stream)
@@ -158,12 +159,14 @@
       (format stream "id             = ~S~%" (<trd>-id-string trd))
       (format stream "version        = ~A~%" (<trd>-version trd))
       (when (<trd>-utime-start trd)
-        (format stream "date = ~A~%" (mnas-string/print:date (<trd>-utime-start trd)))
-        (format stream "time = [ ")
+        (format stream "date           = " )
+        (mnas-string/print:date (<trd>-utime-start trd) :stream stream)
+        (format stream "~%" )
+        (format stream "time           = [ ")
         (mnas-string/print:day-time (<trd>-utime-start trd) :stream stream)
         (format stream " ; ")
         (mnas-string/print:day-time (utime-end trd) :stream stream)
-        (format stream " ]"))
+        (format stream " ]~%"))
       (format stream "Reserv         = ~A~%" (<trd>-reserv trd))
       (format stream "Total-records  = ~A~%" (<trd>-records trd))
       (format stream "Delta-time     = ~A~%" (<trd>-increment trd))
@@ -350,3 +353,6 @@
   (when (<trd>-discret-ht trd)
     (sort (alexandria:hash-table-values (<trd>-discret-ht trd))
           #'< :key #'r/d-sig:<d-signal>-num)))
+
+(defmethod trd-open ((trd <trd>))
+  (r/g:read-obj trd (<trd>-file-name trd)))

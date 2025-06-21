@@ -143,6 +143,10 @@
 
 (defmethod r/g:read-obj ((trd <trd>) (path pathname) &aux pathname-txt)
   (cond
+    ((string= (pathname-type path) "trd")
+     (r/bin:with-open-file-b-in (in path)
+       (r/g:read-obj trd in))
+     (return-from r/g:read-obj trd))
     ((string= (pathname-type path) "txt")
      (setf pathname-txt path))
     ((string= (pathname-type path) "xls")

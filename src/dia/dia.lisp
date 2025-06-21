@@ -13,10 +13,9 @@
 (in-package :recoder/dia)
 
 (defparameter *trd* nil
-  "@b(Описание:) переменная @b(*trd*) содержит объект класса @b(recoder/trd:<trd>).
-")
+  "@b(Описание:) переменная @b(*trd*) содержит объект класса @b(recoder/trd:<trd>).")
 
-#+ nil (defun get-open-ternd ()
+(defun get-open-ternd ()
   "@b(Описание:) функция @b(get-open-ternd) возвращает объект класса
   @b(recoder/trd:<trd>).
 
@@ -24,12 +23,14 @@
 @begin[lang=lisp](code)
  (get-open-ternd)
 @end(code)"
-  (setf *trd*
-        (r/trd:trd-open
-         (make-instance 'r/trd:<trd> :file-name
-                        (mnas-file-dialog:get-open-file
-                         :filetypes '(("Файлы трендов" "*.trd"))
-                         :title "Выберите файл тренда")))))
+  (let ((f-name
+          (probe-file (mnas-file-dialog:get-open-file
+                       :filetypes '(("Файлы трендов" "*.trd"))
+                       :title "Выберите файл тренда"))))
+    (when f-name
+      (setf *trd*
+            (r/trd:trd-open
+             (make-instance 'r/trd:<trd> :file-name f-name))))))
 
 (defun get-open-ternds ()
   "@b(Описание:) функция @b(get-open-ternds) возвращает список имен,

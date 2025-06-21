@@ -69,7 +69,7 @@
   (declare (type (member :long :short) value))
   (setf *a-signal-print-format* value))
 
-#+nil (setf (a-signal-print-format) :short)
+(setf (a-signal-print-format) :short)
 #+nil (setf (a-signal-print-format) :long)
 
 
