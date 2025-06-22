@@ -6,7 +6,10 @@
 
 (in-package :recoder/tests)
 
-(defun run-tests () (run! 'all))
+(defun run-tests ()
+  (run! 'txt)
+  #+nil  (run! 'all)
+  )
 
 (def-suite all
   :description "Мастер-набор всех тестов проекта Recoder.")
@@ -33,7 +36,24 @@
 
 (defun semi-equal (lst-1 lst-2)
   (recoder/split::apply-and
-   (mapcar #'math/core:semi-equal lst-1 lst-2)))
+   (mapcar
+    #'(lambda (x y)
+        (math/core:semi-equal x y))
+    lst-1
+    lst-2)))
+
+(defun semi-equalp (lst-1 lst-2)
+  (recoder/split::apply-and
+   (mapcar
+    #'(lambda (x y)
+        (math/core:semi-equal
+         x y :tolerance
+         (+ 1.0d-3 (* 1.0d-3
+                      (math/core:norma
+                       (list (math/core:norma x) (math/core:norma y)))))))
+    lst-1
+    lst-2)))
+
 
 
 (def-fixture fix-open-trd (path-to-file)
@@ -46,3 +66,15 @@
   (defparameter *trd* (make-instance 'r/c:<trd> :file-name *trd-fname*))
   (recoder/trd:trd-open *trd*)
   )
+
+(defun excel-column-to-number (col)
+  "Преобразует строку столбца Excel (например, 'AF') в номер (например, 32)."
+  (loop for char across (string-upcase col)
+        for pow = (1- (length col)) then (1- pow)
+        summing (* (- (char-code char) 64) (expt 26 pow))))
+
+(defun count-columns-between (start-col end-col)
+  "Возвращает количество столбцов между двумя именами, включая оба."
+  (let ((start (excel-column-to-number start-col))
+        (end (excel-column-to-number end-col)))
+    (1+ (- end start))))

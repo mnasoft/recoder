@@ -38,8 +38,11 @@
 
 (defun read-double-from-sring (str)
   (cond ((string= (string-trim " " str) "") 0.0d0)
-        (t (coerce (mnas-string/parse:read-number str 0.0d0)
-                   'double-float))))
+        (t (coerce
+            (mnas-string/parse:read-number
+             (ppcre:regex-replace-all "," str ".")
+             0.0d0)                   
+            'double-float))))
 
 (defun signal-detect-range (a-signal value)
   (when (< value (r/c:<a-signal>-min a-signal))

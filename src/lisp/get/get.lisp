@@ -275,5 +275,10 @@ rec-number,соответствующий сигналам d-signals."))
       (ldb (byte 1 bit-position)
            (m-bin:b-read-uchar (r/c:<trd>-oc-i-sream trd))))))
 
+(defmethod r/g:signal-value ((trd r/c:<trd>) record (x-signal string))
+  (r/g:signal-value trd
+                    record
+                    (r/slist:a-signals trd (list x-signal))))
+
 (defmethod r/g:signal-value ((trd r/c:<trd>) record (signals cons))
   (mapcar #'(lambda (sig) (r/g:signal-value trd record sig)) signals))

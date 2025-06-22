@@ -213,6 +213,7 @@
                 :components ((:file "a-signal")
                              (:file "d-signal")
                              (:file "trd")
+                             (:file "txt")
                              (:file "slist")
                              (:file "get")
                              (:file "split")
