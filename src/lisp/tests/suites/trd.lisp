@@ -4,7 +4,7 @@
 
 (progn 
   (defparameter *trd-fname* (mnas-path:asdf-path :recoder "trd/2018-11-06_092329.trd"))
-  (defparameter *trd* (make-instance 'recoder/trd:<trd> :file-name *trd-fname*))
+  (defparameter *trd* (make-instance 'r/c:<trd> :file-name *trd-fname*))
   (recoder/trd:trd-open *trd*))
 
 (recoder/get:trd-discret-by-record-t-nil
@@ -27,23 +27,23 @@
 
 (def-fixture fix-open-trd ()
   (let ((trd (r/trd:trd-open
-              (make-instance 'recoder/trd:<trd> :file-name *trd-fname*))))
+              (make-instance 'r/c:<trd> :file-name *trd-fname*))))
     (&body)))
  
 (def-test trd-header-test ()
   "Проверка заголовка треда."
   (with-fixture fix-open-trd ()
-    (is-true (probe-file (r/trd:<trd>-file-name trd)))
-    (is-true (string= (r/trd:<trd>-id-string trd) "TREND" ))
-    (is-true (= (r/trd:<trd>-version trd) 2 ))
-    (is-true (= (r/trd:<trd>-utime-start trd) 3750477809))
-    (is-true (= (r/trd:<trd>-reserv trd) 415))
-    (is-true (= (r/trd:<trd>-a-number trd) 314))
-    (is-true (= (r/trd:<trd>-d-number trd) 101))
-    (is-true (= (r/trd:<trd>-records trd) 15706))
-    (is-true (= (r/trd:<trd>-increment trd) 0.25d0))
-    (is-true (= (hash-table-count (r/trd:<trd>-analog-ht trd)) 314))
-    (is-true (= (hash-table-count (r/trd:<trd>-discret-ht trd)) 101))))
+    (is-true (probe-file (r/c:<trd>-file-name trd)))
+    (is-true (string= (r/c:<trd>-id-string trd) "TREND" ))
+    (is-true (= (r/c:<trd>-version trd) 2 ))
+    (is-true (= (r/c:<trd>-utime-start trd) 3750477809))
+    (is-true (= (r/c:<trd>-reserv trd) 415))
+    (is-true (= (r/c:<trd>-a-number trd) 314))
+    (is-true (= (r/c:<trd>-d-number trd) 101))
+    (is-true (= (r/c:<trd>-records trd) 15706))
+    (is-true (= (r/c:<trd>-increment trd) 0.25d0))
+    (is-true (= (hash-table-count (r/c:<trd>-analog-ht trd)) 314))
+    (is-true (= (hash-table-count (r/c:<trd>-discret-ht trd)) 101))))
 
 (def-test analog-length ()
   "Место (байты) в записи, занимаемое всеми аналоговыми сигналами."

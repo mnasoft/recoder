@@ -13,8 +13,8 @@
     (with-fixture fix-open-trd ()
   (is-true (equal
             (recoder/org:header trd)
-             `(("Файл"          ,(r/trd:<trd>-file-name trd))
-               ("Версия тренда" ,(r/trd:<trd>-version *trd*)) 
+             `(("Файл"          ,(r/c:<trd>-file-name trd))
+               ("Версия тренда" ,(r/c:<trd>-version *trd*)) 
                ("Дата создания тренда" "2018-11-06")
                ("Время создания тренда" "09:23:29")
                ("К-во аналоговых+дискретных сигналов" 415)

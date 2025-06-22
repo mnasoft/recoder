@@ -62,7 +62,7 @@
       ((probe-file r/trd:*convert-excel-to-txt-ps1*))
 
       (t (error "~A" r/trd:*convert-excel-to-txt-ps1*)))
-    (let ((trd (make-instance 'r/trd:<trd>)))
+    (let ((trd (make-instance 'r/c:<trd>)))
       (r/g:read-obj trd path)
       (r/g:write-obj trd (r/trd::fname-xls->trd path)))))
 

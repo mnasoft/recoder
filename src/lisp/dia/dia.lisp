@@ -12,11 +12,11 @@
 (in-package :recoder/dia)
 
 (defparameter *trd* nil
-  "@b(Описание:) переменная @b(*trd*) содержит объект класса @b(recoder/trd:<trd>).")
+  "@b(Описание:) переменная @b(*trd*) содержит объект класса @b(r/c:<trd>).")
 
 (defun get-open-ternd ()
   "@b(Описание:) функция @b(get-open-ternd) возвращает объект класса
-  @b(recoder/trd:<trd>).
+  @b(r/c:<trd>).
 
  @b(Пример использования:)
 @begin[lang=lisp](code)
@@ -29,7 +29,7 @@
     (when f-name
       (setf *trd*
             (r/trd:trd-open
-             (make-instance 'r/trd:<trd> :file-name f-name))))))
+             (make-instance 'r/c:<trd> :file-name f-name))))))
 
 (defun get-open-ternds ()
   "@b(Описание:) функция @b(get-open-ternds) возвращает список имен,

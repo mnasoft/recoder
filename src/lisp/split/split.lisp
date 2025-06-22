@@ -21,22 +21,22 @@
   (mapc #'(lambda (el) (when el (return-from apply-or t))) lst)
   nil)
 
-(defmethod split-on-intervals-when-flag-is-on ((trd r/trd:<trd>) d-signal-str )
+(defmethod split-on-intervals-when-flag-is-on ((trd r/c:<trd>) d-signal-str )
   "@b(Описание:) метод @b(split-on-intervals-when-flag-is-on) для 
 тренда @b(trd) выполняет поиск диапазонов, для которых значение 
 дискретного сигнала с именем d-signal-str имеет значение 1.
 
  Начало и конец диапазона выражено в порядковы номерах записи с начала тренда.
 todo: доработать, чтоб возвращался последний диапазон при поднятом флаге в конце"
-  (let* ((flag (gethash d-signal-str (r/trd:<trd>-discret-ht trd)))
+  (let* ((flag (gethash d-signal-str (r/c:<trd>-discret-ht trd)))
 	 (flag-lst (list flag))
-	 (total-rec (r/trd:<trd>-records trd))
+	 (total-rec (r/c:<trd>-records trd))
 	 (rez-lst nil)
 	 (n-start total-rec)
 	 (n-end -1)
 	 (rez nil)
 	 )
-    (dotimes (i (r/trd:<trd>-records trd) (nreverse rez-lst))
+    (dotimes (i (r/c:<trd>-records trd) (nreverse rez-lst))
       (setf rez (first (r/get:trd-discret-by-record-t-nil trd i flag-lst)))
       (if rez
 	  (setf n-start (min i n-start)
@@ -48,7 +48,7 @@ todo: доработать, чтоб возвращался последний �
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmethod split-on-utimes-when-flag-is-on ((trd r/trd:<trd>) d-signal-str )
+(defmethod split-on-utimes-when-flag-is-on ((trd r/c:<trd>) d-signal-str )
   "@b(Описание:) метод @b(split-on-intervals-when-flag-is-on) для 
 тренда @b(trd) выполняет поиск диапазонов, для которых значение 
 дискретного сигнала с именем d-signal-str имеет значение 1.
@@ -63,18 +63,18 @@ todo: доработать, чтоб возвращался последний �
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmethod split-on-intervals-of-time-when-flag-is-on ((trd r/trd:<trd>) d-signal-str)
+(defmethod split-on-intervals-of-time-when-flag-is-on ((trd r/c:<trd>) d-signal-str)
   "Для тренда trd выполняет поиск диапазонов, для которых
 значение сигнала d-signal-str принимало значение 1. 
 И возвращает длительность этих диапазонов"
   (let ((intervals (split-on-intervals-when-flag-is-on trd d-signal-str))) ;; trd-flag-on-intervals
     (values
      (mapcar
-      #'(lambda (el) (* -1 (r/trd:<trd>-increment trd) (apply #'- el)))
+      #'(lambda (el) (* -1 (r/c:<trd>-increment trd) (apply #'- el)))
       intervals)
      intervals)))
 
-(defmethod split-on-intervals-by-condition ((trd r/trd:<trd>) start-signal-str-lst end-signal-str-lst)
+(defmethod split-on-intervals-by-condition ((trd r/c:<trd>) start-signal-str-lst end-signal-str-lst)
   "@b(Описание:) метод @b(split-on-intervals-by-condition)
 Выполняет деление тренда на диапазоны.
 
@@ -108,18 +108,18 @@ todo: доработать, чтоб возвращался последний �
 @end(list)
 "
   (let* ((start-flag-lst (mapcar
-                          #'(lambda(el) (gethash el (r/trd:<trd>-discret-ht trd)))
+                          #'(lambda(el) (gethash el (r/c:<trd>-discret-ht trd)))
                           start-signal-str-lst))
 	 (end-flag-lst   (mapcar
-                          #'(lambda(el) (gethash el (r/trd:<trd>-discret-ht trd)))
+                          #'(lambda(el) (gethash el (r/c:<trd>-discret-ht trd)))
                           end-signal-str-lst))
 	 (fl-start nil)
 	 (fl-end   nil)
-	 (total-rec (r/trd:<trd>-records trd))
+	 (total-rec (r/c:<trd>-records trd))
 	 (rez-lst nil)
 	 (n-start total-rec)
 	 (n-end -1))
-    (dotimes (i (r/trd:<trd>-records trd) (nreverse rez-lst))
+    (dotimes (i (r/c:<trd>-records trd) (nreverse rez-lst))
       (setf fl-start (or fl-start (apply-and (r/get:trd-discret-by-record-t-nil trd i start-flag-lst))))
       (if fl-start
 	  (progn

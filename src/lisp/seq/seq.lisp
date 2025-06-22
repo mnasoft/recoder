@@ -25,7 +25,7 @@
 
 (in-package :recoder/seq)
 
-(defclass <trd-seq> (r/trd:<trd> sequence)
+(defclass <trd-seq> (r/c:<trd> sequence)
   ((s-sig :reader   <trd-seq>-s-sig :initform nil :initarg :s-sig :documentation "Список с именами сигналов.")
    (a-sig :accessor <trd-seq>-a-sig :initform nil :documentation "Список аналоговых сигналов.")
    (d-sig :accessor <trd-seq>-d-sig :initform nil :documentation "Список дискретных сигналов.")
@@ -49,8 +49,8 @@
     (setf (<trd-seq>-d-sig trd-seq) d-sig)
     (with-slots (s-sig) trd-seq
       (setf s-sig
-            (append (mapcar #'recoder/a-signal:<a-signal>-id (<trd-seq>-a-sig trd-seq))
-                    (mapcar #'recoder/d-signal:<d-signal>-id (<trd-seq>-d-sig trd-seq)))))
+            (append (mapcar #'r/c:<a-signal>-id (<trd-seq>-a-sig trd-seq))
+                    (mapcar #'r/c:<d-signal>-id (<trd-seq>-d-sig trd-seq)))))
     (clrhash (<trd-seq>-h-tbl trd-seq))
     (loop :for s :in (<trd-seq>-s-sig trd-seq)
 	  :for i :from 0 :below (length (<trd-seq>-s-sig trd-seq))
@@ -73,7 +73,7 @@
 (defmethod sequence:length ((trd-seq <trd-seq>))
   "@b(Описание:) метод @b(sequence:length)
 "
-  (r/trd:<trd>-records trd-seq))
+  (r/c:<trd>-records trd-seq))
 
 (defmethod sequence:elt ((trd-seq <trd-seq>) index)
   "@b(Описание:) метод @b(sequence:elt)
@@ -131,7 +131,7 @@
   "@b(Описание:) метод @b(<trd-seq>-units)
 "
   (append
-   (mapcar #'recoder/a-signal:<a-signal>-units (<trd-seq>-a-sig trd-seq))
+   (mapcar #'r/c:<a-signal>-units (<trd-seq>-a-sig trd-seq))
    (loop :for i :in (<trd-seq>-d-sig trd-seq)
 	 :collect "0/1")))
 
@@ -164,7 +164,7 @@
 (defmethod export-to ((trd-seq <trd-seq>) (csv-stream <csv-stream>)
                       &key
                         (start 0)
-                        (end (r/trd:<trd>-records trd-seq))
+                        (end (r/c:<trd>-records trd-seq))
                         (by 1))
   "@b(Описание:) метод @b(export-to) выполняет вывод объекта @b(trd-seq) в
 поток @b(csv-stream).
@@ -175,7 +175,7 @@
  (export-to *trd-sig* *csv-stream*)
 @end(code)
 "
-  (with-open-file (os (concatenate 'string (r/trd:<trd>-file-name trd-seq) ".csv")
+  (with-open-file (os (concatenate 'string (r/c:<trd>-file-name trd-seq) ".csv")
 		      :direction :output :if-exists :supersede
 		      :external-format (<format-stream>-external-format csv-stream))
     (format os "Time;NUM;~{~,4F~^;~}~%" (<trd-seq>-s-sig trd-seq))

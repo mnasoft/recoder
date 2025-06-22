@@ -31,7 +31,7 @@
 строк, которые для тренда @b(trd) не являются именами аналоговых или
 дискреных сигналов, присутствующих в списке @b(s-names)."))
 
-(defmethod not-signals ((trd r/trd:<trd>) s-names)
+(defmethod not-signals ((trd r/c:<trd>) s-names)
   "
  @b(Пример использования:)
 @begin[lang=lisp](code)
@@ -42,11 +42,11 @@
 @end(code)
 "
   (loop :for s-n :in s-names
-          :unless (or (gethash s-n (r/trd:<trd>-analog-ht trd))
-                      (gethash s-n (r/trd:<trd>-discret-ht trd)))
+          :unless (or (gethash s-n (r/c:<trd>-analog-ht trd))
+                      (gethash s-n (r/c:<trd>-discret-ht trd)))
             :collect s-n))
 
-(defmethod a-signals ((trd r/trd:<trd>) s-names)
+(defmethod a-signals ((trd r/c:<trd>) s-names)
   "
  @b(Пример использования:)
 @begin[lang=lisp](code)
@@ -56,16 +56,16 @@
 @end(code)
 "
   #+nil
-  (when (r/trd:<trd>-file-descr trd)
+  (when (r/c:<trd>-file-descr trd)
     (loop :for s-n :in s-names
-      :when (gethash s-n (r/trd:<trd>-analog-ht trd))
+      :when (gethash s-n (r/c:<trd>-analog-ht trd))
         :collect :it)
     )
   (loop :for s-n :in s-names
-      :when (gethash s-n (r/trd:<trd>-analog-ht trd))
+      :when (gethash s-n (r/c:<trd>-analog-ht trd))
         :collect :it))
 
-(defmethod d-signals ((trd r/trd:<trd>) s-names)
+(defmethod d-signals ((trd r/c:<trd>) s-names)
   "
  @b(Пример использования:)
 @begin[lang=lisp](code)
@@ -73,10 +73,10 @@
    recoder/trd:*trd*
    '(\"V2\" \"P02\" \"T2\" \"ET300\" \"FA530\" \"FK526\" \"FA526\" \"FA566\" \"KAZNA-SCHO\"))
 @end(code)"
-  #+nil (when (r/trd:<trd>-file-descr trd)
+  #+nil (when (r/c:<trd>-file-descr trd)
           (loop :for s-n :in s-names
-                :when (gethash s-n (r/trd:<trd>-discret-ht trd))
+                :when (gethash s-n (r/c:<trd>-discret-ht trd))
                   :collect :it))
   (loop :for s-n :in s-names
-        :when (gethash s-n (r/trd:<trd>-discret-ht trd))
+        :when (gethash s-n (r/c:<trd>-discret-ht trd))
           :collect :it))

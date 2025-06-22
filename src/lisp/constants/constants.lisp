@@ -2,7 +2,7 @@
 
 (defpackage #:recoder/constants
   (:use #:cl)
-  (:nicknames "R/C")
+  (:nicknames "R/CONST")
   (:export +signal-id-wid+              
            +signal-description-wid+     
            +signal-units-wid+           

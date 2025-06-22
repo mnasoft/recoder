@@ -54,7 +54,9 @@
 
 (defparameter *trd* (make-instance '<trd> :file-name *fn-txt*))
 
-(r/g:read-obj *trd* *fn-xls*)
+(r/g:read-obj *trd* *fn-txt*) ;;*fn-txt*
+
+(r/g:a-signal-list *trd*)
 
 (r/bin:with-open-file-b-out (out *fn-trd*)
   (r/g:write-obj *trd* out))

@@ -10,7 +10,7 @@
 
 (in-package :recoder/org)
 
-(defmethod header ((trd r/trd:<trd>))
+(defmethod header ((trd r/c:<trd>))
   "@b(Описание:) метод @b(header) возвращает общую информацию
  о тренде в виде пригодном для вставки таблицы в ORG-режиме редактора
  Emacs.
@@ -27,19 +27,19 @@
  (header *trd*)
 @end(code)"
   (let ((rez nil))
-    (push (list "Файл" (r/trd:<trd>-file-name trd )) rez)
+    (push (list "Файл" (r/c:<trd>-file-name trd )) rez)
     (progn
-      (push (list "Версия тренда" 	                  (r/trd:<trd>-version               trd)) rez)
-      (push (list "Дата создания тренда"                (mnas-string/print:date (r/trd:<trd>-utime-start trd) :stream nil)) rez)
-      (push (list "Время создания тренда"               (mnas-string/print:day-time (r/trd:<trd>-utime-start trd) :stream nil)) rez)
-      (push (list "К-во аналоговых+дискретных сигналов" (r/trd:<trd>-reserv                trd)) rez)
-      (push (list "Общее число записей в тренде"        (r/trd:<trd>-records               trd)) rez)
-      (push (list "Интервал между записями тренда"      (r/trd:<trd>-increment             trd)) rez)
-      (push (list "Количество аналоговых сигналов"      (r/trd:<trd>-a-number trd)) rez)
-      (push (list "Количество дискретных сигналов"      (r/trd:<trd>-d-number trd)) rez))
+      (push (list "Версия тренда" 	                (r/c:<trd>-version               trd)) rez)
+      (push (list "Дата создания тренда"                (mnas-string/print:date (r/c:<trd>-utime-start trd) :stream nil)) rez)
+      (push (list "Время создания тренда"               (mnas-string/print:day-time (r/c:<trd>-utime-start trd) :stream nil)) rez)
+      (push (list "К-во аналоговых+дискретных сигналов" (r/c:<trd>-reserv                trd)) rez)
+      (push (list "Общее число записей в тренде"        (r/c:<trd>-records               trd)) rez)
+      (push (list "Интервал между записями тренда"      (r/c:<trd>-increment             trd)) rez)
+      (push (list "Количество аналоговых сигналов"      (r/c:<trd>-a-number trd)) rez)
+      (push (list "Количество дискретных сигналов"      (r/c:<trd>-d-number trd)) rez))
     (nreverse rez)))
 
-(defmethod a-signals ((trd r/trd:<trd>))
+(defmethod a-signals ((trd r/c:<trd>))
   "@b(Описание:) метод @b(a-signals) возврвщает 2d-list список,
  отображающий все аналоговые сигналы в удобном виде для представления
  в ORG-режиме редактора Emacs.
@@ -68,14 +68,14 @@
 .......................................................................................................
 | 313 | SF2      |   0.0d0 |            1000.0d0 |         | Площадь сечения на входе в кс, см2       |
 @end(code)"
-  (loop :for k :being :the hash-key :using (hash-value v) :of (r/trd:<trd>-analog-ht trd)
+  (loop :for k :being :the hash-key :using (hash-value v) :of (r/c:<trd>-analog-ht trd)
 	:collect
         (mapcar #'(lambda (f) (funcall f v))
-                '(r/a-sig:<a-signal>-num r/a-sig:<a-signal>-id
-                  r/a-sig:<a-signal>-min r/a-sig:<a-signal>-max
-                  r/a-sig:<a-signal>-units r/a-sig:<a-signal>-description))))
+                '(r/c:<a-signal>-num   r/c:<a-signal>-id
+                  r/c:<a-signal>-min   r/c:<a-signal>-max
+                  r/c:<a-signal>-units r/c:<a-signal>-description))))
 
-(defmethod d-signals ((trd r/trd:<trd>))
+(defmethod d-signals ((trd r/c:<trd>))
   "@b(Описание:) метод @b(d-signals) возврвщает 2d-list список,
 отображающий все дискретные сигналы в удобном виде для представления в org режиме.
 
@@ -101,7 +101,7 @@
 ..........................................................
 | 100 | FH011 | Кран подачи ДТ - закрыт                  |
 @end(code)"
-  (loop :for k :being :the hash-key :using (hash-value v) :of (r/trd:<trd>-discret-ht trd)
+  (loop :for k :being :the hash-key :using (hash-value v) :of (r/c:<trd>-discret-ht trd)
 	:collect
                 (mapcar #'(lambda (f) (funcall f v))
-                '(r/d-sig:<d-signal>-num r/d-sig:<d-signal>-id r/d-sig:<d-signal>-description))))
+                '(r/c:<d-signal>-num r/c:<d-signal>-id r/c:<d-signal>-description))))

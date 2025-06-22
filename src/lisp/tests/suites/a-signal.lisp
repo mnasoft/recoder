@@ -14,11 +14,11 @@
         (units "м3/с")
         (description "Объёмный расход через КС"))
     (make-instance
-     'r/a-sig:<a-signal> :num num :id id :min min
+     'r/c:<a-signal> :num num :id id :min min
      :max max :units units :description description)))
 
 (def-fixture fix-a-signal (num id min max units description)
-  (let ((a-signal (make-instance 'r/a-sig:<a-signal>
+  (let ((a-signal (make-instance 'r/c:<a-signal>
                                  :num num
                                  :id id
                                  :min min
@@ -40,51 +40,51 @@
 (def-test a-signal-slots ()
   (with-fixture fix-a-signal (115 "V2" -1.0  9.0 "м3/с" "Объёмный расход через КС")
     (is-true
-     (= num (r/a-sig:<a-signal>-num a-signal)))
-    (is-true (string= id (r/a-sig:<a-signal>-id a-signal)))
-    (is-true (math/core:semi-equal min (r/a-sig:<a-signal>-min a-signal)))
-    (is-true (math/core:semi-equal max (r/a-sig:<a-signal>-max a-signal)))
-    (is-false (math/core:semi-equal min (r/a-sig:<a-signal>-max a-signal)))
-    (is-true (string= units (r/a-sig:<a-signal>-units a-signal)))
-    (is-true (string= description (r/a-sig:<a-signal>-description a-signal)))
+     (= num (r/c:<a-signal>-num a-signal)))
+    (is-true (string= id (r/c:<a-signal>-id a-signal)))
+    (is-true (math/core:semi-equal min (r/c:<a-signal>-min a-signal)))
+    (is-true (math/core:semi-equal max (r/c:<a-signal>-max a-signal)))
+    (is-false (math/core:semi-equal min (r/c:<a-signal>-max a-signal)))
+    (is-true (string= units (r/c:<a-signal>-units a-signal)))
+    (is-true (string= description (r/c:<a-signal>-description a-signal)))
     (is-true (stringp (format nil "~%~A" a-signal)))))
 
 (def-test a-signal-slots-change ()
   (with-fixture fix-a-signal (115 "V2" -1.0  9.0 "м3/с" "Объёмный расход через КС")
     (progn
-      (setf (r/a-sig:<a-signal>-num a-signal) 52)
-      (setf (r/a-sig:<a-signal>-id a-signal) "T03")
-      (setf (r/a-sig:<a-signal>-min a-signal) 0.0)
-      (setf (r/a-sig:<a-signal>-max a-signal) 10.0)
-      (setf (r/a-sig:<a-signal>-units a-signal) "C")
-      (setf (r/a-sig:<a-signal>-description a-signal) "Температура за КС"))
+      (setf (r/c:<a-signal>-num a-signal) 52)
+      (setf (r/c:<a-signal>-id a-signal) "T03")
+      (setf (r/c:<a-signal>-min a-signal) 0.0)
+      (setf (r/c:<a-signal>-max a-signal) 10.0)
+      (setf (r/c:<a-signal>-units a-signal) "C")
+      (setf (r/c:<a-signal>-description a-signal) "Температура за КС"))
     
-    (is-true (= 52 (r/a-sig:<a-signal>-num a-signal)))
-    (is-true (string= "T03" (r/a-sig:<a-signal>-id a-signal)))
-    (is-true (math/core:semi-equal 0.0 (r/a-sig:<a-signal>-min a-signal)))
-    (is-true (math/core:semi-equal 10.0 (r/a-sig:<a-signal>-max a-signal)))
-    (is-true (string= "C" (r/a-sig:<a-signal>-units a-signal)))
-    (is-true (string= "Температура за КС" (r/a-sig:<a-signal>-description a-signal)))
+    (is-true (= 52 (r/c:<a-signal>-num a-signal)))
+    (is-true (string= "T03" (r/c:<a-signal>-id a-signal)))
+    (is-true (math/core:semi-equal 0.0 (r/c:<a-signal>-min a-signal)))
+    (is-true (math/core:semi-equal 10.0 (r/c:<a-signal>-max a-signal)))
+    (is-true (string= "C" (r/c:<a-signal>-units a-signal)))
+    (is-true (string= "Температура за КС" (r/c:<a-signal>-description a-signal)))
     (is-true (stringp (format nil "~%~A" a-signal)))))
 
 (def-test a-signal-value ()
   (with-fixture fix-a-signal (115 "V2" 0.0  25.0 "м3/с" "Объёмный расход через КС")
-    (is-true (= 0 (r/a-sig:encode-value 0.0 a-signal)))
-    (is-true (= 0 (r/a-sig:encode-value -0.1 a-signal)))
-    (is-true (= (1- (* 256 256)) (r/a-sig:encode-value 25.0 a-signal)))
-    (is-true (= (1- (* 256 256)) (r/a-sig:encode-value 25.1 a-signal)))
+    (is-true (= 0 (r/g:encode-value 0.0 a-signal)))
+    (is-true (= 0 (r/g:encode-value -0.1 a-signal)))
+    (is-true (= (1- (* 256 256)) (r/g:encode-value 25.0 a-signal)))
+    (is-true (= (1- (* 256 256)) (r/g:encode-value 25.1 a-signal)))
     (is-true (= (round (/ (1- (* 256 256)) 2))
-                (r/a-sig:encode-value 12.5 a-signal)))
+                (r/g:encode-value 12.5 a-signal)))
     (is-true (= (round (* (1- (* 256 256)) 1/10))
-                (r/a-sig:encode-value 2.5 a-signal)))
+                (r/g:encode-value 2.5 a-signal)))
     (is-true (math/core:semi-equal
               (round (* (1- (* 256 256)) 9/10))
-              (r/a-sig:encode-value 22.5 a-signal)
+              (r/g:encode-value 22.5 a-signal)
               :tolerance 1))
     (loop :for i :from 0 :to 100 :do
       (let ((j (random r/a-sig::*ushort-max*)))
                (is-true
                 (= j
-                   (r/a-sig:encode-value
-                    (r/a-sig:decode-value j a-signal)
+                   (r/g:encode-value
+                    (r/g:decode-value j a-signal)
                     a-signal)))))))

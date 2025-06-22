@@ -20,8 +20,6 @@
   (:export trd-a-ids
            trd-a-units
            )
-  (:export signal-value
-           )
   (:documentation "@b(Описание:) пакет @b(recoder/get) предназначен для получения о
 значений аналоговых и дискретных сигналов из тренда."))
 
@@ -122,7 +120,7 @@ rec-number,соответствующий сигналам d-signals."))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; defmethod
 
-(defmethod trd-analog-mid-by-snames ((trd r/trd:<trd>) utime snames &key (n-before *offset*) (n-after *offset*))
+(defmethod trd-analog-mid-by-snames ((trd r/c:<trd>) utime snames &key (n-before *offset*) (n-after *offset*))
   "
  @b(Пример использования:)
 @begin[lang=lisp](code)
@@ -141,20 +139,20 @@ rec-number,соответствующий сигналам d-signals."))
                            :n-before n-before
                            :n-after n-after))
 
-(defmethod trd-analog-stddev-by-utime ( (trd r/trd:<trd>) utime signal-list &key (n-before *offset*) (n-after *offset*))
+(defmethod trd-analog-stddev-by-utime ( (trd r/c:<trd>) utime signal-list &key (n-before *offset*) (n-after *offset*))
   (let* ((rez nil)
 	 (n-start (- (r/trd:utime->record trd utime) n-before))
 	 (rezult (dotimes (i (+ n-before n-after 1) (math/matr:transpose rez))
 		   (push (trd-analog-by-record trd (+ n-start i) signal-list) rez))))
     (mapcar #'math/stat:standard-deviation rezult)))
 
-(defmethod trd-analog-stddev-by-snames ((trd r/trd:<trd>) utime snames &key (n-before *offset*) (n-after *offset*))
+(defmethod trd-analog-stddev-by-snames ((trd r/c:<trd>) utime snames &key (n-before *offset*) (n-after *offset*))
     "
  @b(Пример использования:)
 @begin[lang=lisp](code)
   (let* ((trd (r:trd-open (mnas-path:asdf-path \"recoder\" \"trd/2018-11-06_092329.trd\")))
          (snames '(\"V2\" \"ET022\"))
-         (u-start(r/trd:<trd>-utime-start trd)) 
+         (u-start(r/c:<trd>-utime-start trd)) 
          (u-end  (r/trd:utime-end   trd))
          (p 0.5)
          (u (+ u-start (* p (- u-end u-start)))))
@@ -166,32 +164,32 @@ rec-number,соответствующий сигналам d-signals."))
                               :n-before n-before
                               :n-after n-after))
 
-#+nil (defmethod trd-analog-by-record ((trd r/trd:<trd>) record signal-list)
+#+nil (defmethod trd-analog-by-record ((trd r/c:<trd>) record signal-list)
 
-  (when (and (r/trd:<trd>-file-descr trd) (< -1 record (r/trd:<trd>-records trd)))
-    (file-position (r/trd:<trd>-file-descr trd) 
+  (when (and (r/c:<trd>-file-descr trd) (< -1 record (r/c:<trd>-records trd)))
+    (file-position (r/c:<trd>-file-descr trd) 
 		   (+ (r/trd:start-offset trd) (* record (r/trd:record-length trd))))
-    (let* ((v-sh (make-array (r/trd:<trd>-a-number trd) :element-type 'integer)))
-      (dotimes (i (r/trd:<trd>-a-number trd) 'done)
+    (let* ((v-sh (make-array (r/c:<trd>-a-number trd) :element-type 'integer)))
+      (dotimes (i (r/c:<trd>-a-number trd) 'done)
 	(setf (svref v-sh i)
-	      (m-bin:b-read-ushort (r/trd:<trd>-file-descr trd))))
+	      (m-bin:b-read-ushort (r/c:<trd>-file-descr trd))))
       (mapcar
        #'(lambda(el)
            (r/a-sig:decode-value
-            (svref v-sh (r/a-sig:<a-signal>-num el))
+            (svref v-sh (r/c:<a-signal>-num el))
             el))
        signal-list))))
 
-(defmethod trd-analog-by-record ((trd r/trd:<trd>) record signal-list)
-  (signal-value trd record signal-list))
+(defmethod trd-analog-by-record ((trd r/c:<trd>) record signal-list)
+  (r/g:signal-value trd record signal-list))
 
-(defmethod trd-analog-by-utime ( (trd r/trd:<trd>) utime signal-list)
+(defmethod trd-analog-by-utime ( (trd r/c:<trd>) utime signal-list)
 
   (trd-analog-by-record trd
 			    (r/trd:utime->record trd utime)
 			    signal-list))
 
-(defmethod trd-analog-mid-by-utime ((trd r/trd:<trd>) utime signal-list &key (n-before *offset*) (n-after *offset*))
+(defmethod trd-analog-mid-by-utime ((trd r/c:<trd>) utime signal-list &key (n-before *offset*) (n-after *offset*))
   (let* ((rez nil)
 	 (n-start (- (r/trd:utime->record trd utime) n-before))
 	 (rezult (dotimes (i (+ n-before n-after 1) (math/matr:transpose rez))
@@ -200,82 +198,82 @@ rec-number,соответствующий сигналам d-signals."))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmethod trd-discret-by-record-t-nil ((trd r/trd:<trd>) record d-signals)
+(defmethod trd-discret-by-record-t-nil ((trd r/c:<trd>) record d-signals)
   (mapcar
    #'(lambda (el)
        (when (= el 0)))
    (trd-discret-by-record trd  record d-signals)))
 
-(defmethod trd-discret-by-utime ( (trd r/trd:<trd>) utime d-signals)
+(defmethod trd-discret-by-utime ( (trd r/c:<trd>) utime d-signals)
   (trd-discret-by-record trd
                          (r/trd:utime->record trd utime)
                          d-signals))
 
-(defmethod trd-discret-by-utime-t-nil ( (trd r/trd:<trd>) utime d-signals)
+(defmethod trd-discret-by-utime-t-nil ( (trd r/c:<trd>) utime d-signals)
   (trd-discret-by-record-t-nil trd
                                (r/trd:utime->record trd utime)
                                d-signals))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmethod trd-analog-discret-by-record ((trd r/trd:<trd>) record a-signals d-signals)
+(defmethod trd-analog-discret-by-record ((trd r/c:<trd>) record a-signals d-signals)
   (append (trd-analog-by-record  trd record a-signals)
 	  (trd-discret-by-record trd record d-signals)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmethod analogs-in-records ((trd r/trd:<trd>) start-record end-record a-signals)
+(defmethod analogs-in-records ((trd r/c:<trd>) start-record end-record a-signals)
     (math/matr:transpose
      (loop :for i :from start-record :below end-record
 	   :collect (trd-analog-by-record trd i a-signals))))
 
 
 
-(defmethod analogs-in-utimes ((trd r/trd:<trd>) start-utime end-utime a-signals)
+(defmethod analogs-in-utimes ((trd r/c:<trd>) start-utime end-utime a-signals)
   (analogs-in-records trd
 		      (r/trd:utime->record trd start-utime)
 		      (r/trd:utime->record trd end-utime)
 		      a-signals))
 
-(defmethod trd-discret-by-record ((trd r/trd:<trd>) rec-number d-signals)
-  (signal-value trd rec-number d-signals))
+(defmethod trd-discret-by-record ((trd r/c:<trd>) rec-number d-signals)
+  (r/g:signal-value trd rec-number d-signals))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmethod trd-a-ids (a-names (trd r/trd:<trd>))
+(defmethod trd-a-ids (a-names (trd r/c:<trd>))
   (mapcar
-   #'(lambda (a-s) (r/a-sig:<a-signal>-id a-s))
+   #'(lambda (a-s) (r/c:<a-signal>-id a-s))
    (r/slist:a-signals trd a-names)))
 
 
 
-(defmethod trd-a-units (a-names (trd r/trd:<trd>))
+(defmethod trd-a-units (a-names (trd r/c:<trd>))
 
-  (mapcar #'(lambda (a-s) (r/a-sig:<a-signal>-units a-s))
+  (mapcar #'(lambda (a-s) (r/c:<a-signal>-units a-s))
           (r/slist:a-signals trd a-names)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmethod signal-value ((trd r/trd:<trd>) record (a-signal r/a-sig:<a-signal>))
-  (when (< -1 record (r/trd:<trd>-records trd))
-    (setf (trivial-octet-streams::index (r/trd:<trd>-oc-i-sream trd))
-          (+ (* (r/a-sig:<a-signal>-num a-signal) 2)
+(defmethod r/g:signal-value ((trd r/c:<trd>) record (a-signal r/c:<a-signal>))
+  (when (< -1 record (r/c:<trd>-records trd))
+    (setf (trivial-octet-streams::index (r/c:<trd>-oc-i-sream trd))
+          (+ (* (r/c:<a-signal>-num a-signal) 2)
              (* record (r/trd:record-length trd))))
-    (r/a-sig:decode-value
-     (m-bin:b-read-ushort (r/trd:<trd>-oc-i-sream trd))
+    (r/g:decode-value
+     (m-bin:b-read-ushort (r/c:<trd>-oc-i-sream trd))
      a-signal)))
 
-(defmethod signal-value ((trd r/trd:<trd>) record (d-signal r/d-sig:<d-signal>))
-  (when (< -1 record (r/trd:<trd>-records trd))
+(defmethod r/g:signal-value ((trd r/c:<trd>) record (d-signal r/c:<d-signal>))
+  (when (< -1 record (r/c:<trd>-records trd))
     (multiple-value-bind (offset bit-position)
-        (floor (r/d-sig:<d-signal>-num d-signal) 8)
-      (setf (trivial-octet-streams::index (r/trd:<trd>-oc-i-sream trd))
+        (floor (r/c:<d-signal>-num d-signal) 8)
+      (setf (trivial-octet-streams::index (r/c:<trd>-oc-i-sream trd))
             (+ (* record (r/trd:record-length trd))
                (r/trd:discret-offset trd)
                offset))
       (ldb (byte 1 bit-position)
-           (m-bin:b-read-uchar (r/trd:<trd>-oc-i-sream trd))))))
+           (m-bin:b-read-uchar (r/c:<trd>-oc-i-sream trd))))))
 
-(defmethod signal-value ((trd r/trd:<trd>) record (signals cons))
-  (mapcar #'(lambda (sig) (signal-value trd record sig)) signals))
+(defmethod r/g:signal-value ((trd r/c:<trd>) record (signals cons))
+  (mapcar #'(lambda (sig) (r/g:signal-value trd record sig)) signals))

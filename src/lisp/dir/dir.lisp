@@ -17,7 +17,10 @@
 (in-package :recoder/dir)
 
 (defclass <dir> ()
-  ((directory :accessor <dir>-directory :initarg :directory :initform #P"~" :documentation "Каталог, из которого считываются тренды.")))
+  ((directory :accessor <dir>-directory
+              :initarg :directory
+              :initform (user-homedir-pathname)
+              :documentation "Каталог, из которого считываются тренды.")))
 
 (defclass <trd-dir> (<dir>) ())
 
@@ -67,7 +70,7 @@
          (a-sig (when trd (recoder/slist:a-signals trd signal-ids)))
          (nils  (loop :for i :in signal-ids :collect nil)))
     (if trd
-        (mapcar #'(lambda (a-s) (recoder/a-signal:<a-signal>-units a-s)) a-sig)
+        (mapcar #'(lambda (a-s) (r/c:<a-signal>-units a-s)) a-sig)
         nils)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

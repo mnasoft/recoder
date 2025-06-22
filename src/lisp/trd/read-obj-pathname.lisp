@@ -42,10 +42,10 @@
                    'double-float))))
 
 (defun signal-detect-range (a-signal value)
-  (when (< value (r/a-sig:<a-signal>-min a-signal))
-    (setf (r/a-sig:<a-signal>-min a-signal) value))
-  (when (> value (r/a-sig:<a-signal>-max a-signal))
-    (setf (r/a-sig:<a-signal>-max a-signal) value))
+  (when (< value (r/c:<a-signal>-min a-signal))
+    (setf (r/c:<a-signal>-min a-signal) value))
+  (when (> value (r/c:<a-signal>-max a-signal))
+    (setf (r/c:<a-signal>-max a-signal) value))
   a-signal)
 
 
@@ -65,12 +65,12 @@
       (loop :for name :in (cdddr names-256)
             :for n :from 0 :below (- cols 3)
             :collect
-            (let ((a-signal (make-instance 'r/a-sig:<a-signal>))
+            (let ((a-signal (make-instance 'r/c:<a-signal>))
                   (name-3 (a-singal-name-unit-description name)))
-              (setf  (r/a-sig:<a-signal>-num a-signal) n)
-              (setf  (r/a-sig:<a-signal>-id  a-signal) (first name-3))
-              (setf  (r/a-sig:<a-signal>-description  a-signal) (second name-3))
-              (setf  (r/a-sig:<a-signal>-units  a-signal) (third name-3))
+              (setf  (r/c:<a-signal>-num a-signal) n)
+              (setf  (r/c:<a-signal>-id  a-signal) (first name-3))
+              (setf  (r/c:<a-signal>-description  a-signal) (second name-3))
+              (setf  (r/c:<a-signal>-units  a-signal) (third name-3))
               a-signal)))))
 
 (defun signal-min-max-detect (file-name)
@@ -93,7 +93,7 @@
 (defun signal-encode-to-stream (file-name trd out)
   (with-open-file (in file-name :external-format :utf-16le)
     (read-line in) ;; Пропускаем первую строку заголовков
-    (let ((a-signals (a-signal-list trd))
+    (let ((a-signals (r/g:a-signal-list trd))
           (i 0)
           )
       (loop :for line = (read-line in nil nil)
@@ -105,9 +105,9 @@
                (mapcar
                 #'(lambda (value a-signal)
                     (m-bin:b-write-ushort
-                     (r/a-sig:encode-value value a-signal)
+                     (r/g:encode-value value a-signal)
                      out))
-                (read-record-line line (<trd>-a-number trd))
+                (read-record-line line (r/c:<trd>-a-number trd))
                 a-signals))
       out)))
 
@@ -136,12 +136,12 @@
                (if (= i 0)
                  (setf ut-start (detect-utime line))
                  (setf ut-end   (detect-utime line))))
-      (setf (<trd>-utime-start trd) ut-start)
-      (setf (<trd>-increment trd)
+      (setf (r/c:<trd>-utime-start trd) ut-start)
+      (setf (r/c:<trd>-increment trd)
             (coerce (/ (- ut-end ut-start) i) 'double-float))
       trd)))
 
-(defmethod r/g:read-obj ((trd <trd>) (path pathname) &aux pathname-txt)
+(defmethod r/g:read-obj ((trd r/c:<trd>) (path pathname) &aux pathname-txt)
   (cond
     ((string= (pathname-type path) "trd")
      (m-bin:with-open-file-b-in (in path)
@@ -155,28 +155,28 @@
     (t (error "~S" (pathname-type path))))
   (let ((a-signals
           (signal-min-max-detect pathname-txt)))
-    (setf (<trd>-a-number trd) (length a-signals))
-    (setf (<trd>-id-string trd) "TREND")
-    (setf (<trd>-version   trd) 2)
-    (setf (<trd>-d-number   trd) 0)
-    (setf (<trd>-discret-ht trd)
-          (make-hash-table :test #'equal :size (<trd>-d-number trd)))
-    (setf (<trd>-reserv trd) (<trd>-a-number trd))
-    (setf (<trd>-records trd) 0)
+    (setf (r/c:<trd>-a-number trd) (length a-signals))
+    (setf (r/c:<trd>-id-string trd) "TREND")
+    (setf (r/c:<trd>-version   trd) 2)
+    (setf (r/c:<trd>-d-number   trd) 0)
+    (setf (r/c:<trd>-discret-ht trd)
+          (make-hash-table :test #'equal :size (r/c:<trd>-d-number trd)))
+    (setf (r/c:<trd>-reserv trd) (r/c:<trd>-a-number trd))
+    (setf (r/c:<trd>-records trd) 0)
     (block analog-ht
-      (setf (<trd>-analog-ht trd)
-            (make-hash-table :test #'equal :size (<trd>-a-number trd)))
+      (setf (r/c:<trd>-analog-ht trd)
+            (make-hash-table :test #'equal :size (r/c:<trd>-a-number trd)))
       (loop :for i :from 0
             :for a-signal :in a-signals
-            :do (setf (r/a-sig:<a-signal>-num a-signal) i)
-                (setf (gethash (r/a-sig:<a-signal>-id a-signal) (<trd>-analog-ht trd))
+            :do (setf (r/c:<a-signal>-num a-signal) i)
+                (setf (gethash (r/c:<a-signal>-id a-signal) (r/c:<trd>-analog-ht trd))
                       a-signal)))
     (block encode-a-signal-to-stream
       (with-open-stream (out (trivial-octet-streams:make-octet-output-stream))
         (signal-encode-to-stream pathname-txt trd out)
         (let ((buffer (trivial-octet-streams:get-output-stream-octets out)))
-          (setf (<trd>-records trd) (/ (length buffer) (<trd>-a-number trd) 2))
-          (setf (<trd>-oc-i-sream trd)
+          (setf (r/c:<trd>-records trd) (/ (length buffer) (r/c:<trd>-a-number trd) 2))
+          (setf (r/c:<trd>-oc-i-sream trd)
                 (trivial-octet-streams:make-octet-input-stream buffer))
           buffer)))
     (block increment-utime-start

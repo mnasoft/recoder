@@ -144,8 +144,9 @@
 Аналоговый сигнал"
   :depends-on ("recoder/constants"
                "recoder/generics"
+               "recoder/classes"
                "mnas-bin"
-               "float-features")
+               )
   :serial nil
   :components
   ((:module "src/lisp/a-signal"
@@ -227,3 +228,11 @@
   :components ((:module "src/lisp/generics"
 		:serial nil
                 :components ((:file "generics")))))
+
+(defsystem "recoder/classes"
+  :description
+  "@b(Описание:) система @b(recoder/classes) определяет слассы."
+  :depends-on ("float-features")      
+  :components ((:module "src/lisp/classes"
+		:serial nil
+                :components ((:file "classes")))))
