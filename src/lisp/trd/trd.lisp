@@ -193,22 +193,22 @@
 
 (defmethod r/g:read-obj ((trd <trd>) in)
   (block header 
-    (setf (<trd>-id-string trd) (r/bin:b-read-string in +head-id-wid+))
-    (setf (<trd>-version trd)   (r/bin:b-read-uchar in))
-    (let ((date-day             (r/bin:b-read-uchar in))
-          (date-month           (r/bin:b-read-uchar in))
-          (date-year             (+ 2000 (r/bin:b-read-uchar in)))
-	  (time-hour            (recoder/binary:b-read-uchar in))
-	  (time-minute          (r/bin:b-read-uchar in))
-	  (time-second          (r/bin:b-read-uchar in)))
+    (setf (<trd>-id-string trd) (m-bin:b-read-string in +head-id-wid+))
+    (setf (<trd>-version trd)   (m-bin:b-read-uchar in))
+    (let ((date-day             (m-bin:b-read-uchar in))
+          (date-month           (m-bin:b-read-uchar in))
+          (date-year             (+ 2000 (m-bin:b-read-uchar in)))
+	  (time-hour            (m-bin:b-read-uchar in))
+	  (time-minute          (m-bin:b-read-uchar in))
+	  (time-second          (m-bin:b-read-uchar in)))
       (setf (<trd>-utime-start trd)
             (encode-universal-time time-second time-minute time-hour
                                    date-day date-month date-year)))
-    (setf (<trd>-reserv trd)           (r/bin:b-read-ushort in))
-    (setf (<trd>-records trd)          (r/bin:b-read-uint in)) ;; Считали как правило 0
-    (setf (<trd>-increment trd)        (r/bin:b-read-double in))
-    (setf (<trd>-a-number trd)         (r/bin:b-read-ushort in))
-    (setf (<trd>-d-number trd)         (r/bin:b-read-ushort in))
+    (setf (<trd>-reserv trd)           (m-bin:b-read-ushort in))
+    (setf (<trd>-records trd)          (m-bin:b-read-uint in)) ;; Считали как правило 0
+    (setf (<trd>-increment trd)        (m-bin:b-read-double in))
+    (setf (<trd>-a-number trd)         (m-bin:b-read-ushort in))
+    (setf (<trd>-d-number trd)         (m-bin:b-read-ushort in))
     (setf (<trd>-records trd) ;; Определили число записей
 	  (/ (- (file-length in) (start-offset trd))
 	     (record-length trd))))
@@ -230,33 +230,33 @@
   (block data
     (with-open-stream (out (trivial-octet-streams:make-octet-output-stream))
       (loop :for i :from 0 :below (* (record-length trd) (<trd>-records trd))
-            :do (r/bin:b-write-uchar
-                 (r/bin:b-read-uchar in) out))
+            :do (m-bin:b-write-uchar
+                 (m-bin:b-read-uchar in) out))
       (setf (<trd>-oc-i-sream trd)
             (trivial-octet-streams:make-octet-input-stream
              (trivial-octet-streams:get-output-stream-octets out))))))
 
 (defmethod r/g:write-obj ((trd <trd>) out)
   (block header 
-    (r/bin:b-write-string (r/trd:<trd>-id-string trd)
+    (m-bin:b-write-string (r/trd:<trd>-id-string trd)
                           out (length (r/trd:<trd>-id-string trd)))
-    (r/bin:b-write-uchar (<trd>-version trd) out )
+    (m-bin:b-write-uchar (<trd>-version trd) out )
     (multiple-value-bind (time-second time-minute time-hour
                           date-day date-month date-year)
         (decode-universal-time (<trd>-utime-start trd))
-      (r/bin:b-write-uchar date-day out)
-      (r/bin:b-write-uchar date-month out)
-      (r/bin:b-write-uchar (- date-year 2000) out)
-      (r/bin:b-write-uchar time-hour out)
-      (r/bin:b-write-uchar	time-minute out)
-      (r/bin:b-write-uchar	time-second out))
-    (r/bin:b-write-ushort  (<trd>-reserv trd)    out)
-    (r/bin:b-write-uint    0
+      (m-bin:b-write-uchar date-day out)
+      (m-bin:b-write-uchar date-month out)
+      (m-bin:b-write-uchar (- date-year 2000) out)
+      (m-bin:b-write-uchar time-hour out)
+      (m-bin:b-write-uchar	time-minute out)
+      (m-bin:b-write-uchar	time-second out))
+    (m-bin:b-write-ushort  (<trd>-reserv trd)    out)
+    (m-bin:b-write-uint    0
                            #+nil(<trd>-records trd)
                            out)
-    (r/bin:b-write-double (<trd>-increment trd) out)
-    (r/bin:b-write-ushort  (<trd>-a-number trd)  out)
-    (r/bin:b-write-ushort  (<trd>-d-number trd)  out))
+    (m-bin:b-write-double (<trd>-increment trd) out)
+    (m-bin:b-write-ushort  (<trd>-a-number trd)  out)
+    (m-bin:b-write-ushort  (<trd>-d-number trd)  out))
   (block analog-ht
     (alexandria:maphash-values
      #'(lambda (a-signal) (r/g:write-obj a-signal out))
@@ -270,13 +270,13 @@
     (setf (trivial-octet-streams::index (<trd>-oc-i-sream trd))
           0)
     (loop :for i :from 0 :below (* (record-length trd) (<trd>-records trd))
-            :do (r/bin:b-write-uchar
-                 (r/bin:b-read-uchar (<trd>-oc-i-sream trd)) out))))
+            :do (m-bin:b-write-uchar
+                 (m-bin:b-read-uchar (<trd>-oc-i-sream trd)) out))))
 
 (defmethod r/g:write-obj ((trd <trd>) (path pathname))
   (when (string/= (pathname-type path) "trd")
     (error "~S" (pathname-type path)))
-  (r/bin:with-open-file-b-out (out path)
+  (m-bin:with-open-file-b-out (out path)
     (r/g:write-obj trd out)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

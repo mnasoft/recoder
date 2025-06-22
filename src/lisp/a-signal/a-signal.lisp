@@ -126,26 +126,26 @@
 
 (defmethod r/g:read-obj ((a-signal <a-signal>) in)
   (setf (<a-signal>-id a-signal)
-        (r/bin:b-read-string in r/c:+signal-id-wid+))
+        (m-bin:b-read-string in r/c:+signal-id-wid+))
   (setf (<a-signal>-description a-signal)
-        (r/bin:b-read-string in r/c:+signal-description-wid+))
+        (m-bin:b-read-string in r/c:+signal-description-wid+))
   (setf (<a-signal>-units a-signal)
-        (r/bin:b-read-string in r/c:+signal-units-wid+))
+        (m-bin:b-read-string in r/c:+signal-units-wid+))
   (setf (<a-signal>-min  a-signal)
-        (r/bin:b-read-double in))
+        (m-bin:b-read-double in))
   (setf (<a-signal>-max  a-signal)
-        (r/bin:b-read-double in))
+        (m-bin:b-read-double in))
   a-signal)
 
 (defmethod r/g:write-obj ((a-signal <a-signal>) out)
-  (r/bin:b-write-string (<a-signal>-id a-signal) out
+  (m-bin:b-write-string (<a-signal>-id a-signal) out
                         r/c:+signal-id-wid+)
-  (r/bin:b-write-string (<a-signal>-description a-signal) out
+  (m-bin:b-write-string (<a-signal>-description a-signal) out
                         r/c:+signal-description-wid+)
-  (r/bin:b-write-string (<a-signal>-units a-signal) out
+  (m-bin:b-write-string (<a-signal>-units a-signal) out
                         r/c:+signal-units-wid+)
-  (r/bin:b-write-double (<a-signal>-min a-signal) out)
-  (r/bin:b-write-double (<a-signal>-max a-signal) out)
+  (m-bin:b-write-double (<a-signal>-min a-signal) out)
+  (m-bin:b-write-double (<a-signal>-max a-signal) out)
   a-signal)
 
 

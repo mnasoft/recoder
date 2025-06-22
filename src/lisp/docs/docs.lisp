@@ -24,7 +24,6 @@
       (:recoder/trd      :recoder/trd)
       (:recoder/a-signal nil)
       (:recoder/d-signal nil)
-      (:recoder/binary   nil)
       )
     :do
        (progn
@@ -48,7 +47,6 @@
       :recoder/trd
       :recoder/a-signal
       :recoder/d-signal
-      :recoder/binary
       )
     :do (progn
           (mnas-package:make-codex-graphs i i)

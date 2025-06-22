@@ -174,7 +174,7 @@ rec-number,соответствующий сигналам d-signals."))
     (let* ((v-sh (make-array (r/trd:<trd>-a-number trd) :element-type 'integer)))
       (dotimes (i (r/trd:<trd>-a-number trd) 'done)
 	(setf (svref v-sh i)
-	      (r/bin:b-read-ushort (r/trd:<trd>-file-descr trd))))
+	      (m-bin:b-read-ushort (r/trd:<trd>-file-descr trd))))
       (mapcar
        #'(lambda(el)
            (r/a-sig:decode-value
@@ -263,7 +263,7 @@ rec-number,соответствующий сигналам d-signals."))
           (+ (* (r/a-sig:<a-signal>-num a-signal) 2)
              (* record (r/trd:record-length trd))))
     (r/a-sig:decode-value
-     (r/bin:b-read-ushort (r/trd:<trd>-oc-i-sream trd))
+     (m-bin:b-read-ushort (r/trd:<trd>-oc-i-sream trd))
      a-signal)))
 
 (defmethod signal-value ((trd r/trd:<trd>) record (d-signal r/d-sig:<d-signal>))
@@ -275,7 +275,7 @@ rec-number,соответствующий сигналам d-signals."))
                (r/trd:discret-offset trd)
                offset))
       (ldb (byte 1 bit-position)
-           (r/bin:b-read-uchar (r/trd:<trd>-oc-i-sream trd))))))
+           (m-bin:b-read-uchar (r/trd:<trd>-oc-i-sream trd))))))
 
 (defmethod signal-value ((trd r/trd:<trd>) record (signals cons))
   (mapcar #'(lambda (sig) (signal-value trd record sig)) signals))

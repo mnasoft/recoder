@@ -11,8 +11,8 @@
                      :element-type 'unsigned-byte
                      :direction :output
                      :if-exists :supersede)
-  (r/bin:b-write-double 45.23d0 out)
-  (r/bin:b-write-float  12.78d0 out)
+  (m-bin:b-write-double 45.23d0 out)
+  (m-bin:b-write-float  12.78d0 out)
   (r/g:write-obj *a* out))
 
 (with-open-file (in "/home/mna/123321.bin"
@@ -25,6 +25,6 @@
 (with-open-file (in "/home/mna/123321.bin"
                      :element-type 'unsigned-byte
                      :direction :input)
-  (format t "~A~%" (r/bin:b-read-double in))
-  (format t "~A~%" (r/bin:b-read-float  in))
+  (format t "~A~%" (m-bin:b-read-double in))
+  (format t "~A~%" (m-bin:b-read-float  in))
   (r/g:read-obj *a1* in))

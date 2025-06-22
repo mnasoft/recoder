@@ -104,7 +104,7 @@
                (incf i)
                (mapcar
                 #'(lambda (value a-signal)
-                    (recoder/binary:b-write-ushort
+                    (m-bin:b-write-ushort
                      (r/a-sig:encode-value value a-signal)
                      out))
                 (read-record-line line (<trd>-a-number trd))
@@ -144,7 +144,7 @@
 (defmethod r/g:read-obj ((trd <trd>) (path pathname) &aux pathname-txt)
   (cond
     ((string= (pathname-type path) "trd")
-     (r/bin:with-open-file-b-in (in path)
+     (m-bin:with-open-file-b-in (in path)
        (r/g:read-obj trd in))
      (return-from r/g:read-obj trd))
     ((string= (pathname-type path) "txt")

@@ -39,15 +39,15 @@
 
 (defmethod r/g:read-obj ((d-signal <d-signal>) in)
   (setf (<d-signal>-id d-signal)
-        (r/bin:b-read-string in r/c:+signal-id-wid+))
+        (m-bin:b-read-string in r/c:+signal-id-wid+))
   (setf (<d-signal>-description d-signal)
-        (r/bin:b-read-string in r/c:+signal-description-wid+))
+        (m-bin:b-read-string in r/c:+signal-description-wid+))
   d-signal)
 
 (defmethod r/g:write-obj ((d-signal <d-signal>) out)
-  (r/bin:b-write-string (<d-signal>-id d-signal) out
+  (m-bin:b-write-string (<d-signal>-id d-signal) out
                         r/c:+signal-id-wid+)
-  (r/bin:b-write-string (<d-signal>-description d-signal) out
+  (m-bin:b-write-string (<d-signal>-description d-signal) out
                         r/c:+signal-description-wid+)
   d-signal)
 

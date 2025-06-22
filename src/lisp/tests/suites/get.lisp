@@ -11,7 +11,6 @@
 
 (defpackage :recoder/get
   (:use #:cl
-        #:recoder/binary
         #:recoder/d-signal
         #:recoder/a-signal
         #:recoder/trd
