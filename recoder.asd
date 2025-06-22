@@ -198,7 +198,10 @@
 
 (defsystem "recoder/tests"
   :description "Тестирование систем, входящих  в проект Recoder."
-  :depends-on ("recoder" "fiveam")      ; "math/arr-matr"
+  :depends-on ("recoder"
+               "fiveam"
+               "ironclad"
+               "mnas-path")
   :perform (test-op (o s)
 		    (uiop:symbol-call :mnas-string/tests :run-tests))
   :components ((:module "src/lisp/tests"

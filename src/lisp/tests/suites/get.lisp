@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (def-test trd-analog-mid-by-snames ()
-  (with-fixture fix-open-trd ()
+  (with-fixture fix-open-trd (*trd-fname*)
     (with-fixture a-names ()
       (is-true
        (semi-equal
@@ -51,7 +51,7 @@
         '(0.1269768607832238d0 106507.972838941d0 15.469356614241027d0 424.66468299382007d0))))))
 
 (def-test trd-analog-stddev-by-snames ()
-  (with-fixture fix-open-trd ()
+  (with-fixture fix-open-trd (*trd-fname*)
     (with-fixture a-names ()
       (is-true
        (semi-equal
@@ -62,7 +62,7 @@
         '(7.06355458741549d-4 40.08217147040062d0 0.04416575081504683d0 3.190519247625745d0))))))
 
 (def-test trd-analog-mid-by-utime ()
-  (with-fixture fix-open-trd ()
+  (with-fixture fix-open-trd (*trd-fname*)
     (with-fixture a-names ()
       (is-true
        (semi-equal
@@ -73,7 +73,7 @@
         '(0.13618677042801555d0 107386.45652813654d0 23.159540340130864d0 489.1862218298474d0))))))
 
 (def-test trd-analog-stddev-by-utime ()
-  (with-fixture fix-open-trd ()
+  (with-fixture fix-open-trd (*trd-fname*)
     (with-fixture a-names ()
       (is-true
        (semi-equal
@@ -84,7 +84,7 @@
         '(7.53353843676347d-4 47.907358065677975d0 0.029378371881425107d0 1.68445279343399d0))))))
 
 (def-test trd-analog-by-record ()
-  (with-fixture fix-open-trd ()
+  (with-fixture fix-open-trd (*trd-fname*)
     (with-fixture a-names ()
       (is-true
        (equal
@@ -96,7 +96,7 @@
 
 (def-test trd-analog-test ()
   "Проверка извлечения аналоговых сигналов."
-  (with-fixture fix-open-trd ()
+  (with-fixture fix-open-trd (*trd-fname*)
     (with-fixture a-names ()
       (is-true (equal (recoder/get:trd-analog-by-utime
                        trd
@@ -113,7 +113,7 @@
 
 (def-test trd-discret-by-record ()
   "Проверка извлечения дисктерных сигналов."
-  (with-fixture fix-open-trd ()
+  (with-fixture fix-open-trd (*trd-fname*)
     (with-fixture d-names ()
       (is-true (equal (recoder/get:trd-discret-by-record trd
                                                          2400 
@@ -126,7 +126,7 @@
 
 (def-test trd-discret-by-record-t-nil ()
   "Проверка извлечения дисктерных сигналов."
-  (with-fixture fix-open-trd ()
+  (with-fixture fix-open-trd (*trd-fname*)
     (with-fixture d-names ()
       (is-true (equal (recoder/get:trd-discret-by-record-t-nil trd
                                                                2400 
@@ -139,7 +139,7 @@
 
 (def-test trd-discret-by-utime ()
   "Проверка извлечения дисктерных сигналов."
-  (with-fixture fix-open-trd ()
+  (with-fixture fix-open-trd (*trd-fname*)
     (with-fixture d-names ()
     (is-true (equal (recoder/get:trd-discret-by-utime 
                      trd
@@ -154,7 +154,7 @@
 
 (def-test trd-discret-by-utime-t-nil ()
   "Проверка извлечения дисктерных сигналов."
-  (with-fixture fix-open-trd ()
+  (with-fixture fix-open-trd (*trd-fname*)
     (with-fixture d-names ()
       (is-true (equal (recoder/get:trd-discret-by-utime-t-nil
                        trd
@@ -168,7 +168,7 @@
                       '(nil nil nil nil))))))
 
 (def-test trd-analog-discret-by-record ()
-  (with-fixture fix-open-trd ()
+  (with-fixture fix-open-trd (*trd-fname*)
     (with-fixture fix-sig-names ()
       (is-true
        (equal
@@ -179,7 +179,7 @@
         '(0.13962005035477226d0 105607.69054703593d0 13.577172503242544d0 16.552986953536276d0 0 0 0 0))))))
 
 (def-test analogs-in-records ()
-  (with-fixture fix-open-trd ()
+  (with-fixture fix-open-trd (*trd-fname*)
     (with-fixture fix-sig-names ()
       (is-true (equal (recoder/get:analogs-in-records trd
                                                       0 3
@@ -190,7 +190,7 @@
                         (1.6601815823605708d0 2.3193713282978563d0 2.2705424582284275d0)))))))
 
 (def-test analogs-in-utimes ()
-  (with-fixture fix-open-trd ()
+  (with-fixture fix-open-trd (*trd-fname*)
     (with-fixture fix-sig-names ()
       (is-true
        (equal
@@ -205,18 +205,18 @@
 
 
 (def-test trd-a-ids ()
-  (with-fixture fix-open-trd ()
+  (with-fixture fix-open-trd (*trd-fname*)
     (with-fixture fix-sig-names ()
       (is-true (equal (recoder/get:trd-a-ids names trd)
                       '("V2" "P02" "T2" "ET300"))))))
 
 (def-test trd-a-units ()
-  (with-fixture fix-open-trd ()
+  (with-fixture fix-open-trd (*trd-fname*)
     (with-fixture fix-sig-names ()
     (is-true (equal (recoder/get:trd-a-units names trd)
                     '("м3/с" "Па" "°C" "°C"))))))
 
-(with-fixture fix-open-trd ()
+(with-fixture fix-open-trd (*trd-fname*)
     (with-fixture fix-sig-names ()
       (recoder/get:trd-a-units names trd)))
 

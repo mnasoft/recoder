@@ -34,3 +34,15 @@
 (defun semi-equal (lst-1 lst-2)
   (recoder/split::apply-and
    (mapcar #'math/core:semi-equal lst-1 lst-2)))
+
+
+(def-fixture fix-open-trd (path-to-file)
+  (let ((trd (r/trd:trd-open
+              (make-instance 'r/c:<trd> :file-name path-to-file))))
+    (&body)))
+
+(progn 
+  (defparameter *trd-fname* (mnas-path:asdf-path :recoder "data/trd/2018-11-06_092329.trd"))
+  (defparameter *trd* (make-instance 'r/c:<trd> :file-name *trd-fname*))
+  (recoder/trd:trd-open *trd*)
+  )

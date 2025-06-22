@@ -7,10 +7,9 @@
   :in all)
 
 (in-suite org)
-
 (def-test header ()
   "Проверка извлечения заголовка."
-    (with-fixture fix-open-trd ()
+    (with-fixture fix-open-trd (*trd-fname*)
   (is-true (equal
             (recoder/org:header trd)
              `(("Файл"          ,(r/c:<trd>-file-name trd))

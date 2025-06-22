@@ -5,7 +5,9 @@
   (:nicknames "R/A-SIG")
   (:export encode-lineary) ;; куда-то перенести
   (:export correct-range)
-  (:intern *ushort-max*))
+  (:intern *ushort-max*)
+  (:export a-signal-print-format)
+  )
 
 ;;;;(declaim (optimize (space 0) (compilation-speed 0)  (speed 0) (safety 3) (debug 3)))
 ;;;; (declaim (optimize (compilation-speed 0) (debug 3) (safety 0) (space 0) (speed 0)))

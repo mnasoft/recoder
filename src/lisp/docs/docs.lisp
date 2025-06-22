@@ -12,6 +12,11 @@
     :for j :from 1
     :for i :in
     '((:recoder          :recoder)
+      (:recoder/generics :recoder/generics)
+      (:recoder/classes  :recoder/classes)
+      (:recoder/trd      :recoder/trd)            
+      (:recoder/a-signal nil)
+      (:recoder/d-signal nil)
       (:recoder/dia      :recoder/dia)
       (:recoder/dir      :recoder/dir)
       (:recoder/seq      :recoder/seq)
@@ -21,9 +26,6 @@
       (:recoder/split    nil)
       (:recoder/get      nil)
       (:recoder/slist    nil)
-      (:recoder/trd      :recoder/trd)
-      (:recoder/a-signal nil)
-      (:recoder/d-signal nil)
       )
     :do
        (progn
@@ -47,6 +49,7 @@
       :recoder/trd
       :recoder/a-signal
       :recoder/d-signal
+      :recoder/classes
       )
     :do (progn
           (mnas-package:make-codex-graphs i i)
