@@ -22,7 +22,7 @@
 
 (in-package :recoder)
 
-#+nil (defun trd-open (f-name)
+(defun trd-open (f-name)
   "@b(Описание:) функция @b(trd-open) возвращает объект тренда.
 
  @b(Переменые:)
@@ -31,12 +31,15 @@
 @end(list)
 "
   (when (probe-file f-name)
-    (let ((trd (make-instance 'r/trd:<trd> :file-name f-name)))
+    (let ((trd (make-instance 'r/c:<trd> :file-name f-name)))
       (r/trd:trd-open trd)
       trd)))
 
 (defun recode-xls ()
-  (loop :for i :in (directory "*.xls")
+  (loop :for i :in (mapcar
+                    #'pathname
+                    (mnas-file-dialog:get-open-file :filetypes '(("XLS" "*.xls")) :multiple t))
+        #+nil (directory "*.xls")
         :for n :from 1
         :do
            (format t "~3A ~A~%" n i)
