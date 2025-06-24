@@ -11,8 +11,13 @@ param(
 
 # Запоминаем культурные настройки
 $culture = Get-Culture
+$decimal_deparator = $excel.DecimalSeparator
+$use_system_separators = $excel.UseSystemSeparators
+
 # Устанавливаем культурные настройки
 Set-Culture en-US
+$excel.DecimalSeparator = "." 
+$excel.UseSystemSeparators = $false
 
 $excel = New-Object -ComObject Excel.Application
 $excel.Visible = $false
@@ -36,4 +41,7 @@ $workbook.Close($false)
 $excel.Quit()
 # Восстанавливаем культурные настройки
 Set-Culture $culture 
+$excel.DecimalSeparator = $decimal_deparator
+$excel.UseSystemSeparators = $use_system_separators
+
 [System.Runtime.Interopservices.Marshal]::ReleaseComObject($excel) | Out-Null
