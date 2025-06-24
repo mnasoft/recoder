@@ -35,5 +35,5 @@ $workbook.SaveAs($OutputFile, $xlUnicodeText)
 $workbook.Close($false)
 $excel.Quit()
 # Восстанавливаем культурные настройки
-Set-Culture = $culture 
+Set-Culture $culture 
 [System.Runtime.Interopservices.Marshal]::ReleaseComObject($excel) | Out-Null

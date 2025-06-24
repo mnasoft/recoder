@@ -45,13 +45,6 @@
            (format t "~3A ~A~%" n i)
            (recode i)))
 
-(defparameter *123*
-    (mapcar
-     #'pathname
-     (mnas-file-dialog:get-open-file :filetypes '(("XLS" "*.xls")) :multiple t)))
-
-(recode  (probe-file (first *123*)))
-
 (defun recode (path)
   "@b(Описание:) функция @b(path) выполняет перекодирование тренда из
 формата xls или txt в формат трендера trd.
@@ -74,6 +67,6 @@
       (r/g:write-obj trd (r/trd::fname-xls->trd path)))))
 
 
-;; sbcl --eval "(asdf:load-system :recoder)" --eval "(save-lisp-and-die \"r.exe\" :toplevel #'r:recode-xls :executable t)"
+;; sbcl
 #+nil (asdf:load-system :recoder)
-#+nil (save-lisp-and-die  "r.exe" :executable t :top-level #'r:recode-xls  )
+#+nil (save-lisp-and-die "recode-xls-trd.exe"  :executable t :toplevel #'r:recode-xls)
