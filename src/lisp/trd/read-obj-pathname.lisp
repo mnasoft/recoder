@@ -13,7 +13,7 @@
      (concatenate 'string (namestring f-name-xls) ".trd"))))
 
 (defparameter *Convert-Excel-To-Txt-ps1*
-  (probe-file (mnas-path:asdf-path :recoder "ps1/ConvertExcelToTxt.ps1")))
+  (probe-file (mnas-path:asdf-path :recoder "src/ps1/ConvertExcelToTxt.ps1")))
 
 (defun xls->txt (f-name &key (skip-rows "15") (power-shell-script *Convert-Excel-To-Txt-ps1*))
   (when (and (probe-file f-name) (probe-file power-shell-script))
