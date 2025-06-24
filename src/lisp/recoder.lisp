@@ -69,4 +69,5 @@
 
 ;; sbcl
 #+nil (asdf:load-system :recoder)
-#+nil (save-lisp-and-die "recode-xls-trd.exe"  :executable t :toplevel #'r:recode-xls)
+#+nil (save-lisp-and-die "recode-xls-trd.exe"  :executable t :toplevel #'r:recode-xls :compression t)
+ 
