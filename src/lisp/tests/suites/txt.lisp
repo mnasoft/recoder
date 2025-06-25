@@ -52,17 +52,7 @@
 
 (+ 26 26 26 (- 26 3) )
 
-(defun excel-column-to-number (col)
-  "Преобразует строку столбца Excel (например, 'AF') в номер (например, 32)."
-  (loop for char across (string-upcase col)
-        for pow = (1- (length col)) then (1- pow)
-        summing (* (- (char-code char) 64) (expt 26 pow))))
 
-(defun count-columns-between (start-col end-col)
-  "Возвращает количество столбцов между двумя именами, включая оба."
-  (let ((start (excel-column-to-number start-col))
-        (end (excel-column-to-number end-col)))
-    (1+ (- end start))))
 
 
 
