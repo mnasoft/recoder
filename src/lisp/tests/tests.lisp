@@ -78,3 +78,7 @@
   (let ((start (excel-column-to-number start-col))
         (end (excel-column-to-number end-col)))
     (1+ (- end start))))
+
+
+(count-columns-between "D"  "DX")
+

@@ -8,7 +8,9 @@
 
 (defparameter *trd-fname*
   (probe-file (mnas-path:asdf-path :recoder "data/trd/2018-11-06_092329.trd"))
-   "Для примеров.")
+  "Для примеров.")
+
+(defparameter *trd-fname* "C:/Users/namatv/Desktop/xls/1_Custom_sec_16May2025_111820_AM.xls")
 
 (setf (trd-print-format) :long)
 (setf (r/a-sig:a-signal-print-format) :long)
@@ -87,3 +89,6 @@
 (uiop:pathname-directory-pathname (first sb-ext:*posix-argv*))
 
 (r:recode *fn-xls*)
+
+
+

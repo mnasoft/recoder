@@ -22,7 +22,7 @@
 
 (in-package :recoder)
 
-#+nil (defun trd-open (f-name)
+(defun trd-open (f-name)
   "@b(Описание:) функция @b(trd-open) возвращает объект тренда.
 
  @b(Переменые:)
@@ -31,12 +31,15 @@
 @end(list)
 "
   (when (probe-file f-name)
-    (let ((trd (make-instance 'r/trd:<trd> :file-name f-name)))
+    (let ((trd (make-instance 'r/c:<trd> :file-name f-name)))
       (r/trd:trd-open trd)
       trd)))
 
 (defun recode-xls ()
-  (loop :for i :in (directory "*.xls")
+  (loop :for i :in (mapcar
+                    #'pathname
+                    (mnas-file-dialog:get-open-file :filetypes '(("XLS" "*.xls")) :multiple t))
+        #+nil (directory "*.xls")
         :for n :from 1
         :do
            (format t "~3A ~A~%" n i)
@@ -48,25 +51,23 @@
 
  При перекодировании функция основывается на расширении файла.
 "
-  (let ((ps1-script
-          (probe-file
-           (first
-            (directory
-             (concatenate 'string
-                          (namestring (mnas-path:posix-arg0-path))
-                          "*.ps1"))))))
-    (format t "~A~%"ps1-script)
+  (let* ((ps1-script-fn 
+           (first (directory (concatenate 'string (namestring (mnas-path:posix-arg0-path)) "*.ps1"))))
+         (ps1-script
+           (when ps1-script-fn
+             (probe-file ps1-script-fn))))
+    (format t "~A~%" ps1-script)
     (cond
       (ps1-script
        (setf r/trd:*convert-excel-to-txt-ps1* ps1-script))
       ((probe-file r/trd:*convert-excel-to-txt-ps1*))
-
       (t (error "~A" r/trd:*convert-excel-to-txt-ps1*)))
     (let ((trd (make-instance 'r/c:<trd>)))
       (r/g:read-obj trd path)
       (r/g:write-obj trd (r/trd::fname-xls->trd path)))))
 
 
-;; sbcl --eval "(asdf:load-system :recoder)" --eval "(save-lisp-and-die \"r.exe\" :toplevel #'r:recode-xls :executable t)"
+;; sbcl
 #+nil (asdf:load-system :recoder)
-#+nil (save-lisp-and-die  "r.exe" :executable t :top-level #'r:recode-xls  )
+#+nil (save-lisp-and-die "recode-xls-trd.exe"  :executable t :toplevel #'r:recode-xls :compression t)
+ 
