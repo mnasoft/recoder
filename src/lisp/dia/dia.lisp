@@ -1,0 +1,48 @@
+;;;; ./clisp/recoder/src/dia/dia.lisp
+
+(defpackage :recoder/dia
+  (:use #:cl
+        )
+  (:nicknames "R/DIA")
+  (:export get-open-ternds
+	   get-open-ternd
+	   change-directory-default)
+  (:export *trd*))
+
+(in-package :recoder/dia)
+
+(defparameter *trd* nil
+  "@b(Описание:) переменная @b(*trd*) содержит объект класса @b(r/c:<trd>).")
+
+(defun get-open-ternd ()
+  "@b(Описание:) функция @b(get-open-ternd) возвращает объект класса
+  @b(r/c:<trd>).
+
+ @b(Пример использования:)
+@begin[lang=lisp](code)
+ (get-open-ternd)
+@end(code)"
+  (let ((f-name
+          (probe-file (mnas-file-dialog:get-open-file
+                       :filetypes '(("Файлы трендов" "*.trd"))
+                       :title "Выберите файл тренда"))))
+    (when f-name
+      (setf *trd*
+            (r/trd:trd-open
+             (make-instance 'r/c:<trd> :file-name f-name))))))
+
+(defun get-open-ternds ()
+  "@b(Описание:) функция @b(get-open-ternds) возвращает список имен,
+ отобранных в диалоге файлов.
+
+ @b(Пример использования:) @begin[lang=lisp](code)
+ (get-open-ternds)
+@end(code)
+
+"
+  (mnas-file-dialog:get-open-file
+   :filetypes '(("Файлы трендов" "*.trd"))
+   :title "Выберите файлы трендов" :multiple t))
+
+(defun change-directory-default ()
+  (mnas-file-dialog:change-directory-default))

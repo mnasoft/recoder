@@ -2,10 +2,12 @@
 
 (defsystem "recoder"
   :description "@b(Описание:) система @b(Recoder) преднзначена для работы с трендами."
-  :long-description #.(uiop:read-file-string "doc/recoder-long-description.txt")
+  ;; :long-description #.(uiop:read-file-string "doc/recoder-long-description.txt")
   :author "Mykola Matvyeyev <mnasoft@gmail.com>"
   :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"  
-  :depends-on ("recoder/trd"
+  :depends-on ("mnas-path"
+               "mnas-file-dialog"
+               "recoder/trd"
                "recoder/get"
                "recoder/html"
                "recoder/interval"
@@ -17,22 +19,27 @@
                "recoder/split") 
   :serial nil
   :in-order-to ((test-op (test-op "recoder/tests")))
-  :components  ((:file "recoder")))
+  :components ((:module "src/lisp"
+                :components  ((:file "recoder")))))
 
 (defsystem "recoder/trd"
   :description "Преднзначен для работы с трендами."
   :depends-on ("mnas-string/print"
+               "mnas-string/parse"
+               "cl-ppcre"
                "recoder/a-signal"
                "recoder/d-signal"
-               "recoder/binary"
+               "mnas-bin"
+               "trivial-octet-streams"
                ;; "mnas-file-dialog" "html-table" "mnas-path" "math" "mnas-string"
                ) 
   :serial nil
   :in-order-to ((test-op (test-op "recoder/tests")))
-  :components ((:module "src/trd"
+  :components ((:module "src/lisp/trd"
 		:serial t
                 :components
 		((:file "trd")
+                 (:file "read-obj-pathname")
 		 ;; (:file "test") 
 		 ))))
 
@@ -42,7 +49,7 @@
   :depends-on ("recoder/slist" "math") ;; "recoder/trd"
   :serial nil
   :components
-  ((:module "src/get"
+  ((:module "src/lisp/get"
     :serial nil
     :components
     ((:file "get")))))
@@ -53,7 +60,7 @@
   :depends-on ("recoder/get" "recoder/slist" "html-table" "mnas-string/print")
   :serial nil
   :components
-  ((:module "src/html"
+  ((:module "src/lisp/html"
     :serial nil
     :components
     ((:file "html")))))
@@ -64,7 +71,7 @@
   :depends-on ("recoder/trd")
   :serial nil
   :components
-  ((:module "src/interval"
+  ((:module "src/lisp/interval"
     :serial nil
     :components
     ((:file "interval")))))
@@ -76,7 +83,7 @@
                "mnas-string/print")
   :serial nil
   :components
-  ((:module "src/org"
+  ((:module "src/lisp/org"
     :serial nil
     :components
     ((:file "org")))))
@@ -88,7 +95,7 @@
                "mnas-string/print")
   :serial nil
   :components
-  ((:module "src/split"
+  ((:module "src/lisp/split"
     :serial nil
     :components
     ((:file "split")))))
@@ -99,7 +106,7 @@
   :depends-on ("mnas-file-dialog" "recoder/trd")
   :serial nil
   :components
-  ((:module "src/dia"
+  ((:module "src/lisp/dia"
     :serial nil
     :components
     ((:file "dia")))))
@@ -107,28 +114,43 @@
 (defsystem "recoder/docs"
   :description "Зависимости для сборки документации."
   :depends-on ("recoder" "codex" "mnas-package")
-  :components ((:module "src/docs"
+  :components ((:module "src/lisp/docs"
 		:serial nil
                 :components ((:file "docs")))))
 
-(defsystem "recoder/binary"
-  :description "Преднзначен для работы с трендами. 
-Содержит низкоуровневые функции ввода-вывода."
-  :author "Mykola Matvyeyev <mnasoft@gmail.com>"
-  :depends-on ("ieee-floats" "babel-streams") ;; "mnas-string" "html-table" "math" "mnas-path" "mnas-file-dialog"
+
+(defsystem "recoder/constants"
+  :description "@b(Описание:) система @b(recoder/constants) определяет константы."
   :serial nil
   :components
-  ((:module "src/binary"
+  ((:module "src/lisp/constants"
     :serial t
     :components
-    ((:file "binary")))))
+    ((:file "constants")))))
+
+(defsystem "recoder/d-signal"
+  :description "Преднзначен для работы с трендами.
+Аналоговый сигнал"
+  :depends-on ("recoder/constants" "recoder/generics" "mnas-bin")
+  :serial nil
+  :components
+  ((:module "src/lisp/d-signal"
+    :serial t
+    :components
+    ((:file "d-signal")
+     ))))
 
 (defsystem "recoder/a-signal"
   :description "Преднзначен для работы с трендами.
 Аналоговый сигнал"
+  :depends-on ("recoder/constants"
+               "recoder/generics"
+               "recoder/classes"
+               "mnas-bin"
+               )
   :serial nil
   :components
-  ((:module "src/a-signal"
+  ((:module "src/lisp/a-signal"
     :serial t
     :components
     ((:file "a-signal")))))
@@ -140,21 +162,12 @@
                "mnas-org-mode") ;;"recoder/trd"
   :serial nil
   :components
-  ((:module "src/seq"
+  ((:module "src/lisp/seq"
     :serial nil
     :components
     ((:file "seq")))))
 
-(defsystem "recoder/d-signal"
-  :description "Преднзначен для работы с трендами.
-Аналоговый сигнал"
-  :serial nil
-  :components
-  ((:module "src/d-signal"
-    :serial t
-    :components
-    ((:file "d-signal")
-     ))))
+
 
 (defsystem "recoder/dir"
   :description "Преднзначен для работы группами трендов, помещенными в отдельные каталоги."
@@ -167,7 +180,7 @@
                )
   :serial nil
   :components
-  ((:module "src/dir"
+  ((:module "src/lisp/dir"
     :serial nil
     :components
     ((:file "dir")))))
@@ -177,7 +190,7 @@
   :depends-on ("recoder/trd")
   :serial nil
   :components
-  ((:module "src/slist"
+  ((:module "src/lisp/slist"
     :serial nil
     :components
     ((:file "slist")
@@ -186,25 +199,45 @@
 
 (defsystem "recoder/tests"
   :description "Тестирование систем, входящих  в проект Recoder."
-  :depends-on ("recoder" "fiveam")      ; "math/arr-matr"
+  :depends-on ("recoder"
+               "fiveam"
+               "ironclad"
+               "mnas-path")
   :perform (test-op (o s)
 		    (uiop:symbol-call :mnas-string/tests :run-tests))
-  :components ((:module "src/tests"
+  :components ((:module "src/lisp/tests"
 		:serial nil
                 :components ((:file "tests")))
-               (:module "src/tests/suites"
-                :depends-on ("src/tests")
+               (:module "src/lisp/tests/suites"
+                :depends-on ("src/lisp/tests")
 		:serial nil
-                :components ((:file "binary")
-                             (:file "a-signal")
+                :components ((:file "a-signal")
                              (:file "d-signal")
                              (:file "trd")
+                             (:file "txt")
                              (:file "slist")
                              (:file "get")
                              (:file "split")
                              (:file "interval")
                              (:file "org")))
-               (:module "src/tests/run"
-                :depends-on ("src/tests/suites")
+               (:module "src/lisp/tests/run"
+                :depends-on ("src/lisp/tests/suites")
 		:serial nil
                 :components ((:file "run")))))
+
+
+(defsystem "recoder/generics"
+  :description
+  "@b(Описание:) система @b(recoder/generics) определяет обобщенные
+ функции."
+  :components ((:module "src/lisp/generics"
+		:serial nil
+                :components ((:file "generics")))))
+
+(defsystem "recoder/classes"
+  :description
+  "@b(Описание:) система @b(recoder/classes) определяет слассы."
+  :depends-on ("float-features")      
+  :components ((:module "src/lisp/classes"
+		:serial nil
+                :components ((:file "classes")))))
