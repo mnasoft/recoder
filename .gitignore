@@ -6,6 +6,7 @@
 *.lisp-temp
 build
 \#*\#
+trd/
 
 docs/*.scr
 docs/*.lisp
